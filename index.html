@@ -373,7 +373,7 @@ function buyProduct(id){
  game.coins-=product.price;game.inventory.push(id);save();refresh();alert("Purchase successful!");
 }
 
-/* MYSTERY CRATE OPEN SYSTEM */
+/* FIXED MYSTERY CRATE OPEN SYSTEM */
 function openMysteryCrate(){
  const crateIndex=game.inventory.indexOf("crate");
 
@@ -390,9 +390,9 @@ function openMysteryCrate(){
   {id:"backpack",name:"Backpack",icon:"🎒"}
  ];
 
- const reward=rewards[Math.floor(Math.random()*rewards.length)];
-
  if(!confirm("🎁 Mystery Crate খুলতে চান?"))return;
+
+ const reward=rewards[Math.floor(Math.random()*rewards.length)];
 
  game.inventory.splice(crateIndex,1);
 
@@ -412,10 +412,15 @@ function openMysteryCrate(){
 }
 
 function renderInventory(){
- $("inventoryList").innerHTML="";
+ const list=$("inventoryList");
+ list.innerHTML="";
+
+ if(!Array.isArray(game.inventory)){
+  game.inventory=[];
+ }
 
  if(!game.inventory.length){
-  $("inventoryList").textContent="আপনার Inventory খালি।";
+  list.textContent="আপনার Inventory খালি।";
   return;
  }
 
@@ -428,17 +433,19 @@ function renderInventory(){
 
   const name=document.createElement("span");
   name.textContent=product.icon+" "+product.name;
-
   div.appendChild(name);
 
   if(id==="crate"){
    const btn=document.createElement("button");
+   btn.type="button";
    btn.textContent="🎁 Open";
-   btn.onclick=openMysteryCrate;
+   btn.addEventListener("click",function(){
+    openMysteryCrate();
+   });
    div.appendChild(btn);
   }
 
-  $("inventoryList").appendChild(div);
+  list.appendChild(div);
  });
 }
 
@@ -488,8 +495,7 @@ function resetDemo(){
  save();refresh();alert("Local demo data reset হয়েছে।");
 }
 
-/* Login check runs after all functions and variables are ready */
 checkLogin();
 </script>
 </body>
- </html>
+   </html>
