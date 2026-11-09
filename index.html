@@ -13,6 +13,7 @@ button,input,select{font:inherit}
 button{border:0;border-radius:9px;padding:11px 15px;background:#1688e8;color:white;font-weight:bold;cursor:pointer}
 button.secondary{background:#34445b}
 button.danger{background:#c0392b}
+button.success{background:#16834a}
 button:disabled{opacity:.5}
 input,select{width:100%;padding:12px;margin:6px 0;border:1px solid #40536c;border-radius:8px;background:#101c2d;color:white}
 header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#0a1424;border-bottom:1px solid #30435c;gap:10px;flex-wrap:wrap}
@@ -36,6 +37,11 @@ h2,h3{margin-top:5px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row>*{flex:1}
 .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #31465e}
+.character-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.character-card{background:#203a57;border:1px solid #385879;border-radius:12px;padding:15px;text-align:center}
+.character-icon{font-size:55px;margin:10px}
+.character-card.selected{border:2px solid #42c5ff;background:#17476b}
+.equipment-box{background:#203751;padding:12px;border-radius:10px;margin:8px 0}
 #authScreen{position:fixed;inset:0;z-index:99;background:linear-gradient(145deg,#081321,#183653);display:flex;align-items:center;justify-content:center;padding:15px;overflow:auto}
 .authBox{width:100%;max-width:390px;background:#14243a;border:1px solid #426080;border-radius:16px;padding:22px}
 .authBox h1{text-align:center;color:#54c5ff}
@@ -45,7 +51,7 @@ h2,h3{margin-top:5px}
 #mobileNav{display:none}
 footer{text-align:center;color:#9eb0c5;padding:20px;font-size:12px}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.rightSide,.leftSide{display:none}#mobileNav{display:block}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:400px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:25px}}
+@media(max-width:400px){.grid,.character-grid{grid-template-columns:1fr 1fr}.hero h1{font-size:25px}}
 </style>
 </head>
 <body>
@@ -84,6 +90,7 @@ footer{text-align:center;color:#9eb0c5;padding:20px;font-size:12px}
  <div class="panel menu" id="sideMenu">
   <button class="active" onclick="openPage('home',this)">🏠 Game Lobby</button>
   <button onclick="openPage('profile',this)">👤 Profile</button>
+  <button onclick="openPage('character',this)">🧑‍🚀 Character & Outfit</button>
   <button onclick="openPage('friends',this)">👥 Friends</button>
   <button onclick="openPage('team',this)">🛡️ Team</button>
   <button onclick="openPage('store',this)">🛒 Store</button>
@@ -97,11 +104,17 @@ footer{text-align:center;color:#9eb0c5;padding:20px;font-size:12px}
 
 <main>
 <select id="mobileNav" onchange="openPage(this.value)">
- <option value="home">Game Lobby</option><option value="profile">Profile</option>
- <option value="friends">Friends</option><option value="team">Team</option>
- <option value="store">Store</option><option value="inventory">Inventory</option>
- <option value="missions">Missions</option><option value="events">Events</option>
- <option value="leaderboard">Leaderboard</option><option value="settings">Settings</option>
+ <option value="home">Game Lobby</option>
+ <option value="profile">Profile</option>
+ <option value="character">Character & Outfit</option>
+ <option value="friends">Friends</option>
+ <option value="team">Team</option>
+ <option value="store">Store</option>
+ <option value="inventory">Inventory</option>
+ <option value="missions">Missions</option>
+ <option value="events">Events</option>
+ <option value="leaderboard">Leaderboard</option>
+ <option value="settings">Settings</option>
 </select>
 
 <section id="page-home" class="page active">
@@ -122,6 +135,7 @@ footer{text-align:center;color:#9eb0c5;padding:20px;font-size:12px}
  <div class="panel">
   <h2>🎮 Game Center</h2>
   <div class="grid">
+   <div class="tile" onclick="openPage('character')">🧑‍🚀<b>Character</b></div>
    <div class="tile" onclick="openPage('store')">🛒<b>Store</b></div>
    <div class="tile" onclick="openPage('inventory')">🎒<b>Inventory</b></div>
    <div class="tile" onclick="openPage('missions')">🎯<b>Missions</b></div>
@@ -144,6 +158,21 @@ footer{text-align:center;color:#9eb0c5;padding:20px;font-size:12px}
    <option value="🤖">🤖 Avatar 5</option>
   </select>
   <button onclick="updateProfile()">Save Profile</button>
+ </div>
+</section>
+
+<!-- CHARACTER AND OUTFIT PAGE -->
+<section id="page-character" class="page">
+ <div class="panel">
+  <h2>🧑‍🚀 Character Selection</h2>
+  <p class="muted">আপনার পছন্দের Character নির্বাচন করুন।</p>
+  <div id="characterList" class="character-grid"></div>
+ </div>
+ <div class="panel">
+  <h2>👕 Equipped Outfit</h2>
+  <p class="muted">Inventory থেকে কেনা বা পাওয়া আইটেম এখানে Equip করতে পারবেন।</p>
+  <div id="equippedList"></div>
+  <button class="secondary" onclick="openPage('inventory')">🎒 Go to Inventory</button>
  </div>
 </section>
 
@@ -268,13 +297,39 @@ function showGame(){
  refresh();
 }
 
-const defaultData={coins:1250,diamonds:100,name:"BD Player",avatar:"🧑",mode:"Battle Royale",friends:[],team:"",members:[],inventory:[],missions:{},rewardClaimed:false,xp:0};
+const defaultData={
+ coins:1250,
+ diamonds:100,
+ name:"BD Player",
+ avatar:"🧑",
+ mode:"Battle Royale",
+ friends:[],
+ team:"",
+ members:[],
+ inventory:[],
+ missions:{},
+ rewardClaimed:false,
+ xp:0,
+ character:"bd",
+ equipped:{skin:false,helmet:false,backpack:false}
+};
 
 function getData(){
- try{return {...defaultData,...(JSON.parse(localStorage.getItem("bdgame_data"))||{})};}
- catch(e){return {...defaultData};}
+ try{
+  const old=JSON.parse(localStorage.getItem("bdgame_data"))||{};
+  return {
+   ...defaultData,
+   ...old,
+   friends:Array.isArray(old.friends)?old.friends:[],
+   members:Array.isArray(old.members)?old.members:[],
+   inventory:Array.isArray(old.inventory)?old.inventory:[],
+   missions:old.missions||{},
+   equipped:{...defaultData.equipped,...(old.equipped||{})}
+  };
+ }catch(e){return {...defaultData};}
 }
 let game=getData();
+
 function save(){localStorage.setItem("bdgame_data",JSON.stringify(game));}
 
 function refresh(){
@@ -286,7 +341,14 @@ function refresh(){
  $("profileAvatar").textContent=game.avatar;
  $("profileAvatarSelect").value=game.avatar;
  $("selectedMode").textContent=game.mode;
- renderFriends();renderTeam();renderStore();renderInventory();renderMissions();renderLeaderboard();
+ renderFriends();
+ renderTeam();
+ renderStore();
+ renderInventory();
+ renderMissions();
+ renderLeaderboard();
+ renderCharacters();
+ renderEquipped();
 }
 
 function openPage(page,button){
@@ -325,25 +387,38 @@ function addFriend(){
  const name=$("friendName").value.trim();
  if(!name)return alert("বন্ধুর নাম লিখুন।");
  if(game.friends.includes(name))return alert("এই বন্ধু আগে থেকেই আছে।");
- game.friends.push(name.slice(0,30));$("friendName").value="";save();renderFriends();
+ game.friends.push(name.slice(0,30));
+ $("friendName").value="";
+ save();renderFriends();
 }
 
 function createTeam(){
  const name=$("teamName").value.trim();
  if(!name)return alert("Team Name লিখুন।");
- game.team=name.slice(0,30);game.members=[game.name];save();renderTeam();
+ game.team=name.slice(0,30);
+ game.members=[game.name];
+ save();renderTeam();
 }
+
 function addTeamMember(){
  if(!game.team)return alert("আগে Team তৈরি করুন।");
  const name=$("teamMember").value.trim();
  if(!name)return alert("Member Name লিখুন।");
  if(game.members.includes(name))return alert("এই সদস্য আগে আছে।");
- game.members.push(name.slice(0,30));$("teamMember").value="";save();renderTeam();
+ game.members.push(name.slice(0,30));
+ $("teamMember").value="";
+ save();renderTeam();
 }
+
 function renderTeam(){
  $("teamInfo").textContent=game.team?"Team: "+game.team:"No team created yet";
  $("teamMembers").innerHTML="";
- game.members.forEach(name=>{const div=document.createElement("div");div.className="item";div.textContent="👤 "+name;$("teamMembers").appendChild(div);});
+ game.members.forEach(name=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent="👤 "+name;
+  $("teamMembers").appendChild(div);
+ });
 }
 
 const products=[
@@ -358,10 +433,15 @@ const products=[
 function renderStore(){
  $("storeList").innerHTML="";
  products.forEach(product=>{
-  const div=document.createElement("div");div.className="item";
-  const info=document.createElement("span");info.textContent=product.icon+" "+product.name+" — "+product.price+" Coins";
-  const btn=document.createElement("button");btn.textContent="Buy";btn.onclick=()=>buyProduct(product.id);
-  div.append(info,btn);$("storeList").appendChild(div);
+  const div=document.createElement("div");
+  div.className="item";
+  const info=document.createElement("span");
+  info.textContent=product.icon+" "+product.name+" — "+product.price+" Coins";
+  const btn=document.createElement("button");
+  btn.textContent="Buy";
+  btn.onclick=()=>buyProduct(product.id);
+  div.append(info,btn);
+  $("storeList").appendChild(div);
  });
 }
 
@@ -370,13 +450,15 @@ function buyProduct(id){
  if(!product)return;
  if(game.coins<product.price)return alert("পর্যাপ্ত Coins নেই।");
  if(game.inventory.includes(id))return alert("এই আইটেম আপনার Inventory-তে আছে।");
- game.coins-=product.price;game.inventory.push(id);save();refresh();alert("Purchase successful!");
+ game.coins-=product.price;
+ game.inventory.push(id);
+ save();refresh();
+ alert("Purchase successful!");
 }
 
-/* FIXED MYSTERY CRATE OPEN SYSTEM */
+/* MYSTERY CRATE */
 function openMysteryCrate(){
  const crateIndex=game.inventory.indexOf("crate");
-
  if(crateIndex===-1){
   alert("আপনার Inventory-তে কোনো Mystery Crate নেই।");
   return;
@@ -393,7 +475,6 @@ function openMysteryCrate(){
  if(!confirm("🎁 Mystery Crate খুলতে চান?"))return;
 
  const reward=rewards[Math.floor(Math.random()*rewards.length)];
-
  game.inventory.splice(crateIndex,1);
 
  let message="🎉 অভিনন্দন!\nআপনি পেয়েছেন: "+reward.icon+" "+reward.name;
@@ -411,6 +492,93 @@ function openMysteryCrate(){
  alert(message);
 }
 
+/* CHARACTER SYSTEM */
+const characters=[
+ {id:"bd",name:"BD Soldier",icon:"🧑‍🚀",description:"বাংলাদেশি যোদ্ধা"},
+ {id:"ninja",name:"Shadow Ninja",icon:"🥷",description:"নিঃশব্দ ও রহস্যময়"},
+ {id:"hero",name:"Battle Hero",icon:"🦸",description:"সাহসী যোদ্ধা"},
+ {id:"robot",name:"Cyber Robot",icon:"🤖",description:"ভবিষ্যতের রোবট"}
+];
+
+function renderCharacters(){
+ const list=$("characterList");
+ if(!list)return;
+ list.innerHTML="";
+
+ characters.forEach(character=>{
+  const card=document.createElement("div");
+  card.className="character-card";
+  if(game.character===character.id)card.classList.add("selected");
+
+  const icon=document.createElement("div");
+  icon.className="character-icon";
+  icon.textContent=character.icon;
+
+  const name=document.createElement("h3");
+  name.textContent=character.name;
+
+  const description=document.createElement("p");
+  description.className="muted";
+  description.textContent=character.description;
+
+  const btn=document.createElement("button");
+  btn.textContent=game.character===character.id?"✓ Selected":"Select Character";
+  btn.disabled=game.character===character.id;
+  btn.onclick=()=>selectCharacter(character.id);
+
+  card.append(icon,name,description,btn);
+  list.appendChild(card);
+ });
+}
+
+function selectCharacter(id){
+ const character=characters.find(item=>item.id===id);
+ if(!character)return;
+ game.character=id;
+ save();
+ refresh();
+ alert(character.name+" নির্বাচন করা হয়েছে!");
+}
+
+function renderEquipped(){
+ const list=$("equippedList");
+ if(!list)return;
+ list.innerHTML="";
+
+ const character=characters.find(item=>item.id===game.character)||characters[0];
+
+ const characterBox=document.createElement("div");
+ characterBox.className="equipment-box";
+ characterBox.textContent=character.icon+" Character: "+character.name;
+ list.appendChild(characterBox);
+
+ const equipment=[
+  {id:"skin",name:"Basic Skin",icon:"👕"},
+  {id:"helmet",name:"Helmet",icon:"🪖"},
+  {id:"backpack",name:"Backpack",icon:"🎒"}
+ ];
+
+ equipment.forEach(item=>{
+  const box=document.createElement("div");
+  box.className="equipment-box";
+  const isEquipped=!!game.equipped[item.id];
+  box.textContent=item.icon+" "+item.name+" — "+(isEquipped?"Equipped":"Not Equipped");
+  list.appendChild(box);
+ });
+}
+
+/* EQUIP AND UNEQUIP */
+function toggleEquipment(id){
+ if(!game.inventory.includes(id)){
+  alert("এই আইটেম আপনার Inventory-তে নেই।");
+  return;
+ }
+
+ game.equipped[id]=!game.equipped[id];
+ save();
+ refresh();
+}
+
 function renderInventory(){
  const list=$("inventoryList");
  list.innerHTML="";
@@ -424,7 +592,7 @@ function renderInventory(){
   return;
  }
 
- game.inventory.forEach((id,index)=>{
+ game.inventory.forEach(id=>{
   const product=products.find(item=>item.id===id);
   if(!product)return;
 
@@ -439,9 +607,15 @@ function renderInventory(){
    const btn=document.createElement("button");
    btn.type="button";
    btn.textContent="🎁 Open";
-   btn.addEventListener("click",function(){
-    openMysteryCrate();
-   });
+   btn.addEventListener("click",openMysteryCrate);
+   div.appendChild(btn);
+  }
+
+  if(["skin","helmet","backpack"].includes(id)){
+   const btn=document.createElement("button");
+   btn.className=game.equipped[id]?"secondary":"success";
+   btn.textContent=game.equipped[id]?"Unequip":"Equip";
+   btn.addEventListener("click",()=>toggleEquipment(id));
    div.appendChild(btn);
   }
 
@@ -459,10 +633,16 @@ function renderMissions(){
  $("missionList").innerHTML="";
  missions.forEach(mission=>{
   const claimed=!!game.missions[mission.id];
-  const div=document.createElement("div");div.className="item";
-  const span=document.createElement("span");span.textContent=mission.name+" — "+mission.reward+" Coins";
-  const btn=document.createElement("button");btn.textContent=claimed?"Claimed":"Claim";btn.disabled=claimed;btn.onclick=()=>claimMission(mission.id);
-  div.append(span,btn);$("missionList").appendChild(div);
+  const div=document.createElement("div");
+  div.className="item";
+  const span=document.createElement("span");
+  span.textContent=mission.name+" — "+mission.reward+" Coins";
+  const btn=document.createElement("button");
+  btn.textContent=claimed?"Claimed":"Claim";
+  btn.disabled=claimed;
+  btn.onclick=()=>claimMission(mission.id);
+  div.append(span,btn);
+  $("missionList").appendChild(div);
  });
 }
 
@@ -471,14 +651,23 @@ function claimMission(id){
  if(!mission||game.missions[id])return;
  if(id==="friend"&&!game.friends.length)return alert("আগে একজন বন্ধু যোগ করুন।");
  if(id==="team"&&!game.team)return alert("আগে একটি Team তৈরি করুন।");
- game.missions[id]=true;game.coins+=mission.reward;save();refresh();
+ game.missions[id]=true;
+ game.coins+=mission.reward;
+ save();refresh();
 }
 
 function renderLeaderboard(){
- const players=[{name:game.name,score:game.xp},{name:"BD Warrior",score:900},{name:"Dragon BD",score:750},{name:"Shadow Player",score:600}];
- players.sort((a,b)=>b.score-a.score);$("leaderboardList").innerHTML="";
+ const players=[
+  {name:game.name,score:game.xp},
+  {name:"BD Warrior",score:900},
+  {name:"Dragon BD",score:750},
+  {name:"Shadow Player",score:600}
+ ];
+ players.sort((a,b)=>b.score-a.score);
+ $("leaderboardList").innerHTML="";
  players.forEach((player,index)=>{
-  const div=document.createElement("div");div.className="item";
+  const div=document.createElement("div");
+  div.className="item";
   div.textContent=(index+1)+". "+player.name+" — "+player.score+" XP";
   $("leaderboardList").appendChild(div);
  });
@@ -486,16 +675,27 @@ function renderLeaderboard(){
 
 function dailyReward(){
  if(game.rewardClaimed)return alert("আজকের Reward নেওয়া হয়েছে।");
- game.coins+=100;game.rewardClaimed=true;save();refresh();alert("আপনি 100 Coins পেয়েছেন!");
+ game.coins+=100;
+ game.rewardClaimed=true;
+ save();refresh();
+ alert("আপনি 100 Coins পেয়েছেন!");
 }
 
 function resetDemo(){
  if(!confirm("এই ডিভাইসের BD GAME demo data reset করতে চান?"))return;
- game={...defaultData,friends:[],members:[],inventory:[],missions:{}};
- save();refresh();alert("Local demo data reset হয়েছে।");
+ game={
+  ...defaultData,
+  friends:[],
+  members:[],
+  inventory:[],
+  missions:{},
+  equipped:{skin:false,helmet:false,backpack:false}
+ };
+ save();refresh();
+ alert("Local demo data reset হয়েছে।");
 }
 
 checkLogin();
 </script>
 </body>
-   </html>
+                                         </html>
