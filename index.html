@@ -3,64 +3,129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101522">
+<meta name="theme-color" content="#091323">
 <title>BD GAME</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:linear-gradient(145deg,#091323,#1b3150,#101522);color:#fff;font-family:Arial,sans-serif;min-height:100vh}
+body{margin:0;background:#091323;color:white;font-family:Arial,sans-serif}
 button,input,select{font:inherit}
-button{cursor:pointer;border:0;border-radius:10px;padding:11px 15px;color:#fff;background:#2379d8;font-weight:bold}
-button:active{transform:scale(.97)}
-header{height:65px;position:sticky;top:0;z-index:5;background:#0b1424ed;border-bottom:1px solid #ffffff20;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
-.logo{font-size:23px;font-weight:900;letter-spacing:1px;color:#55c9ff}
-.wallet{display:flex;gap:9px;align-items:center;font-weight:bold}
-.wallet span{background:#1b2b43;padding:9px 12px;border-radius:9px}
-.layout{max-width:1250px;margin:auto;padding:18px;display:grid;grid-template-columns:210px 1fr 220px;gap:16px}
-.panel{background:#111e31e8;border:1px solid #ffffff18;border-radius:15px;padding:15px;margin-bottom:14px}
-h2,h3{margin:0 0 13px}
-h2{font-size:21px}
-h3{font-size:16px;color:#8bdcff}
-nav button,.rightnav button{display:block;width:100%;text-align:left;margin:7px 0;background:#1b2d46;color:#dcecff}
+button{border:0;border-radius:9px;padding:12px;color:white;background:#087fca;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,select{width:100%;padding:12px;background:#0a1728;border:1px solid #405976;border-radius:9px;color:white;margin:7px 0}
+.hidden{display:none!important}
+
+/* LOADING */
+#loading{
+ position:fixed;inset:0;z-index:10000;
+ display:flex;align-items:center;justify-content:center;
+ text-align:center;background:linear-gradient(145deg,#071323,#12395c,#080e1b)
+}
+.loadbox{width:90%;max-width:430px}
+.logo{font-size:42px;font-weight:900;color:#64d9ff;text-shadow:0 0 25px #159cff}
+.character{font-size:100px;margin:25px}
+.track{height:12px;background:#263c56;border-radius:20px;overflow:hidden;margin:20px 0}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#0789ef,#5be7ff)}
+.loadtext{color:#b8dfff}
+
+/* LOGIN */
+#login{
+ position:fixed;inset:0;z-index:9999;display:none;
+ align-items:center;justify-content:center;padding:18px;
+ background:linear-gradient(145deg,#081323,#153a5b,#101522)
+}
+.loginbox{width:100%;max-width:390px;background:#101f34;border:1px solid #ffffff25;border-radius:18px;padding:24px;text-align:center}
+.loginlogo{font-size:34px;font-weight:900;color:#68d9ff}
+.loginbox button{width:100%;margin-top:10px}
+.note{font-size:12px;color:#a9bdd2;line-height:1.6}
+
+/* GAME */
+header{
+ height:65px;position:sticky;top:0;z-index:20;
+ background:#0b1424ed;border-bottom:1px solid #ffffff20;
+ display:flex;align-items:center;justify-content:space-between;padding:0 15px
+}
+.wallet{display:flex;gap:7px;font-weight:bold}
+.wallet span{background:#1b2b43;padding:9px;border-radius:8px}
+.layout{max-width:1250px;margin:auto;padding:16px;display:grid;grid-template-columns:205px 1fr 210px;gap:15px}
+.panel{background:#111e31;border:1px solid #ffffff18;border-radius:14px;padding:15px;margin-bottom:14px}
+h2{font-size:21px;margin:0 0 14px}
+h3{font-size:15px;color:#8bdcff;margin:0 0 12px}
+.muted{font-size:12px;color:#aabbd0}
+nav button,.rightnav button{display:block;width:100%;text-align:left;margin:6px 0;background:#1b2d46}
 nav button:hover,.rightnav button:hover{background:#28547d}
 .profile{text-align:center}
-.avatar{width:76px;height:76px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(135deg,#27b9ed,#4e5ce0);display:grid;place-items:center;font-size:38px;border:3px solid #9be7ff}
-.muted{color:#aabbd0;font-size:13px}
-.hero{min-height:330px;background:linear-gradient(130deg,#123b62,#14213b 65%,#243b5a);border-radius:18px;border:1px solid #ffffff25;padding:25px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
-.hero h1{font-size:38px;margin:5px 0;color:#8ce1ff}
-.hero-art{text-align:center;font-size:92px;filter:drop-shadow(0 8px 12px #0008)}
+.avatar{width:76px;height:76px;border-radius:50%;margin:auto auto 10px;background:linear-gradient(135deg,#27b9ed,#4e5ce0);display:grid;place-items:center;font-size:38px;border:3px solid #9be7ff}
+.hero{min-height:310px;background:linear-gradient(130deg,#123b62,#14213b 65%,#243b5a);border-radius:17px;border:1px solid #ffffff25;padding:23px;display:flex;flex-direction:column;justify-content:space-between}
+.hero h1{font-size:38px;color:#8ce1ff;margin:8px 0}
+.heroart{text-align:center;font-size:85px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.mode{flex:1;min-width:130px;background:#1c3552;padding:15px;border-radius:12px;border:1px solid #ffffff20}
+.mode{flex:1;min-width:130px;background:#1c3552;padding:14px;border-radius:11px;border:1px solid #ffffff20;cursor:pointer}
 .mode.active{border:2px solid #42caff;background:#17466b}
-.primary{background:linear-gradient(90deg,#0789e9,#16b8dd);font-size:17px;padding:14px 24px}
+.primary{background:linear-gradient(90deg,#0789e9,#16b8dd);font-size:17px;padding:14px}
 .secondary{background:#263c58}
 .danger{background:#a43c4b}
 .tilegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.tile{background:#1b2d46;border:1px solid #ffffff17;border-radius:12px;padding:15px;min-height:90px}
+.tile{background:#1b2d46;border:1px solid #ffffff17;border-radius:11px;padding:15px;min-height:85px;cursor:pointer}
 .tile strong{display:block;margin-bottom:7px}
 .tile small{color:#aabbd0}
-.content{min-height:350px}
 .item{background:#1a2c45;padding:12px;border-radius:10px;margin:9px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-input,select{background:#0b1728;border:1px solid #49617e;color:white;border-radius:9px;padding:11px;max-width:100%}
-input{width:100%;margin:6px 0}
-textarea{width:100%;min-height:75px;background:#0b1728;border:1px solid #49617e;color:white;border-radius:9px;padding:10px}
-.notice{background:#193b4e;padding:11px;border-radius:9px;color:#bdeeff;margin:10px 0}
+.content{min-height:350px}
 footer{text-align:center;color:#91a4bb;padding:20px;font-size:12px}
-.hidden{display:none}
-@media(max-width:850px){.layout{grid-template-columns:1fr}.left,.right{display:none}.layout.show-menu{grid-template-columns:1fr}.hero{min-height:280px}.hero h1{font-size:30px}}
-@media(min-width:851px){.mobile-nav{display:none}}
+.mobile-nav{display:none}
+
+@media(max-width:850px){
+ .layout{grid-template-columns:1fr}
+ .left,.right{display:none}
+ .mobile-nav{display:block;margin:10px 12px 0}
+ .hero{min-height:280px}
+ .hero h1{font-size:30px}
+}
 </style>
 </head>
+
 <body>
+
+<!-- LOADING SCREEN -->
+<div id="loading">
+ <div class="loadbox">
+  <div class="logo">⚡ BD GAME</div>
+  <div class="character">🧑‍🚀</div>
+  <h2>WELCOME TO BD GAME</h2>
+  <div class="track"><div class="fill" id="loadFill"></div></div>
+  <div class="loadtext" id="loadText">Loading 0%</div>
+  <p class="loadtext">Preparing your game...</p>
+ </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="login">
+ <div class="loginbox">
+  <div class="loginlogo">⚡ BD GAME</div>
+  <h2>PLAYER LOGIN</h2>
+  <p>Welcome to the Battle Arena</p>
+  <input id="email" type="email" placeholder="Email address">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="loginDemo()">LOGIN</button>
+  <button class="secondary" onclick="registerDemo()">CREATE ACCOUNT</button>
+  <button style="background:#26734b" onclick="enterGuest()">CONTINUE AS GUEST</button>
+  <p class="note">Login ও Registration-এর আসল অ্যাকাউন্ট যাচাই এখনো Supabase Auth-এর সঙ্গে যুক্ত হয়নি। Guest দিয়ে Demo Lobby-তে প্রবেশ করা যাবে।</p>
+ </div>
+</div>
+
+<!-- GAME APP -->
+<div id="gameApp" class="hidden">
+
 <header>
- <div class="logo">⚡ BD GAME</div>
+ <div class="logo" style="font-size:23px">⚡ BD GAME</div>
  <div class="wallet">
   <span>🪙 <b id="coins">1250</b></span>
   <span>💎 <b id="diamonds">100</b></span>
  </div>
 </header>
 
-<div class="mobile-nav panel" style="margin:10px 12px 0">
- <select id="mobilePage" onchange="openPage(this.value)" style="width:100%">
+<div class="mobile-nav panel">
+ <select id="mobilePage" onchange="openPage(this.value)">
   <option value="home">🏠 Home Lobby</option>
   <option value="profile">👤 Profile</option>
   <option value="friends">👥 Friends</option>
@@ -81,6 +146,7 @@ footer{text-align:center;color:#91a4bb;padding:20px;font-size:12px}
 </div>
 
 <div class="layout">
+
 <aside class="left">
  <div class="panel profile">
   <div class="avatar" id="avatar">🧑‍🚀</div>
@@ -88,6 +154,7 @@ footer{text-align:center;color:#91a4bb;padding:20px;font-size:12px}
   <div class="muted">Level <b id="level">12</b> • BD Region</div>
   <button class="secondary" style="margin-top:12px" onclick="openPage('profile')">Edit Profile</button>
  </div>
+
  <div class="panel">
   <h3>PLAYER MENU</h3>
   <nav>
@@ -104,53 +171,57 @@ footer{text-align:center;color:#91a4bb;padding:20px;font-size:12px}
 </aside>
 
 <main>
- <section id="homePage">
-  <div class="hero">
-   <div>
-    <div class="muted">WELCOME TO YOUR BATTLE LOBBY</div>
-    <h1>BD GAME</h1>
-    <p>Play • Team Up • Become a Champion</p>
-   </div>
-   <div class="hero-art">🧑‍🚀</div>
-   <div class="row">
-    <div class="mode active" id="brMode" onclick="chooseMode('Battle Royale')">
-     <strong>🪂 Battle Royale</strong><div class="muted">Classic battle mode</div>
-    </div>
-    <div class="mode" id="csMode" onclick="chooseMode('Clash Squad')">
-     <strong>⚔️ Clash Squad</strong><div class="muted">Team battle mode</div>
-    </div>
-   </div>
-   <button class="primary" onclick="startMatch()">▶ START MATCH</button>
+<section id="homePage">
+ <div class="hero">
+  <div>
+   <div class="muted">WELCOME TO YOUR BATTLE LOBBY</div>
+   <h1>BD GAME</h1>
+   <p>Play • Team Up • Become a Champion</p>
   </div>
-  <div class="panel" style="margin-top:15px">
-   <h2>Game Center</h2>
-   <div class="tilegrid">
-    <div class="tile" onclick="openPage('store')"><strong>🛒 Store</strong><small>Items and outfits</small></div>
-    <div class="tile" onclick="openPage('inventory')"><strong>🎒 Inventory</strong><small>Your owned items</small></div>
-    <div class="tile" onclick="openPage('missions')"><strong>📋 Missions</strong><small>Daily activities</small></div>
-    <div class="tile" onclick="openPage('pass')"><strong>🎫 Booyah Pass</strong><small>Pass progress</small></div>
-    <div class="tile" onclick="openPage('events')"><strong>🎉 Events</strong><small>Latest events</small></div>
-    <div class="tile" onclick="openPage('esports')"><strong>🏆 Esports</strong><small>Tournament center</small></div>
+  <div class="heroart">🧑‍🚀</div>
+  <div class="row">
+   <div class="mode active" id="brMode" onclick="chooseMode('Battle Royale')">
+    <strong>🪂 Battle Royale</strong>
+    <div class="muted">Classic battle mode</div>
+   </div>
+   <div class="mode" id="csMode" onclick="chooseMode('Clash Squad')">
+    <strong>⚔️ Clash Squad</strong>
+    <div class="muted">Team battle mode</div>
    </div>
   </div>
-  <div class="panel">
-   <h2>Quick Access</h2>
-   <div class="row">
-    <button class="secondary" onclick="openPage('friends')">Friends</button>
-    <button class="secondary" onclick="openPage('team')">Team</button>
-    <button class="secondary" onclick="openPage('pets')">Pets</button>
-    <button class="secondary" onclick="openPage('settings')">Settings</button>
-   </div>
-  </div>
- </section>
+  <button class="primary" onclick="startMatch()">▶ START MATCH</button>
+ </div>
 
- <section id="contentPage" class="panel content hidden">
-  <div class="row" style="justify-content:space-between">
-   <h2 id="pageTitle">Page</h2>
-   <button class="secondary" onclick="openPage('home')">← Home</button>
+ <div class="panel" style="margin-top:15px">
+  <h2>Game Center</h2>
+  <div class="tilegrid">
+   <div class="tile" onclick="openPage('store')"><strong>🛒 Store</strong><small>Items and outfits</small></div>
+   <div class="tile" onclick="openPage('inventory')"><strong>🎒 Inventory</strong><small>Your owned items</small></div>
+   <div class="tile" onclick="openPage('missions')"><strong>📋 Missions</strong><small>Daily activities</small></div>
+   <div class="tile" onclick="openPage('pass')"><strong>🎫 Booyah Pass</strong><small>Pass progress</small></div>
+   <div class="tile" onclick="openPage('events')"><strong>🎉 Events</strong><small>Latest events</small></div>
+   <div class="tile" onclick="openPage('esports')"><strong>🏆 Esports</strong><small>Tournament center</small></div>
   </div>
-  <div id="pageBody"></div>
- </section>
+ </div>
+
+ <div class="panel">
+  <h2>Quick Access</h2>
+  <div class="row">
+   <button class="secondary" onclick="openPage('friends')">Friends</button>
+   <button class="secondary" onclick="openPage('team')">Team</button>
+   <button class="secondary" onclick="openPage('pets')">Pets</button>
+   <button class="secondary" onclick="openPage('settings')">Settings</button>
+  </div>
+ </div>
+</section>
+
+<section id="contentPage" class="panel content hidden">
+ <div class="row" style="justify-content:space-between">
+  <h2 id="pageTitle">Page</h2>
+  <button class="secondary" onclick="openPage('home')">← Home</button>
+ </div>
+ <div id="pageBody"></div>
+</section>
 </main>
 
 <aside class="right">
@@ -174,14 +245,49 @@ footer{text-align:center;color:#91a4bb;padding:20px;font-size:12px}
   <div class="muted" id="dailyStatus"></div>
  </div>
 </aside>
+
+</div>
+<footer>BD GAME • Original game demo interface • Not an official game</footer>
 </div>
 
-<footer>BD GAME • Original fan-made demo interface • Not an official game</footer>
-
 <script>
+/* LOADING */
+(function(){
+ let p=0;
+ const fill=document.getElementById("loadFill");
+ const txt=document.getElementById("loadText");
+ const timer=setInterval(()=>{
+  p+=2;
+  if(p>100)p=100;
+  fill.style.width=p+"%";
+  txt.textContent="Loading "+p+"%";
+  if(p>=100){
+   clearInterval(timer);
+   setTimeout(()=>{
+    document.getElementById("loading").style.display="none";
+    document.getElementById("login").style.display="flex";
+   },400);
+  }
+ },55);
+})();
+
+/* LOGIN DEMO */
+function loginDemo(){
+ alert("Supabase Auth এখনো সংযুক্ত হয়নি। আপাতত Continue as Guest ব্যবহার করো।");
+}
+function registerDemo(){
+ alert("Registration চালু করতে Supabase Auth যুক্ত করতে হবে।");
+}
+function enterGuest(){
+ document.getElementById("login").style.display="none";
+ document.getElementById("gameApp").classList.remove("hidden");
+ refresh();
+}
+
+/* LOCAL DATA */
 const $=id=>document.getElementById(id);
-const get=(key,def)=>{try{let v=localStorage.getItem(key);return v===null?def:JSON.parse(v)}catch(e){return def}};
-const save=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
+const get=(k,d)=>{try{let v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
 let coins=get("bd_coins",1250);
 let diamonds=get("bd_diamonds",100);
@@ -208,7 +314,6 @@ function refresh(){
  $("dailyBtn").textContent=claimed?"✓ Already Claimed":"🎁 Claim 50 Coins";
  $("dailyStatus").textContent=claimed?"Today's reward collected":"";
 }
-refresh();
 
 function chooseMode(m){
  mode=m;
@@ -216,12 +321,14 @@ function chooseMode(m){
  $("csMode").classList.toggle("active",m==="Clash Squad");
 }
 function startMatch(){
- alert(mode+" selected. This is a demo lobby; online matchmaking is not connected yet.");
+ alert(mode+" selected. এটি Demo Lobby; আসল অনলাইন ম্যাচ এখনো যুক্ত হয়নি।");
 }
+
 function openPage(page){
  $("homePage").classList.toggle("hidden",page!=="home");
  $("contentPage").classList.toggle("hidden",page==="home");
  $("mobilePage").value=page;
+
  const titles={
  profile:"👤 Player Profile",friends:"👥 Friends",team:"🛡️ Team",
  chat:"💬 Chat",leaderboard:"🏆 Leaderboard",achievements:"🎖️ Achievements",
@@ -230,28 +337,22 @@ function openPage(page){
  events:"🎉 Events",pets:"🐾 Pets",esports:"🏆 Esports",settings:"⚙️ Settings"
  };
  $("pageTitle").textContent=titles[page]||"BD GAME";
+
  const pages={
- profile:profilePage,
- friends:friendsPage,
- team:teamPage,
- chat:chatPage,
- leaderboard:leaderboardPage,
- achievements:achievementsPage,
- notifications:notificationsPage,
- store:storePage,
- inventory:inventoryPage,
- missions:missionsPage,
- pass:passPage,
- events:eventsPage,
- pets:petsPage,
- esports:esportsPage,
- settings:settingsPage
+ profile:profilePage,friends:friendsPage,team:teamPage,chat:chatPage,
+ leaderboard:leaderboardPage,achievements:achievementsPage,
+ notifications:notificationsPage,store:storePage,inventory:inventoryPage,
+ missions:missionsPage,pass:passPage,events:eventsPage,pets:petsPage,
+ esports:esportsPage,settings:settingsPage
  };
  $("pageBody").innerHTML=pages[page]?pages[page]():"";
 }
+
 function esc(s){
  return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
+
+/* PROFILE */
 function profilePage(){
  return `<div class="avatar">${esc(avatar)}</div>
  <p><b>Player Name:</b> ${esc(playerName)}</p>
@@ -259,7 +360,10 @@ function profilePage(){
  <p><b>Region:</b> Bangladesh</p>
  <h3>Edit Profile</h3>
  <input id="newName" maxlength="20" placeholder="Enter player name" value="${esc(playerName)}">
- <select id="newAvatar"><option>🧑‍🚀</option><option>😎</option><option>🦊</option><option>🐯</option><option>👑</option><option>🤖</option></select>
+ <select id="newAvatar">
+ <option>🧑‍🚀</option><option>😎</option><option>🦊</option>
+ <option>🐯</option><option>👑</option><option>🤖</option>
+ </select>
  <button onclick="updateProfile()">Save Profile</button>`;
 }
 function updateProfile(){
@@ -269,12 +373,14 @@ function updateProfile(){
  save("bd_name",playerName);save("bd_avatar",avatar);
  refresh();openPage("profile");
 }
+
+/* FRIENDS */
 function friendsPage(){
  return `<h3>Your Friends (${friends.length})</h3>
  <input id="friendName" maxlength="24" placeholder="Enter friend name">
  <button onclick="addFriend()">+ Add Friend</button>
  <div>${friends.map((f,i)=>`<div class="item"><span>🟢 ${esc(f)}</span><button class="danger" onclick="removeFriend(${i})">Remove</button></div>`).join("")||"No friends yet."}</div>
- <p class="muted">Friend list is saved on this device only in this demo.</p>`;
+ <p class="muted">Demo friend list is saved on this device only.</p>`;
 }
 function addFriend(){
  let n=$("friendName").value.trim();
@@ -283,6 +389,8 @@ function addFriend(){
  friends.push(n);save("bd_friends",friends);openPage("friends");
 }
 function removeFriend(i){friends.splice(i,1);save("bd_friends",friends);openPage("friends")}
+
+/* TEAM */
 function teamPage(){
  return `<h3>Create Your Team</h3>
  <input id="teamName" maxlength="24" placeholder="Team name">
@@ -302,6 +410,8 @@ function addMember(){
  team.push(n);save("bd_team",team);openPage("team");
 }
 function removeMember(i){team.splice(i,1);save("bd_team",team);openPage("team")}
+
+/* CHAT */
 function chatPage(){
  return `<h3>Local Demo Chat</h3>
  <div style="height:210px;overflow:auto;background:#0b1728;border-radius:10px;padding:10px" id="chatMessages">
@@ -309,7 +419,7 @@ function chatPage(){
  </div>
  <input id="chatInput" maxlength="200" placeholder="Write a message...">
  <button onclick="sendMessage()">Send Message</button>
- <p class="muted">This chat is stored only on this device. Other players cannot see it.</p>`;
+ <p class="muted">এই চ্যাট শুধু এই ডিভাইসে দেখা যাবে।</p>`;
 }
 function sendMessage(){
  let v=$("chatInput").value.trim();if(!v)return;
@@ -317,20 +427,28 @@ function sendMessage(){
  if(messages.length>50)messages=messages.slice(-50);
  save("bd_messages",messages);openPage("chat");
 }
+
+/* LEADERBOARD */
 function leaderboardPage(){
  return `<h3>Demo Leaderboard</h3>
  ${["BD KING","BD WARRIOR","BD PLAYER","BD LEGEND","BD HERO"].map((n,i)=>`<div class="item"><b>${i+1}. ${n}</b><span>${2500-i*310} XP</span></div>`).join("")}
- <p class="muted">Sample leaderboard. Not connected to online player scores.</p>`;
+ <p class="muted">Sample leaderboard. Online scores connected নয়।</p>`;
 }
+
+/* ACHIEVEMENTS */
 function achievementsPage(){
  return `<h3>Achievements</h3>
  ${["First Login","Profile Creator","Team Builder","Shop Visitor","Mission Explorer"].map((n,i)=>`<div class="item"><span>🏅 ${n}</span><span>${i===0?"Unlocked":"Locked"}</span></div>`).join("")}`;
 }
+
+/* NOTIFICATIONS */
 function notificationsPage(){
  return `<h3>Notifications</h3>
  ${notifications.map(n=>`<div class="item">🔔 ${esc(n)}</div>`).join("")}
  <button class="secondary" onclick="notifications=[];save('bd_notifications',notifications);openPage('notifications')">Clear Notifications</button>`;
 }
+
+/* STORE */
 const products=[
  {name:"Blue Warrior Outfit",price:300,icon:"🦸"},
  {name:"Neon Helmet",price:150,icon:"⛑️"},
@@ -352,10 +470,14 @@ function buyItem(i){
  save("bd_coins",coins);save("bd_inventory",inventory);
  refresh();openPage("store");
 }
+
+/* INVENTORY */
 function inventoryPage(){
  return `<h3>My Items</h3>
  ${inventory.map(n=>`<div class="item">🎁 ${esc(n)} <span>Owned</span></div>`).join("")||"Your inventory is empty. Visit the Store to get demo items."}`;
 }
+
+/* MISSIONS */
 const missionList=[
  {name:"Visit the Lobby",reward:50},
  {name:"Open Your Profile",reward:75},
@@ -373,20 +495,26 @@ function claimMission(i){
  notifications.unshift("Mission completed: "+missionList[i].name);
  save("bd_notifications",notifications);refresh();openPage("missions");
 }
+
+/* PASS */
 function passPage(){
  return `<h3>Booyah Pass - Demo</h3>
- <div class="notice">Your pass XP: <b>${passXP}</b></div>
+ <div class="item">Your pass XP: <b>${passXP}</b></div>
  <div class="item">Level 1 <span>${passXP>=100?"✓ Unlocked":"100 XP required"}</span></div>
  <div class="item">Level 2 <span>${passXP>=200?"✓ Unlocked":"200 XP required"}</span></div>
  <div class="item">Level 3 <span>${passXP>=300?"✓ Unlocked":"300 XP required"}</span></div>
  <p class="muted">Complete missions to earn pass XP.</p>`;
 }
+
+/* EVENTS */
 function eventsPage(){
  return `<h3>Current Events</h3>
  <div class="item">🎉 BD Welcome Event <span>Available</span></div>
  <div class="item">⚡ Weekend Challenge <span>Coming Soon</span></div>
  <div class="item">🏆 Community Tournament <span>Coming Soon</span></div>`;
 }
+
+/* PETS */
 function petsPage(){
  return `<h3>Pet Center</h3>
  <div class="tilegrid">
@@ -395,13 +523,17 @@ function petsPage(){
  <div class="tile"><div style="font-size:35px">🦊</div><strong>Fox</strong><small>Swift pet</small></div>
  </div><p class="muted">Pet selection is a visual demo.</p>`;
 }
+
+/* ESPORTS */
 function esportsPage(){
  return `<h3>Esports Center</h3>
  <div class="item">🏆 BD Community Cup <span>Coming Soon</span></div>
  <div class="item">⚔️ Squad Challenge <span>Coming Soon</span></div>
  <div class="item">📅 Tournament Schedule <span>Not announced</span></div>
- <p class="muted">No real tournament registration is connected yet.</p>`;
+ <p class="muted">Real tournament registration is not connected.</p>`;
 }
+
+/* SETTINGS */
 function settingsPage(){
  return `<h3>Game Settings</h3>
  <div class="item"><span>Sound</span><select id="sound"><option>On</option><option>Off</option></select></div>
@@ -420,9 +552,12 @@ function resetDemo(){
  ["bd_coins","bd_diamonds","bd_name","bd_avatar","bd_level","bd_friends","bd_team","bd_messages","bd_inventory","bd_daily","bd_missions","bd_passxp","bd_notifications"].forEach(k=>localStorage.removeItem(k));
  location.reload();
 }
+
+/* DAILY REWARD */
 function dailyReward(){
  if(claimed)return;
- coins+=50;claimed=true;save("bd_coins",coins);save("bd_daily",true);
+ coins+=50;claimed=true;
+ save("bd_coins",coins);save("bd_daily",true);
  notifications.unshift("Daily reward: 50 coins collected");
  save("bd_notifications",notifications);refresh();
 }
