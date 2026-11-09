@@ -206,6 +206,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_gzSyqoH8rkQ8jGFqekpOhQ_I0Sl4w1X";
 
 const sb = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let currentUser = null;
+const $=id=>document.getElementById(id);
 
 function authMessage(message){$("authMessage").textContent=message;}
 
@@ -267,7 +268,6 @@ function showGame(){
  refresh();
 }
 
-const $=id=>document.getElementById(id);
 const defaultData={coins:1250,diamonds:100,name:"BD Player",avatar:"🧑",mode:"Battle Royale",friends:[],team:"",members:[],inventory:[],missions:{},rewardClaimed:false,xp:0};
 
 function getData(){
@@ -364,6 +364,7 @@ function renderStore(){
   div.append(info,btn);$("storeList").appendChild(div);
  });
 }
+
 function buyProduct(id){
  const product=products.find(item=>item.id===id);
  if(!product)return;
@@ -371,12 +372,73 @@ function buyProduct(id){
  if(game.inventory.includes(id))return alert("এই আইটেম আপনার Inventory-তে আছে।");
  game.coins-=product.price;game.inventory.push(id);save();refresh();alert("Purchase successful!");
 }
+
+/* MYSTERY CRATE OPEN SYSTEM */
+function openMysteryCrate(){
+ const crateIndex=game.inventory.indexOf("crate");
+
+ if(crateIndex===-1){
+  alert("আপনার Inventory-তে কোনো Mystery Crate নেই।");
+  return;
+ }
+
+ const rewards=[
+  {id:"skin",name:"Basic Skin",icon:"👕"},
+  {id:"pet",name:"Pet",icon:"🐾"},
+  {id:"dance",name:"Dance Emote",icon:"💃"},
+  {id:"helmet",name:"Helmet",icon:"🪖"},
+  {id:"backpack",name:"Backpack",icon:"🎒"}
+ ];
+
+ const reward=rewards[Math.floor(Math.random()*rewards.length)];
+
+ if(!confirm("🎁 Mystery Crate খুলতে চান?"))return;
+
+ game.inventory.splice(crateIndex,1);
+
+ let message="🎉 অভিনন্দন!\nআপনি পেয়েছেন: "+reward.icon+" "+reward.name;
+
+ if(game.inventory.includes(reward.id)){
+  game.coins+=50;
+  message+="\n\nএই আইটেম আগে থেকেই ছিল। তাই ৫০ Coins দেওয়া হয়েছে।";
+ }else{
+  game.inventory.push(reward.id);
+  message+="\n\nপুরস্কারটি আপনার Inventory-তে যোগ হয়েছে।";
+ }
+
+ save();
+ refresh();
+ alert(message);
+}
+
 function renderInventory(){
  $("inventoryList").innerHTML="";
- if(!game.inventory.length){$("inventoryList").textContent="আপনার Inventory খালি।";return;}
- game.inventory.forEach(id=>{
-  const product=products.find(item=>item.id===id);if(!product)return;
-  const div=document.createElement("div");div.className="item";div.textContent=product.icon+" "+product.name;$("inventoryList").appendChild(div);
+
+ if(!game.inventory.length){
+  $("inventoryList").textContent="আপনার Inventory খালি।";
+  return;
+ }
+
+ game.inventory.forEach((id,index)=>{
+  const product=products.find(item=>item.id===id);
+  if(!product)return;
+
+  const div=document.createElement("div");
+  div.className="item";
+
+  const name=document.createElement("span");
+  name.textContent=product.icon+" "+product.name;
+
+  div.appendChild(name);
+
+  if(id==="crate"){
+   const btn=document.createElement("button");
+   btn.textContent="🎁 Open";
+   btn.onclick=openMysteryCrate;
+   div.appendChild(btn);
+  }
+
+  $("inventoryList").appendChild(div);
  });
 }
 
@@ -385,6 +447,7 @@ const missions=[
  {id:"friend",name:"Add a Friend",reward:100},
  {id:"team",name:"Create a Team",reward:150}
 ];
+
 function renderMissions(){
  $("missionList").innerHTML="";
  missions.forEach(mission=>{
@@ -395,6 +458,7 @@ function renderMissions(){
   div.append(span,btn);$("missionList").appendChild(div);
  });
 }
+
 function claimMission(id){
  const mission=missions.find(item=>item.id===id);
  if(!mission||game.missions[id])return;
@@ -417,12 +481,14 @@ function dailyReward(){
  if(game.rewardClaimed)return alert("আজকের Reward নেওয়া হয়েছে।");
  game.coins+=100;game.rewardClaimed=true;save();refresh();alert("আপনি 100 Coins পেয়েছেন!");
 }
+
 function resetDemo(){
  if(!confirm("এই ডিভাইসের BD GAME demo data reset করতে চান?"))return;
  game={...defaultData,friends:[],members:[],inventory:[],missions:{}};
  save();refresh();alert("Local demo data reset হয়েছে।");
 }
 
+/* Login check runs after all functions and variables are ready */
 checkLogin();
 </script>
 </body>
