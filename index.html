@@ -7,395 +7,425 @@
 <title>BD GAME</title>
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;color:white;font-family:Arial,sans-serif;
- background:linear-gradient(145deg,#0b1425,#253d59,#101522);
-}
-header{
- position:sticky;top:0;z-index:5;
- display:flex;justify-content:space-between;align-items:center;
- padding:13px;background:#101522;border-bottom:1px solid #52647c;
-}
-.logo{font-size:23px;font-weight:bold;color:#ffc857}
-.wallet{font-size:12px;text-align:right}
-button{
- border:1px solid #536b86;border-radius:8px;
- padding:11px;background:#263d59;color:white;
- font-weight:bold;cursor:pointer;
-}
+body{margin:0;background:linear-gradient(145deg,#091323,#1b3150,#101522);color:#fff;font-family:Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:11px 15px;color:#fff;background:#2379d8;font-weight:bold}
 button:active{transform:scale(.97)}
-button.gold{background:#ffc857;color:#17202c}
-button.active{background:#ffc857;color:#17202c}
-main{max-width:1200px;margin:auto;padding:12px}
-.layout{
- display:grid;grid-template-columns:180px 1fr 180px;gap:10px;
-}
-.panel{
- background:#15243a;border:1px solid #53647c;
- border-radius:12px;padding:12px;
-}
-h3{color:#ffc857;font-size:14px}
-.menu button{width:100%;margin:4px 0;text-align:left}
-.lobby{
- min-height:430px;text-align:center;
- background:radial-gradient(circle at center,#526e89,#192c43 70%);
-}
-.tag{
- display:inline-block;padding:7px 12px;border-radius:20px;
- background:#101522;color:#ffc857;font-size:11px;
-}
-.character{font-size:100px;margin:25px}
-.modes{display:flex;gap:7px}
-.modes button{flex:1;font-size:11px}
-.start{width:100%;font-size:20px;padding:15px;margin-top:12px}
-.bottom{
- display:grid;grid-template-columns:repeat(4,1fr);
- gap:8px;margin-top:10px;
-}
-.bottom button{text-align:center}
-.bottom small{display:block;color:#c0cada;font-size:10px;margin-top:5px}
-#screen{
- display:none;margin-top:12px;min-height:280px;
-}
-#screen h2{color:#ffc857}
-.item{
- padding:12px;margin:7px 0;background:#203650;
- border:1px solid #465d76;border-radius:8px;
-}
-.item button{float:right;padding:7px}
-input,select,textarea{
- width:100%;padding:12px;margin:7px 0;
- border-radius:7px;border:1px solid #52647c;
- background:#101d30;color:white;
-}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.card{
- background:#203650;border:1px solid #52647c;
- border-radius:9px;padding:12px;text-align:center;
-}
-.card strong{display:block;color:#ffc857;margin:7px}
-.close{float:right}
-#toast{
- display:none;position:fixed;bottom:15px;left:50%;
- transform:translateX(-50%);z-index:10;
- background:#ffc857;color:#17202c;
- padding:12px;border-radius:8px;font-weight:bold;
- max-width:90%;text-align:center;
-}
-@media(max-width:750px){
- .layout{grid-template-columns:1fr}
- .menu{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
- .menu h3{grid-column:1/-1}
- .lobby{min-height:390px}
- .bottom{grid-template-columns:repeat(2,1fr)}
-}
+header{height:65px;position:sticky;top:0;z-index:5;background:#0b1424ed;border-bottom:1px solid #ffffff20;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.logo{font-size:23px;font-weight:900;letter-spacing:1px;color:#55c9ff}
+.wallet{display:flex;gap:9px;align-items:center;font-weight:bold}
+.wallet span{background:#1b2b43;padding:9px 12px;border-radius:9px}
+.layout{max-width:1250px;margin:auto;padding:18px;display:grid;grid-template-columns:210px 1fr 220px;gap:16px}
+.panel{background:#111e31e8;border:1px solid #ffffff18;border-radius:15px;padding:15px;margin-bottom:14px}
+h2,h3{margin:0 0 13px}
+h2{font-size:21px}
+h3{font-size:16px;color:#8bdcff}
+nav button,.rightnav button{display:block;width:100%;text-align:left;margin:7px 0;background:#1b2d46;color:#dcecff}
+nav button:hover,.rightnav button:hover{background:#28547d}
+.profile{text-align:center}
+.avatar{width:76px;height:76px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(135deg,#27b9ed,#4e5ce0);display:grid;place-items:center;font-size:38px;border:3px solid #9be7ff}
+.muted{color:#aabbd0;font-size:13px}
+.hero{min-height:330px;background:linear-gradient(130deg,#123b62,#14213b 65%,#243b5a);border-radius:18px;border:1px solid #ffffff25;padding:25px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.hero h1{font-size:38px;margin:5px 0;color:#8ce1ff}
+.hero-art{text-align:center;font-size:92px;filter:drop-shadow(0 8px 12px #0008)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mode{flex:1;min-width:130px;background:#1c3552;padding:15px;border-radius:12px;border:1px solid #ffffff20}
+.mode.active{border:2px solid #42caff;background:#17466b}
+.primary{background:linear-gradient(90deg,#0789e9,#16b8dd);font-size:17px;padding:14px 24px}
+.secondary{background:#263c58}
+.danger{background:#a43c4b}
+.tilegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:#1b2d46;border:1px solid #ffffff17;border-radius:12px;padding:15px;min-height:90px}
+.tile strong{display:block;margin-bottom:7px}
+.tile small{color:#aabbd0}
+.content{min-height:350px}
+.item{background:#1a2c45;padding:12px;border-radius:10px;margin:9px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+input,select{background:#0b1728;border:1px solid #49617e;color:white;border-radius:9px;padding:11px;max-width:100%}
+input{width:100%;margin:6px 0}
+textarea{width:100%;min-height:75px;background:#0b1728;border:1px solid #49617e;color:white;border-radius:9px;padding:10px}
+.notice{background:#193b4e;padding:11px;border-radius:9px;color:#bdeeff;margin:10px 0}
+footer{text-align:center;color:#91a4bb;padding:20px;font-size:12px}
+.hidden{display:none}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.left,.right{display:none}.layout.show-menu{grid-template-columns:1fr}.hero{min-height:280px}.hero h1{font-size:30px}}
+@media(min-width:851px){.mobile-nav{display:none}}
 </style>
 </head>
 <body>
-
 <header>
  <div class="logo">⚡ BD GAME</div>
  <div class="wallet">
-  <div>🪙 <span id="coins">1250</span></div>
-  <div>💎 <span id="diamonds">100</span></div>
+  <span>🪙 <b id="coins">1250</b></span>
+  <span>💎 <b id="diamonds">100</b></span>
  </div>
 </header>
 
-<main>
+<div class="mobile-nav panel" style="margin:10px 12px 0">
+ <select id="mobilePage" onchange="openPage(this.value)" style="width:100%">
+  <option value="home">🏠 Home Lobby</option>
+  <option value="profile">👤 Profile</option>
+  <option value="friends">👥 Friends</option>
+  <option value="team">🛡️ Team</option>
+  <option value="chat">💬 Chat</option>
+  <option value="leaderboard">🏆 Leaderboard</option>
+  <option value="achievements">🎖️ Achievements</option>
+  <option value="notifications">🔔 Notifications</option>
+  <option value="store">🛒 Store</option>
+  <option value="inventory">🎒 Inventory</option>
+  <option value="missions">📋 Missions</option>
+  <option value="pass">🎫 Booyah Pass</option>
+  <option value="events">🎉 Events</option>
+  <option value="pets">🐾 Pets</option>
+  <option value="esports">🏆 Esports</option>
+  <option value="settings">⚙️ Settings</option>
+ </select>
+</div>
+
 <div class="layout">
-
-<section class="panel menu">
-<h3>PLAYER MENU</h3>
-<button onclick="openPage('Profile')">👤 Profile</button>
-<button onclick="openPage('Friends')">👥 Friends</button>
-<button onclick="openPage('Team')">🛡️ Team</button>
-<button onclick="openPage('Chat')">💬 Chat</button>
-<button onclick="openPage('Leaderboard')">🏆 Leaderboard</button>
-<button onclick="openPage('Achievements')">🎖️ Achievements</button>
-<button onclick="openPage('Notifications')">🔔 Notifications</button>
-</section>
-
-<section class="panel lobby" id="home">
- <span class="tag">BATTLE ARENA • SEASON 01</span>
- <h1>BD GAME</h1>
- <p>WELCOME TO THE BATTLE ARENA</p>
- <div class="character">🧑‍🚀</div>
- <h3>SELECT GAME MODE</h3>
- <div class="modes">
-  <button class="active" onclick="selectMode('Battle Royale',this)">BATTLE ROYALE</button>
-  <button onclick="selectMode('Clash Squad',this)">CLASH SQUAD</button>
+<aside class="left">
+ <div class="panel profile">
+  <div class="avatar" id="avatar">🧑‍🚀</div>
+  <h3 id="playerName">BD Player</h3>
+  <div class="muted">Level <b id="level">12</b> • BD Region</div>
+  <button class="secondary" style="margin-top:12px" onclick="openPage('profile')">Edit Profile</button>
  </div>
- <div id="modeName"><h2>Battle Royale</h2></div>
- <button class="gold start" onclick="startMatch()">▶ START MATCH</button>
- <p id="matchInfo">Player: Guest • Status: Lobby</p>
-</section>
+ <div class="panel">
+  <h3>PLAYER MENU</h3>
+  <nav>
+   <button onclick="openPage('home')">🏠 Home</button>
+   <button onclick="openPage('profile')">👤 Profile</button>
+   <button onclick="openPage('friends')">👥 Friends</button>
+   <button onclick="openPage('team')">🛡️ Team</button>
+   <button onclick="openPage('chat')">💬 Chat</button>
+   <button onclick="openPage('leaderboard')">🏆 Leaderboard</button>
+   <button onclick="openPage('achievements')">🎖️ Achievements</button>
+   <button onclick="openPage('notifications')">🔔 Notifications</button>
+  </nav>
+ </div>
+</aside>
 
-<section class="panel menu">
-<h3>GAME CENTER</h3>
-<button onclick="openPage('Store')">🛒 Store</button>
-<button onclick="openPage('Luck Royale')">🎡 Luck Royale</button>
-<button onclick="openPage('Booyah Pass')">🎫 Booyah Pass</button>
-<button onclick="openPage('Events')">🎉 Events</button>
-<button onclick="openPage('Missions')">📋 Missions</button>
-<button onclick="openPage('Vault')">🎒 Vault</button>
-<button onclick="openPage('Pets')">🐾 Pets</button>
-<button onclick="openPage('Esports')">🏅 Esports</button>
-<button onclick="openPage('Settings')">⚙️ Settings</button>
-</section>
+<main>
+ <section id="homePage">
+  <div class="hero">
+   <div>
+    <div class="muted">WELCOME TO YOUR BATTLE LOBBY</div>
+    <h1>BD GAME</h1>
+    <p>Play • Team Up • Become a Champion</p>
+   </div>
+   <div class="hero-art">🧑‍🚀</div>
+   <div class="row">
+    <div class="mode active" id="brMode" onclick="chooseMode('Battle Royale')">
+     <strong>🪂 Battle Royale</strong><div class="muted">Classic battle mode</div>
+    </div>
+    <div class="mode" id="csMode" onclick="chooseMode('Clash Squad')">
+     <strong>⚔️ Clash Squad</strong><div class="muted">Team battle mode</div>
+    </div>
+   </div>
+   <button class="primary" onclick="startMatch()">▶ START MATCH</button>
+  </div>
+  <div class="panel" style="margin-top:15px">
+   <h2>Game Center</h2>
+   <div class="tilegrid">
+    <div class="tile" onclick="openPage('store')"><strong>🛒 Store</strong><small>Items and outfits</small></div>
+    <div class="tile" onclick="openPage('inventory')"><strong>🎒 Inventory</strong><small>Your owned items</small></div>
+    <div class="tile" onclick="openPage('missions')"><strong>📋 Missions</strong><small>Daily activities</small></div>
+    <div class="tile" onclick="openPage('pass')"><strong>🎫 Booyah Pass</strong><small>Pass progress</small></div>
+    <div class="tile" onclick="openPage('events')"><strong>🎉 Events</strong><small>Latest events</small></div>
+    <div class="tile" onclick="openPage('esports')"><strong>🏆 Esports</strong><small>Tournament center</small></div>
+   </div>
+  </div>
+  <div class="panel">
+   <h2>Quick Access</h2>
+   <div class="row">
+    <button class="secondary" onclick="openPage('friends')">Friends</button>
+    <button class="secondary" onclick="openPage('team')">Team</button>
+    <button class="secondary" onclick="openPage('pets')">Pets</button>
+    <button class="secondary" onclick="openPage('settings')">Settings</button>
+   </div>
+  </div>
+ </section>
 
-</div>
-
-<section class="panel" id="screen">
- <button class="close" onclick="closePage()">✕ CLOSE</button>
- <div id="pageContent"></div>
-</section>
-
-<div class="bottom">
- <button onclick="openPage('Missions')">📋 Missions<small>Daily challenges</small></button>
- <button onclick="openPage('Vault')">🎒 Vault<small>Collection</small></button>
- <button onclick="openPage('Pets')">🐾 Pets<small>Companions</small></button>
- <button onclick="openPage('Esports')">🏅 Esports<small>Tournaments</small></button>
-</div>
+ <section id="contentPage" class="panel content hidden">
+  <div class="row" style="justify-content:space-between">
+   <h2 id="pageTitle">Page</h2>
+   <button class="secondary" onclick="openPage('home')">← Home</button>
+  </div>
+  <div id="pageBody"></div>
+ </section>
 </main>
 
-<div id="toast"></div>
+<aside class="right">
+ <div class="panel">
+  <h3>GAME CENTER</h3>
+  <div class="rightnav">
+   <button onclick="openPage('store')">🛒 Store</button>
+   <button onclick="openPage('inventory')">🎒 Inventory</button>
+   <button onclick="openPage('missions')">📋 Missions</button>
+   <button onclick="openPage('pass')">🎫 Booyah Pass</button>
+   <button onclick="openPage('events')">🎉 Events</button>
+   <button onclick="openPage('pets')">🐾 Pets</button>
+   <button onclick="openPage('esports')">🏆 Esports</button>
+   <button onclick="openPage('settings')">⚙️ Settings</button>
+  </div>
+ </div>
+ <div class="panel">
+  <h3>DAILY REWARD</h3>
+  <p class="muted">Collect your daily demo reward.</p>
+  <button id="dailyBtn" onclick="dailyReward()">🎁 Claim 50 Coins</button>
+  <div class="muted" id="dailyStatus"></div>
+ </div>
+</aside>
+</div>
+
+<footer>BD GAME • Original fan-made demo interface • Not an official game</footer>
 
 <script>
-let coins=1250;
-let diamonds=100;
-let selectedMode="Battle Royale";
-let currentPage="";
-let toastTimer;
+const $=id=>document.getElementById(id);
+const get=(key,def)=>{try{let v=localStorage.getItem(key);return v===null?def:JSON.parse(v)}catch(e){return def}};
+const save=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
 
-function notify(message){
- const box=document.getElementById("toast");
- box.textContent=message;
- box.style.display="block";
- clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>box.style.display="none",2500);
+let coins=get("bd_coins",1250);
+let diamonds=get("bd_diamonds",100);
+let playerName=get("bd_name","BD Player");
+let avatar=get("bd_avatar","🧑‍🚀");
+let level=get("bd_level",12);
+let mode="Battle Royale";
+let friends=get("bd_friends",["BD Friend 01","BD Friend 02"]);
+let team=get("bd_team",[]);
+let messages=get("bd_messages",[]);
+let inventory=get("bd_inventory",[]);
+let claimed=get("bd_daily",false);
+let missionDone=get("bd_missions",[]);
+let passXP=get("bd_passxp",0);
+let notifications=get("bd_notifications",["Welcome to BD GAME!"]);
+
+function refresh(){
+ $("coins").textContent=coins;
+ $("diamonds").textContent=diamonds;
+ $("playerName").textContent=playerName;
+ $("avatar").textContent=avatar;
+ $("level").textContent=level;
+ $("dailyBtn").disabled=claimed;
+ $("dailyBtn").textContent=claimed?"✓ Already Claimed":"🎁 Claim 50 Coins";
+ $("dailyStatus").textContent=claimed?"Today's reward collected":"";
 }
+refresh();
 
-function updateWallet(){
- document.getElementById("coins").textContent=coins;
- document.getElementById("diamonds").textContent=diamonds;
+function chooseMode(m){
+ mode=m;
+ $("brMode").classList.toggle("active",m==="Battle Royale");
+ $("csMode").classList.toggle("active",m==="Clash Squad");
 }
-
-function selectMode(name,button){
- selectedMode=name;
- document.querySelectorAll(".modes button").forEach(b=>b.classList.remove("active"));
- button.classList.add("active");
- document.getElementById("modeName").innerHTML="<h2>"+name+"</h2>";
-}
-
 function startMatch(){
- document.getElementById("matchInfo").textContent=
- "Selected: "+selectedMode+" • Demo mode";
- notify(selectedMode+" নির্বাচিত হয়েছে। অনলাইন ম্যাচ এখনো চালু হয়নি।");
+ alert(mode+" selected. This is a demo lobby; online matchmaking is not connected yet.");
 }
-
-function closePage(){
- document.getElementById("screen").style.display="none";
- document.getElementById("home").style.display="block";
-}
-
 function openPage(page){
- currentPage=page;
- document.getElementById("home").style.display="none";
- const screen=document.getElementById("screen");
- const content=document.getElementById("pageContent");
- screen.style.display="block";
- let html="<h2>"+page+"</h2>";
-
- if(page==="Profile"){
- html+=`
- <div class="card">🧑‍🚀<strong>Guest Player</strong>
- Player ID: BD-000001<br>Level: 1<br>Rank: Beginner</div>
- <input id="playerName" placeholder="তোমার Player Name">
- <button onclick="saveName()">SAVE PROFILE</button>`;
- }
-
- else if(page==="Friends"){
- html+=`
- <input id="friendSearch" placeholder="Player ID দিয়ে খুঁজুন">
- <button onclick="searchFriend()">SEARCH PLAYER</button>
- <div class="item">👤 Guest Friend 01 — Online
- <button onclick="notify('Friend request demo')">ADD</button></div>
- <div class="item">👤 Guest Friend 02 — Offline
- <button onclick="notify('Invite demo')">INVITE</button></div>`;
- }
-
- else if(page==="Team"){
- html+=`
- <div class="item">🛡️ My Team <p>Team Members: 1/4</p></div>
- <button onclick="notify('Demo team তৈরি হয়েছে')">CREATE TEAM</button>
- <button onclick="notify('Team Join demo')">JOIN TEAM</button>
- <button onclick="notify('Team invite demo')">INVITE PLAYER</button>
- <button onclick="notify('Ready status demo')">READY</button>`;
- }
-
- else if(page==="Chat"){
- html+=`
- <div class="item" id="chatMessages">💬 BD GAME Chat<br>Welcome to BD GAME!</div>
- <input id="chatText" placeholder="মেসেজ লিখুন">
- <button onclick="sendChat()">SEND MESSAGE</button>`;
- }
-
- else if(page==="Leaderboard"){
- html+=`
- <div class="item">🥇 Player One — 2500 Points</div>
- <div class="item">🥈 Player Two — 2200 Points</div>
- <div class="item">🥉 Player Three — 1900 Points</div>
- <div class="item">⭐ You — 0 Points</div>`;
- }
-
- else if(page==="Achievements"){
- html+=`
- <div class="item">🏆 First Login — Locked</div>
- <div class="item">🎯 First Match — Locked</div>
- <div class="item">⭐ Rising Player — Locked</div>`;
- }
-
- else if(page==="Notifications"){
- html+=`
- <div class="item">🔔 Welcome to BD GAME!</div>
- <div class="item">🎉 New Season Coming Soon</div>
- <div class="item">📢 Game updates will appear here</div>`;
- }
-
- else if(page==="Store"){
- html+=`
- <div class="grid">
- <div class="card">🎒<strong>Basic Backpack</strong>100 Coins
- <button onclick="buyItem('Basic Backpack',100)">BUY</button></div>
- <div class="card">👕<strong>BD Outfit</strong>250 Coins
- <button onclick="buyItem('BD Outfit',250)">BUY</button></div>
- <div class="card">🎭<strong>Cool Mask</strong>150 Coins
- <button onclick="buyItem('Cool Mask',150)">BUY</button></div>
- <div class="card">🎁<strong>Gift Box</strong>200 Coins
- <button onclick="buyItem('Gift Box',200)">BUY</button></div>
- </div>`;
- }
-
- else if(page==="Luck Royale"){
- html+=`
- <div class="card">🎡<h3>LUCK ROYALE</h3>
- Try your luck with demo rewards!
- <button onclick="spinWheel()">SPIN — 50 COINS</button></div>`;
- }
-
- else if(page==="Booyah Pass"){
- html+=`
- <div class="card">🎫<h3>SEASON 01 PASS</h3>
- Level 1<br>Progress: 0 XP
- <button onclick="notify('Booyah Pass demo')">VIEW REWARDS</button></div>`;
- }
-
- else if(page==="Events"){
- html+=`
- <div class="item">🎉 Welcome Event — Coming Soon</div>
- <div class="item">🏆 Season Challenge — Coming Soon</div>
- <div class="item">🎁 Weekend Rewards — Coming Soon</div>`;
- }
-
- else if(page==="Missions"){
- html+=`
- <div class="item">📋 Daily Login — 0/1
- <button onclick="claimMission(this)">CLAIM</button></div>
- <div class="item">🎯 Play a Match — 0/1
- <button onclick="notify('ম্যাচ সম্পন্ন হলে মিশন চালু হবে')">VIEW</button></div>
- <div class="item">⭐ Invite a Friend — 0/1
- <button onclick="notify('Invite demo')">VIEW</button></div>`;
- }
-
- else if(page==="Vault"){
- html+=`
- <div class="item">🎒 Basic Backpack — Not owned</div>
- <div class="item">👕 BD Outfit — Not owned</div>
- <div class="item">🎭 Cool Mask — Not owned</div>
- <p>কেনা আইটেমগুলো এখানে দেখা যাবে।</p>`;
- }
-
- else if(page==="Pets"){
- html+=`
- <div class="grid">
- <div class="card">🐶<strong>BD Puppy</strong>
- <button onclick="notify('Pet demo')">SELECT</button></div>
- <div class="card">🐱<strong>BD Kitty</strong>
- <button onclick="notify('Pet demo')">SELECT</button></div>
- </div>`;
- }
-
- else if(page==="Esports"){
- html+=`
- <div class="item">🏅 Tournament Center</div>
- <div class="item">📅 Match Schedule — Coming Soon</div>
- <div class="item">🏆 Results — Coming Soon</div>
- <button onclick="notify('Tournament demo')">VIEW TOURNAMENT</button>`;
- }
-
- else if(page==="Settings"){
- html+=`
- <div class="item">🔊 Sound
- <select><option>On</option><option>Off</option></select></div>
- <div class="item">🌐 Language
- <select><option>বাংলা</option><option>English</option></select></div>
- <div class="item">🎮 Graphics
- <select><option>Normal</option><option>High</option></select></div>
- <button onclick="notify('Settings demo saved')">SAVE SETTINGS</button>`;
- }
-
- content.innerHTML=html;
- screen.scrollIntoView({behavior:"smooth",block:"start"});
+ $("homePage").classList.toggle("hidden",page!=="home");
+ $("contentPage").classList.toggle("hidden",page==="home");
+ $("mobilePage").value=page;
+ const titles={
+ profile:"👤 Player Profile",friends:"👥 Friends",team:"🛡️ Team",
+ chat:"💬 Chat",leaderboard:"🏆 Leaderboard",achievements:"🎖️ Achievements",
+ notifications:"🔔 Notifications",store:"🛒 Game Store",
+ inventory:"🎒 Inventory",missions:"📋 Missions",pass:"🎫 Booyah Pass",
+ events:"🎉 Events",pets:"🐾 Pets",esports:"🏆 Esports",settings:"⚙️ Settings"
+ };
+ $("pageTitle").textContent=titles[page]||"BD GAME";
+ const pages={
+ profile:profilePage,
+ friends:friendsPage,
+ team:teamPage,
+ chat:chatPage,
+ leaderboard:leaderboardPage,
+ achievements:achievementsPage,
+ notifications:notificationsPage,
+ store:storePage,
+ inventory:inventoryPage,
+ missions:missionsPage,
+ pass:passPage,
+ events:eventsPage,
+ pets:petsPage,
+ esports:esportsPage,
+ settings:settingsPage
+ };
+ $("pageBody").innerHTML=pages[page]?pages[page]():"";
 }
-
-function saveName(){
- let name=document.getElementById("playerName").value.trim();
- if(!name){notify("Player Name লিখুন");return;}
- notify("Demo profile name: "+name);
+function esc(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
-
-function searchFriend(){
- let id=document.getElementById("friendSearch").value.trim();
- if(!id){notify("Player ID লিখুন");return;}
- notify("Demo search: "+id);
+function profilePage(){
+ return `<div class="avatar">${esc(avatar)}</div>
+ <p><b>Player Name:</b> ${esc(playerName)}</p>
+ <p><b>Level:</b> ${level}</p>
+ <p><b>Region:</b> Bangladesh</p>
+ <h3>Edit Profile</h3>
+ <input id="newName" maxlength="20" placeholder="Enter player name" value="${esc(playerName)}">
+ <select id="newAvatar"><option>🧑‍🚀</option><option>😎</option><option>🦊</option><option>🐯</option><option>👑</option><option>🤖</option></select>
+ <button onclick="updateProfile()">Save Profile</button>`;
 }
-
-function sendChat(){
- let input=document.getElementById("chatText");
- let message=input.value.trim();
- if(!message){notify("মেসেজ লিখুন");return;}
- let box=document.getElementById("chatMessages");
- box.innerHTML+="<br>🧑‍🚀 You: "+escapeText(message);
- input.value="";
+function updateProfile(){
+ let n=$("newName").value.trim();
+ if(n)playerName=n;
+ avatar=$("newAvatar").value;
+ save("bd_name",playerName);save("bd_avatar",avatar);
+ refresh();openPage("profile");
 }
-
-function escapeText(value){
- const div=document.createElement("div");
- div.textContent=value;
- return div.innerHTML;
+function friendsPage(){
+ return `<h3>Your Friends (${friends.length})</h3>
+ <input id="friendName" maxlength="24" placeholder="Enter friend name">
+ <button onclick="addFriend()">+ Add Friend</button>
+ <div>${friends.map((f,i)=>`<div class="item"><span>🟢 ${esc(f)}</span><button class="danger" onclick="removeFriend(${i})">Remove</button></div>`).join("")||"No friends yet."}</div>
+ <p class="muted">Friend list is saved on this device only in this demo.</p>`;
 }
-
-function buyItem(name,price){
- if(coins<price){notify("পর্যাপ্ত Coin নেই");return;}
- coins-=price;
- updateWallet();
- notify(name+" কেনা হয়েছে (ডেমো)");
+function addFriend(){
+ let n=$("friendName").value.trim();
+ if(!n)return;
+ if(friends.some(x=>x.toLowerCase()===n.toLowerCase())){alert("Friend already added");return}
+ friends.push(n);save("bd_friends",friends);openPage("friends");
 }
-
-function spinWheel(){
- if(coins<50){notify("Coin পর্যাপ্ত নেই");return;}
- coins-=50;
- updateWallet();
- notify("ডেমো স্পিন সম্পন্ন হয়েছে!");
+function removeFriend(i){friends.splice(i,1);save("bd_friends",friends);openPage("friends")}
+function teamPage(){
+ return `<h3>Create Your Team</h3>
+ <input id="teamName" maxlength="24" placeholder="Team name">
+ <button onclick="createTeam()">Create Team</button>
+ <h3 style="margin-top:20px">Team Members</h3>
+ <div>${team.map((n,i)=>`<div class="item">🛡️ ${esc(n)} <button class="danger" onclick="removeMember(${i})">Remove</button></div>`).join("")||"No team members."}</div>
+ <input id="memberName" maxlength="24" placeholder="Member name">
+ <button onclick="addMember()">+ Add Member</button>`;
 }
-
-function claimMission(button){
- button.disabled=true;
- button.textContent="CLAIMED";
- notify("Demo mission claimed");
+function createTeam(){
+ let n=$("teamName").value.trim();if(!n)return;
+ team=[n];save("bd_team",team);openPage("team");
 }
-
-updateWallet();
+function addMember(){
+ let n=$("memberName").value.trim();if(!n)return;
+ if(team.length>=4){alert("Demo team limit is 4 members.");return}
+ team.push(n);save("bd_team",team);openPage("team");
+}
+function removeMember(i){team.splice(i,1);save("bd_team",team);openPage("team")}
+function chatPage(){
+ return `<h3>Local Demo Chat</h3>
+ <div style="height:210px;overflow:auto;background:#0b1728;border-radius:10px;padding:10px" id="chatMessages">
+ ${messages.map(m=>`<div class="item"><b>${esc(m.name)}:</b> ${esc(m.text)}</div>`).join("")||"No messages yet."}
+ </div>
+ <input id="chatInput" maxlength="200" placeholder="Write a message...">
+ <button onclick="sendMessage()">Send Message</button>
+ <p class="muted">This chat is stored only on this device. Other players cannot see it.</p>`;
+}
+function sendMessage(){
+ let v=$("chatInput").value.trim();if(!v)return;
+ messages.push({name:playerName,text:v});
+ if(messages.length>50)messages=messages.slice(-50);
+ save("bd_messages",messages);openPage("chat");
+}
+function leaderboardPage(){
+ return `<h3>Demo Leaderboard</h3>
+ ${["BD KING","BD WARRIOR","BD PLAYER","BD LEGEND","BD HERO"].map((n,i)=>`<div class="item"><b>${i+1}. ${n}</b><span>${2500-i*310} XP</span></div>`).join("")}
+ <p class="muted">Sample leaderboard. Not connected to online player scores.</p>`;
+}
+function achievementsPage(){
+ return `<h3>Achievements</h3>
+ ${["First Login","Profile Creator","Team Builder","Shop Visitor","Mission Explorer"].map((n,i)=>`<div class="item"><span>🏅 ${n}</span><span>${i===0?"Unlocked":"Locked"}</span></div>`).join("")}`;
+}
+function notificationsPage(){
+ return `<h3>Notifications</h3>
+ ${notifications.map(n=>`<div class="item">🔔 ${esc(n)}</div>`).join("")}
+ <button class="secondary" onclick="notifications=[];save('bd_notifications',notifications);openPage('notifications')">Clear Notifications</button>`;
+}
+const products=[
+ {name:"Blue Warrior Outfit",price:300,icon:"🦸"},
+ {name:"Neon Helmet",price:150,icon:"⛑️"},
+ {name:"Golden Backpack",price:250,icon:"🎒"},
+ {name:"Speed Shoes",price:200,icon:"👟"},
+ {name:"Skyboard",price:400,icon:"🛹"},
+ {name:"Cool Glasses",price:100,icon:"🕶️"}
+];
+function storePage(){
+ return `<h3>Available Items</h3>
+ ${products.map((p,i)=>`<div class="item"><span>${p.icon} <b>${p.name}</b><br><small>${p.price} Coins</small></span><button onclick="buyItem(${i})">${inventory.includes(p.name)?"Owned":"Buy"}</button></div>`).join("")}
+ <p class="muted">Demo coins only. No real-money purchases.</p>`;
+}
+function buyItem(i){
+ let p=products[i];
+ if(inventory.includes(p.name)){alert("You already own this item.");return}
+ if(coins<p.price){alert("Not enough coins.");return}
+ coins-=p.price;inventory.push(p.name);
+ save("bd_coins",coins);save("bd_inventory",inventory);
+ refresh();openPage("store");
+}
+function inventoryPage(){
+ return `<h3>My Items</h3>
+ ${inventory.map(n=>`<div class="item">🎁 ${esc(n)} <span>Owned</span></div>`).join("")||"Your inventory is empty. Visit the Store to get demo items."}`;
+}
+const missionList=[
+ {name:"Visit the Lobby",reward:50},
+ {name:"Open Your Profile",reward:75},
+ {name:"Visit the Store",reward:100},
+ {name:"Explore Game Center",reward:125}
+];
+function missionsPage(){
+ return `<h3>Daily Missions</h3>
+ ${missionList.map((m,i)=>`<div class="item"><span>📋 ${m.name}<br><small>Reward: ${m.reward} Coins</small></span><button ${missionDone.includes(i)?"disabled":""} onclick="claimMission(${i})">${missionDone.includes(i)?"✓ Done":"Claim"}</button></div>`).join("")}`;
+}
+function claimMission(i){
+ if(missionDone.includes(i))return;
+ missionDone.push(i);coins+=missionList[i].reward;passXP+=20;
+ save("bd_missions",missionDone);save("bd_coins",coins);save("bd_passxp",passXP);
+ notifications.unshift("Mission completed: "+missionList[i].name);
+ save("bd_notifications",notifications);refresh();openPage("missions");
+}
+function passPage(){
+ return `<h3>Booyah Pass - Demo</h3>
+ <div class="notice">Your pass XP: <b>${passXP}</b></div>
+ <div class="item">Level 1 <span>${passXP>=100?"✓ Unlocked":"100 XP required"}</span></div>
+ <div class="item">Level 2 <span>${passXP>=200?"✓ Unlocked":"200 XP required"}</span></div>
+ <div class="item">Level 3 <span>${passXP>=300?"✓ Unlocked":"300 XP required"}</span></div>
+ <p class="muted">Complete missions to earn pass XP.</p>`;
+}
+function eventsPage(){
+ return `<h3>Current Events</h3>
+ <div class="item">🎉 BD Welcome Event <span>Available</span></div>
+ <div class="item">⚡ Weekend Challenge <span>Coming Soon</span></div>
+ <div class="item">🏆 Community Tournament <span>Coming Soon</span></div>`;
+}
+function petsPage(){
+ return `<h3>Pet Center</h3>
+ <div class="tilegrid">
+ <div class="tile"><div style="font-size:35px">🐶</div><strong>Buddy</strong><small>Friendly pet</small></div>
+ <div class="tile"><div style="font-size:35px">🐱</div><strong>Kitty</strong><small>Lovely pet</small></div>
+ <div class="tile"><div style="font-size:35px">🦊</div><strong>Fox</strong><small>Swift pet</small></div>
+ </div><p class="muted">Pet selection is a visual demo.</p>`;
+}
+function esportsPage(){
+ return `<h3>Esports Center</h3>
+ <div class="item">🏆 BD Community Cup <span>Coming Soon</span></div>
+ <div class="item">⚔️ Squad Challenge <span>Coming Soon</span></div>
+ <div class="item">📅 Tournament Schedule <span>Not announced</span></div>
+ <p class="muted">No real tournament registration is connected yet.</p>`;
+}
+function settingsPage(){
+ return `<h3>Game Settings</h3>
+ <div class="item"><span>Sound</span><select id="sound"><option>On</option><option>Off</option></select></div>
+ <div class="item"><span>Graphics</span><select id="graphics"><option>Standard</option><option>High</option><option>Low</option></select></div>
+ <button onclick="saveSettings()">Save Settings</button>
+ <h3 style="margin-top:25px">Local Demo Data</h3>
+ <button class="danger" onclick="resetDemo()">Reset Demo Data</button>
+ <p class="muted">Reset করলে এই ফোনে সেভ করা demo progress মুছে যাবে।</p>`;
+}
+function saveSettings(){
+ save("bd_sound",$("sound").value);save("bd_graphics",$("graphics").value);
+ alert("Settings saved on this device.");
+}
+function resetDemo(){
+ if(!confirm("Are you sure you want to reset demo data?"))return;
+ ["bd_coins","bd_diamonds","bd_name","bd_avatar","bd_level","bd_friends","bd_team","bd_messages","bd_inventory","bd_daily","bd_missions","bd_passxp","bd_notifications"].forEach(k=>localStorage.removeItem(k));
+ location.reload();
+}
+function dailyReward(){
+ if(claimed)return;
+ coins+=50;claimed=true;save("bd_coins",coins);save("bd_daily",true);
+ notifications.unshift("Daily reward: 50 coins collected");
+ save("bd_notifications",notifications);refresh();
+}
 </script>
 </body>
-  </html>
+ </html>
