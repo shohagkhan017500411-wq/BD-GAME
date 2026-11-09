@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BD GAME</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:linear-gradient(145deg,#101a30,#344c65,#101522);
+ color:white;
+ font-family:Arial,sans-serif;
+}
+header{
+ display:flex;
+ justify-content:space-between;
+ padding:15px;
+ background:#101522;
+}
+.logo{color:#ffc857;font-size:25px;font-weight:bold}
+.stats{font-size:12px}
+main{
+ padding:12px;
+ display:grid;
+ grid-template-columns:1fr 2fr 1fr;
+ gap:10px;
+}
+.panel{
+ background:#15243a;
+ padding:12px;
+ border:1px solid #53647a;
+ border-radius:12px;
+}
+h3{color:#ffc857}
+button{
+ width:100%;
+ padding:12px;
+ margin:5px 0;
+ background:#263c58;
+ color:white;
+ border:1px solid #52647c;
+ border-radius:8px;
+ font-weight:bold;
+}
+.lobby{
+ text-align:center;
+ background:linear-gradient(160deg,#526d83,#18283d);
+ padding:25px 10px;
+}
+.character{font-size:100px;margin:25px}
+.start{
+ background:#ffc857;
+ color:#17202c;
+ font-size:20px;
+ padding:16px;
+}
+.bottom{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:8px;
+ padding:12px;
+}
+@media(max-width:650px){
+ main{grid-template-columns:1fr}
+ .bottom{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">BD GAME</div>
+ <div class="stats">🪙 1250 | 💎 100</div>
+</header>
+
+<main>
+ <section class="panel">
+  <h3>MAIN MENU</h3>
+  <button>Profile</button>
+  <button>Friends</button>
+  <button>Team</button>
+  <button>Leaderboard</button>
+  <button>Achievements</button>
+ </section>
+
+ <section class="panel lobby">
+  <h1>BD GAME</h1>
+  <div class="character">🧑‍🚀</div>
+  <h3>SELECT GAME MODE</h3>
+  <button onclick="mode('Battle Royale')">
+   BATTLE ROYALE
+  </button>
+  <button onclick="mode('Clash Squad')">
+   CLASH SQUAD
+  </button>
+  <h2 id="selected">Battle Royale</h2>
+  <button class="start" onclick="alert('BD GAME Demo')">
+   START
+  </button>
+ </section>
+
+ <section class="panel">
+  <h3>QUICK ACCESS</h3>
+  <button>Store</button>
+  <button>Luck Royale</button>
+  <button>Booyah Pass</button>
+  <button>Events</button>
+  <button>Settings</button>
+ </section>
+</main>
+
+<div class="bottom">
+ <button>Missions</button>
+ <button>Vault</button>
+ <button>Pets</button>
+ <button>Esports</button>
+</div>
+
+<script>
+function mode(name){
+ document.getElementById("selected").innerText=name;
+}
+</script>
+</body>
+</html>
