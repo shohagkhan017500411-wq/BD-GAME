@@ -1,6 +1,14 @@
-name = "bd-game-server"
+name = "bd-game"
 main = "server.js"
 compatibility_date = "2026-11-11"
+
+[assets]
+directory = "."
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"
+exclude = ["server.js", "wrangler.toml"]
 
 [[durable_objects.bindings]]
 name = "GAME_ROOMS"
