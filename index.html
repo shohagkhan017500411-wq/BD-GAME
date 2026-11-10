@@ -3,137 +3,309 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101522">
 <title>BD GAME</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#101522;color:#fff;font-family:Arial,sans-serif}
-button,input{font:inherit}button{border:0;border-radius:9px;padding:12px;background:#e7a72e;color:#111;font-weight:bold;cursor:pointer}
-input{width:100%;padding:13px;margin:6px 0;border-radius:8px;border:1px solid #586174;background:#202a3b;color:white}
-.screen{display:none;min-height:100vh;padding:18px}.active{display:block}.center{text-align:center}
-.logo{font-size:42px;font-weight:900;color:#ffc34b;text-shadow:0 3px 15px #e45b19}
-.panel{background:#202b40;padding:16px;border-radius:14px;margin:12px 0}
+*{box-sizing:border-box}
+body{margin:0;background:#101522;color:white;font-family:Arial,sans-serif}
+button,input{font:inherit}
+button{border:0;border-radius:10px;padding:13px;background:#e7a72e;color:#111;font-weight:bold;cursor:pointer}
+input{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #586174;background:#202a3b;color:white}
+.screen{display:none;min-height:100vh;padding:16px}
+.active{display:block}
+.center{text-align:center}
+.logo{font-size:40px;font-weight:900;color:#ffc34b;text-shadow:0 3px 15px #e45b19}
+.panel{background:#202b40;padding:15px;border-radius:14px;margin:12px 0}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.item{background:#29374e;padding:15px;border-radius:10px;text-align:center}
-.item button{width:100%;margin-top:8px}
+.item{background:#29374e;padding:14px;border-radius:10px;text-align:center}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.small{font-size:12px;color:#bdc8d8}.gold{color:#ffc34b}
-.bar{height:9px;background:#3a4659;border-radius:10px;overflow:hidden}.bar span{display:block;height:100%;background:#e7a72e;width:20%}
-.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.menu button{background:#29374e;color:white;padding:13px 4px}
-.hero{min-height:180px;border-radius:15px;background:linear-gradient(140deg,#152b43,#65452d,#171b2b);display:flex;align-items:center;justify-content:center;text-align:center;margin:12px 0}
-#notice{color:#ffc34b;text-align:center;margin:12px}
-@media(max-width:380px){.menu{grid-template-columns:repeat(2,1fr)}.logo{font-size:34px}}
+.hero{min-height:190px;border-radius:15px;background:linear-gradient(140deg,#152b43,#65452d,#171b2b);display:flex;align-items:center;justify-content:center;text-align:center;margin:12px 0}
+.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.menu button{background:#29374e;color:white}
+.small{font-size:12px;color:#bdc8d8}
+.gold{color:#ffc34b}
+#notice{color:#ffc34b;text-align:center}
+@media(max-width:380px){.menu{grid-template-columns:repeat(2,1fr)}.logo{font-size:32px}}
 </style>
 </head>
 <body>
-<section id="loading" class="screen active center"><div style="padding-top:30vh"><div class="logo">BD GAME</div><h2>LOADING...</h2><div class="bar"><span id="loadbar"></span></div><p class="small">YOUR BATTLE. YOUR LEGEND.</p></div></section>
-<section id="entry" class="screen center"><div class="hero"><div><div class="logo">BD GAME</div><h2>BATTLE ROYALE</h2><p>YOUR BATTLE. YOUR LEGEND.</p></div></div><button style="width:100%" onclick="show('login')">▶ ENTER GAME</button><p class="small">WELCOME TO BD GAME</p></section>
-<section id="login" class="screen center"><div class="logo">BD GAME</div><h2>PLAYER LOGIN</h2><div class="panel">
-<input id="email" type="email" autocomplete="email" placeholder="Email address">
-<input id="password" type="password" autocomplete="current-password" placeholder="Password">
+
+<section id="loading" class="screen active center">
+<div style="padding-top:30vh">
+<div class="logo">BD GAME</div>
+<h2>LOADING...</h2>
+<p class="small">YOUR BATTLE. YOUR LEGEND.</p>
+</div>
+</section>
+
+<section id="entry" class="screen center">
+<div class="hero">
+<div><div class="logo">BD GAME</div><h2>BATTLE ROYALE</h2><p>YOUR BATTLE. YOUR LEGEND.</p></div>
+</div>
+<button style="width:100%" onclick="show('login')">ENTER GAME</button>
+</section>
+
+<section id="login" class="screen center">
+<div class="logo">BD GAME</div>
+<h2>PLAYER LOGIN</h2>
+<div class="panel">
+<input id="email" type="email" placeholder="Email address">
+<input id="password" type="password" placeholder="Password">
 <button style="width:100%" onclick="loginUser()">LOGIN</button>
 <button style="width:100%;margin-top:8px" onclick="signupUser()">REGISTER</button>
-<button style="width:100%;margin-top:8px;background:#4267B2;color:white" onclick="facebookLogin()">FACEBOOK LOGIN</button>
 <button style="width:100%;margin-top:8px;background:#66758c;color:white" onclick="guestLogin()">GUEST LOGIN</button>
-</div><p class="small">Facebook login চালাতে Supabase ও Meta-তে OAuth সেটআপ প্রয়োজন।</p><div id="authNotice" class="small"></div></section>
-<section id="lobby" class="screen">
-<div class="top"><div class="logo" style="font-size:27px">BD GAME</div><div>🪙 <span id="coins">500</span> | 💎 <span id="diamonds">0</span></div></div>
-<div class="panel top"><div>👤 <b id="playername">Guest Player</b><p class="small">Level <span id="level">1</span> • XP <span id="xp">0</span></p></div><button onclick="openPage('Profile')">PROFILE</button></div>
-<div class="hero"><div><div class="logo">BD GAME</div><h2>WELCOME TO</h2><h2>YOUR BATTLE. YOUR LEGEND.</h2><p>🪂 BATTLE ROYALE ARENA</p></div></div>
-<div class="panel"><h3>🎮 Game Mode</h3><div class="grid"><button onclick="selectMode('Battle Royale')">🪂 Battle Royale</button><button onclick="selectMode('Clash Squad')">⚔️ Clash Squad</button><button onclick="selectMode('Training')">🎯 Training</button></div><p>Selected Mode: <b id="selectedMode">Battle Royale</b></p><button style="width:100%" onclick="airplane()">▶ START MATCH</button></div>
-<div class="panel"><h3>🏆 Rank System</h3><div class="grid"><div class="item">🪂 BR Rank<h3 id="brRank">Bronze</h3><span id="brPoints">0</span> Points</div><div class="item">⚔️ CS Rank<h3 id="csRank">Bronze</h3><span id="csPoints">0</span> Points</div></div></div>
-<div class="panel"><h3>🎮 Game Center</h3><div class="menu">
-<button onclick="openPage('Store')">🛒 Store</button><button onclick="openPage('Inventory')">🎒 Inventory</button><button onclick="openPage('Missions')">🎯 Missions</button><button onclick="openPage('Events')">🎉 Events</button><button onclick="openPage('Leaderboard')">🏆 Leaderboard</button><button onclick="openPage('Friends')">👥 Friends</button><button onclick="openPage('Team')">👨‍👩‍👧 Team</button><button onclick="openPage('Character')">🧍 Character</button><button onclick="openPage('Outfit')">👕 Outfit</button><button onclick="openPage('Downloads')">⬇️ Downloads</button><button onclick="openPage('Settings')">⚙️ Settings</button><button onclick="openPage('Profile')">👤 Profile</button>
-</div></div>
-<div class="panel center"><h3>🎁 Daily Reward</h3><p>আজকের পুরস্কার: <b class="gold">100 Coins</b></p><button onclick="claimReward()">CLAIM REWARD</button></div>
-<div id="notice"></div><p class="small center" id="accountStatus">Guest / Demo account</p>
+</div>
+<div id="authNotice" class="small"></div>
 </section>
-<section id="airplane" class="screen center"><div class="top"><button onclick="show('lobby')">← BACK</button><b>BD GAME • MATCH LOBBY</b></div><div class="hero" style="min-height:240px"><div><div style="font-size:65px">✈️</div><h2>AIRPLANE LOBBY</h2><p>Aircraft waiting area</p></div></div><h2>PLAYER WAITING</h2><h1 class="gold" id="players">50 / 50</h1><p>Demo Player Slots</p><div class="panel"><h3 id="planeMode">Battle Royale</h3><p>Map: BD Island</p><p id="flightStatus">Aircraft is ready</p><button onclick="startFlight()">✈️ START FLIGHT</button><button onclick="jump()" style="background:#d85b42">🪂 JUMP</button></div><div class="panel"><h3>🎙️ Voice Controls (Demo)</h3><button onclick="toggleMic()" id="mic">🎙️ MIC OFF</button><button onclick="toggleSpeaker()" id="speaker">🔊 SOUND ON</button><p class="small">Live voice chat connected নয়।</p></div></section>
-<section id="match" class="screen center"><div class="top"><b>BD GAME MATCH</b><button onclick="show('lobby')">EXIT MATCH</button></div><div class="hero" style="min-height:330px;background:linear-gradient(#527b91,#355c43,#182b25)"><div><h2>🗺️ BD ISLAND</h2><div style="font-size:65px">🌲 🏠 🌳</div><p>Battle Royale Demo Map</p><p>🪂 Safe Zone • Demo Area</p></div></div><div class="grid"><div class="item">👥 Players<h2 id="matchPlayers">50</h2></div><div class="item">⏱️ Match<h2>DEMO</h2></div></div><div class="panel"><button onclick="musicToggle()" id="musicButton">🎵 MUSIC ON</button><button onclick="toggleMic()" id="matchMic">🎙️ MIC OFF</button><button onclick="toggleSpeaker()">🔊 SPEAKER</button></div><p class="small">এটি একটি 2D demo screen, আসল অনলাইন ম্যাচ নয়।</p></section>
-<section id="page" class="screen"><div class="top"><button onclick="show('lobby')">← BACK TO LOBBY</button><div class="logo" style="font-size:23px">BD GAME</div></div><div class="panel"><h2 id="pageTitle">Game Center</h2><div id="pageContent"></div></div></section>
+
+<section id="lobby" class="screen">
+<div class="top">
+<div class="logo" style="font-size:27px">BD GAME</div>
+<div>🪙 <span id="coins">500</span> | 💎 <span id="diamonds">0</span></div>
+</div>
+
+<div class="panel top">
+<div>👤 <b id="playername">Guest Player</b>
+<p class="small">Level <span id="level">1</span></p></div>
+<button onclick="openPage('Profile')">PROFILE</button>
+</div>
+
+<div class="hero">
+<div><div class="logo">BD GAME</div><h2>WELCOME TO THE LOBBY</h2><p>🪂 BATTLE ROYALE ARENA</p></div>
+</div>
+
+<div class="panel">
+<h3>🎮 GAME MODE</h3>
+<div class="grid">
+<button onclick="selectMode('SOLO')">SOLO</button>
+<button onclick="selectMode('DUO')">DUO</button>
+<button onclick="selectMode('SQUAD')">SQUAD</button>
+</div>
+<p>Selected Mode: <b id="selectedMode">SOLO</b></p>
+</div>
+
+<div class="panel">
+<h3>🗺️ SELECT MAP</h3>
+<div class="grid">
+<button onclick="selectMap('Island')">🏝️ ISLAND</button>
+<button onclick="selectMap('City')">🏙️ CITY</button>
+<button onclick="selectMap('Forest')">🌲 FOREST</button>
+<button onclick="selectMap('Desert')">🏜️ DESERT</button>
+</div>
+<p>Selected Map: <b id="selectedMap">Island</b></p>
+</div>
+
+<div class="panel">
+<h3>🏆 RANK</h3>
+<div class="grid">
+<div class="item">BR Rank<h3 id="brRank">Bronze</h3></div>
+<div class="item">CS Rank<h3 id="csRank">Bronze</h3></div>
+</div>
+</div>
+
+<div class="panel">
+<button style="width:100%;font-size:19px" onclick="startMatch()">▶ START MATCH</button>
+</div>
+
+<div class="panel">
+<h3>🎮 GAME CENTER</h3>
+<div class="menu">
+<button onclick="openPage('Store')">🛒 Store</button>
+<button onclick="openPage('Inventory')">🎒 Inventory</button>
+<button onclick="openPage('Missions')">🎯 Missions</button>
+<button onclick="openPage('Events')">🎉 Events</button>
+<button onclick="openPage('Friends')">👥 Friends</button>
+<button onclick="openPage('Team')">👨‍👩‍👧 Team</button>
+<button onclick="openPage('Character')">🧍 Character</button>
+<button onclick="openPage('Outfit')">👕 Outfit</button>
+<button onclick="openPage('Settings')">⚙️ Settings</button>
+<button onclick="openPage('Profile')">👤 Profile</button>
+</div>
+</div>
+<div id="notice"></div>
+</section>
+
+<section id="airplane" class="screen center">
+<div class="top">
+<button onclick="show('lobby')">← BACK</button>
+<b>BD GAME</b>
+</div>
+<div class="hero">
+<div><div style="font-size:65px">✈️</div><h2>AIRPLANE LOBBY</h2><p>PLAYER WAITING</p></div>
+</div>
+<h2 id="planeMode">SOLO</h2>
+<h3>MAP: <span id="planeMap">Island</span></h3>
+<div class="panel">
+<h2 class="gold">50 / 50</h2>
+<p>Demo Player Slots</p>
+<button style="width:100%" onclick="startFlight()">START FLIGHT</button>
+<button style="width:100%;margin-top:8px" onclick="jump()">ENTER DEMO MATCH</button>
+</div>
+</section>
+
+<section id="match" class="screen center">
+<div class="top">
+<b>BD GAME MATCH</b>
+<button onclick="show('lobby')">EXIT MATCH</button>
+</div>
+<div class="hero" style="min-height:330px">
+<div>
+<h2 id="matchMap">🏝️ ISLAND</h2>
+<div style="font-size:65px">🌲 🏠 🌳</div>
+<p>BD GAME DEMO MAP</p>
+</div>
+</div>
+<div class="panel">
+<h3 id="matchMode">SOLO</h3>
+<p>Demo Match Running</p>
+<p class="small">এটি একটি Demo। বাস্তব Multiplayer Server এখনো যুক্ত হয়নি।</p>
+</div>
+</section>
+
+<section id="page" class="screen">
+<div class="top">
+<button onclick="show('lobby')">← BACK</button>
+<div class="logo" style="font-size:23px">BD GAME</div>
+</div>
+<div class="panel">
+<h2 id="pageTitle">Game Center</h2>
+<div id="pageContent"></div>
+</div>
+</section>
+
 <script>
 const SUPABASE_URL="https://qgcvhflehoxsjyzntxmp.supabase.co";
-const SUPABASE_KEY="sb_publishable_gzSyqoH8rkQ8jGFqekpOhQ_I0Sl4w1X";
+const SUPABASE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let onlinePlayerId=null;
-let data=JSON.parse(localStorage.getItem("bdgame_data")||"null")||{name:"Guest Player",coins:500,diamonds:0,xp:0,level:1,br:0,cs:0,claimed:false,items:[],mode:"Battle Royale",mic:false,speaker:true,music:true};
-function save(){localStorage.setItem("bdgame_data",JSON.stringify(data));update();}
-function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");}
-function update(){
-const values={coins:data.coins,diamonds:data.diamonds,xp:data.xp,level:data.level,brPoints:data.br,csPoints:data.cs,playername:data.name};
-Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value;});
-document.getElementById("selectedMode").textContent=data.mode;
-document.getElementById("mic").textContent=data.mic?"🎙️ MIC ON":"🎙️ MIC OFF";
-document.getElementById("speaker").textContent=data.speaker?"🔊 SOUND ON":"🔇 SOUND OFF";
-document.getElementById("musicButton").textContent=data.music?"🎵 MUSIC ON":"🎵 MUSIC OFF";
-document.getElementById("matchMic").textContent=data.mic?"🎙️ MIC ON":"🎙️ MIC OFF";
-}
-function rank(points){const levels=["Bronze","Silver","Gold","Platinum","Diamond","Heroic","Master","Grandmaster"];return levels[Math.min(7,Math.floor(points/100))];}
-function updateRanks(){document.getElementById("brRank").textContent=rank(data.br);document.getElementById("csRank").textContent=rank(data.cs);}
-async function loadOnlinePlayer(user){
-onlinePlayerId=user.id;
-const {data:profile,error:profileError}=await db.from("player_profiles").select("player_name,level,xp,coins,diamonds").eq("id",user.id).maybeSingle();
-if(profileError){alert("Player profile load error: "+profileError.message);return false;}
-if(!profile){alert("Player Profile পাওয়া যায়নি। Supabase trigger ও SQL পরীক্ষা করো।");return false;}
-const {data:ranks,error:rankError}=await db.from("player_ranks").select("br_points,cs_points").eq("player_id",user.id).maybeSingle();
-if(rankError){alert("Rank load error: "+rankError.message);return false;}
-data.name=profile.player_name||"Player";data.level=profile.level??1;data.xp=profile.xp??0;data.coins=profile.coins??500;data.diamonds=profile.diamonds??0;data.br=ranks?.br_points??0;data.cs=ranks?.cs_points??0;
-save();updateRanks();document.getElementById("accountStatus").textContent="Online account connected";return true;
-}
-async function loginUser(){
-const emailValue=document.getElementById("email").value.trim(),passwordValue=document.getElementById("password").value;
-if(!emailValue||!passwordValue)return alert("Email ও password লিখো।");
-const {data:result,error}=await db.auth.signInWithPassword({email:emailValue,password:passwordValue});
-if(error)return alert(error.message);
-if(await loadOnlinePlayer(result.user))show("lobby");
-}
-async function signupUser(){
-const emailValue=document.getElementById("email").value.trim(),passwordValue=document.getElementById("password").value;
-if(!emailValue||passwordValue.length<8)return alert("সঠিক Email এবং কমপক্ষে ৮ অক্ষরের password দাও।");
-const {data:result,error}=await db.auth.signUp({email:emailValue,password:passwordValue,options:{emailRedirectTo:location.origin+location.pathname,data:{player_name:"Player"}}});
-if(error)return alert(error.message);
-document.getElementById("authNotice").textContent=result.session?"Account created.":"Registration submitted. Email confirmation লাগতে পারে।";
-if(result.session&&result.user){if(await loadOnlinePlayer(result.user))show("lobby");}
-}
-async function facebookLogin(){const {error}=await db.auth.signInWithOAuth({provider:"facebook",options:{redirectTo:location.origin+location.pathname}});if(error)alert(error.message);}
-function guestLogin(){onlinePlayerId=null;data.name="Guest Player";save();document.getElementById("accountStatus").textContent="Guest / Demo account — online save নেই";show("lobby");}
-function selectMode(mode){data.mode=mode;save();}
-function airplane(){document.getElementById("planeMode").textContent=data.mode;show("airplane");}
-function startFlight(){document.getElementById("flightStatus").textContent="✈️ Aircraft flying over BD Island!";}
-function jump(){document.getElementById("flightStatus").textContent="🪂 Jump sequence started!";document.getElementById("matchPlayers").textContent="49";show("match");}
-function toggleMic(){data.mic=!data.mic;save();}
-function toggleSpeaker(){data.speaker=!data.speaker;save();}
-function musicToggle(){data.music=!data.music;save();}
-function claimReward(){if(data.claimed)return alert("আজকের Reward নেওয়া হয়েছে!");data.coins+=100;data.claimed=true;save();alert("100 Demo Coins যোগ হয়েছে!");}
-function openPage(name){
-document.getElementById("pageTitle").textContent=name;const c=document.getElementById("pageContent");c.innerHTML="";
-const content={
-Store:[["Basic Outfit",100],["Pet",200],["Mystery Crate",200],["Dance Emote",150],["Helmet Skin",100],["Backpack Skin",100]],
-Missions:[["Play a Demo Match",50],["Visit Game Lobby",20],["Claim Daily Reward",30]],
-Events:[["BD GAME Welcome Event",0],["Daily Login Event",0]],
-Leaderboard:[["BR Ranking — নিজের অনলাইন পয়েন্ট",0],["CS Ranking — নিজের অনলাইন পয়েন্ট",0]],
-Friends:[["Friends List (Demo)",0],["Add Friend (Demo)",0]],
-Team:[["Create Team (Demo)",0],["Team Members (Demo)",0]],
-Character:[["Default Character",0],["Character Collection (Demo)",0]],
-Outfit:[["Basic Outfit",0],["Outfit Collection",0]],
-Downloads:[["Recommended Resources",0],["Maps",0],["Characters & Pets",0],["Outfits & Collections",0],["Game Modes",0],["Special Systems",0]],
-Profile:[["Player Name: "+data.name,0],["Level: "+data.level,0],["BR Points: "+data.br,0],["CS Points: "+data.cs,0]],
-Settings:[["Sound and Music",0],["Graphics: Medium",0],["Controls",0],["Logout",0]]
+
+let data=JSON.parse(localStorage.getItem("bdgame_data")||"null")||{
+name:"Guest Player",coins:500,diamonds:0,level:1,
+br:0,cs:0,items:[],mode:"SOLO",map:"Island"
 };
-if(name==="Inventory"){const p=document.createElement("p");p.textContent=data.items.length?data.items.join(", "):"Your inventory is empty.";c.appendChild(p);}
-else (content[name]||[]).forEach(([title,price])=>{
-const div=document.createElement("div");div.className="item";const h=document.createElement("b");h.textContent=title;div.appendChild(h);
-if(name==="Store"){const p=document.createElement("p");p.textContent=price+" Demo Coins";const b=document.createElement("button");b.textContent="BUY";b.onclick=()=>buy(title,price);div.append(p,b);}
-if(name==="Downloads"){const p=document.createElement("p");p.className="small";p.textContent="Resource download file যুক্ত করা হয়নি।";div.appendChild(p);}
-if(name==="Settings"&&title==="Logout"){const b=document.createElement("button");b.textContent="LOG OUT";b.onclick=logoutUser;div.appendChild(b);}
-if(name==="Settings"&&title==="Sound and Music"){const b=document.createElement("button");b.textContent="TOGGLE MUSIC";b.onclick=musicToggle;div.appendChild(b);}
+
+function save(){
+localStorage.setItem("bdgame_data",JSON.stringify(data));
+update();
+}
+
+function show(id){
+document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+function update(){
+document.getElementById("coins").textContent=data.coins;
+document.getElementById("diamonds").textContent=data.diamonds;
+document.getElementById("playername").textContent=data.name;
+document.getElementById("level").textContent=data.level;
+document.getElementById("selectedMode").textContent=data.mode;
+document.getElementById("selectedMap").textContent=data.map;
+document.getElementById("brRank").textContent=rank(data.br);
+document.getElementById("csRank").textContent=rank(data.cs);
+}
+
+function rank(points){
+const levels=["Bronze","Silver","Gold","Platinum","Diamond","Heroic","Master","Grandmaster"];
+return levels[Math.min(7,Math.floor(points/100))];
+}
+
+function selectMode(mode){
+data.mode=mode;
+save();
+}
+
+function selectMap(map){
+data.map=map;
+save();
+document.getElementById("notice").textContent=map+" selected!";
+}
+
+function startMatch(){
+document.getElementById("planeMode").textContent=data.mode;
+document.getElementById("planeMap").textContent=data.map;
+show("airplane");
+}
+
+function startFlight(){
+document.getElementById("planeMode").textContent=data.mode+" — FLIGHT READY";
+}
+
+function jump(){
+document.getElementById("matchMap").textContent="🗺️ "+data.map.toUpperCase();
+document.getElementById("matchMode").textContent=data.mode;
+show("match");
+}
+
+async function loginUser(){
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+if(!email||!password)return alert("Email ও Password লিখুন।");
+const {data:result,error}=await db.auth.signInWithPassword({email,password});
+if(error)return alert(error.message);
+data.name=result.user.email.split("@")[0];
+save();
+show("lobby");
+}
+
+async function signupUser(){
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+if(!email||password.length<8)return alert("Email ও কমপক্ষে ৮ অক্ষরের Password দিন।");
+const {data:result,error}=await db.auth.signUp({email,password});
+if(error)return alert(error.message);
+document.getElementById("authNotice").textContent=
+result.session?"Account created!":"Email confirmation প্রয়োজন হতে পারে।";
+}
+
+function guestLogin(){
+data.name="Guest Player";
+save();
+show("lobby");
+}
+
+function openPage(name){
+document.getElementById("pageTitle").textContent=name;
+const c=document.getElementById("pageContent");
+c.innerHTML="";
+
+const options={
+Store:["Basic Outfit — 100 Coins","Pet — 200 Coins","Dance Emote — 150 Coins"],
+Inventory:data.items.length?data.items:["Your inventory is empty."],
+Missions:["Play a Demo Match","Visit Game Lobby","Daily Login"],
+Events:["BD GAME Welcome Event","Daily Login Event"],
+Friends:["Friends List — Demo"],
+Team:["Create Team — Demo","Team Members — Demo"],
+Character:["Default Character"],
+Outfit:["Basic Outfit"],
+Profile:["Player: "+data.name,"Level: "+data.level,"Coins: "+data.coins],
+Settings:["Graphics: Medium","Sound Settings","Logout"]
+};
+
+(options[name]||[]).forEach(title=>{
+const div=document.createElement("div");
+div.className="item";
+div.textContent=title;
 c.appendChild(div);
 });
 show("page");
 }
-function buy(title,price){if(data.coins<price)return alert("Not enough demo coins!");data.coins-=price;data.items.push(title);save();alert(title+" added to demo inventory!");}
-async function logoutUser(){await db.auth.signOut();onlinePlayerId=null;show("login");}
-let progress=0;const loader=setInterval(async()=>{progress+=10;document.getElementById("loadbar").style.width=progress+"%";if(progress>=100){clearInterval(loader);const {data:r}=await db.auth.getSession();if(r.session){if(await loadOnlinePlayer(r.session.user))show("lobby");else show("login");}else show("entry");}},180);
-update();updateRanks();
+
+async function logout(){
+await db.auth.signOut();
+show("entry");
+}
+
+setTimeout(async()=>{
+const {data:sessionData}=await db.auth.getSession();
+if(sessionData.session){
+data.name=sessionData.session.user.email.split("@")[0];
+save();
+show("lobby");
+}else show("entry");
+},1200);
+
+update();
 </script>
 </body>
 </html>
