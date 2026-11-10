@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101522">
 <title>BD GAME</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101522;color:white;font-family:Arial,sans-serif}
@@ -25,10 +28,13 @@ input{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #5
 .menu button{background:#29374e;color:white}
 .small{font-size:12px;color:#bdc8d8}
 .gold{color:#ffc34b}
-#notice{color:#ffc34b;text-align:center}
+#notice,#onlineStatus{color:#ffc34b;text-align:center}
+#island3d{width:100%;height:330px;border-radius:15px;overflow:hidden;background:#101b2b}
+#island3d canvas{width:100%;height:100%;display:block}
 @media(max-width:380px){.menu{grid-template-columns:repeat(2,1fr)}.logo{font-size:32px}}
 </style>
 </head>
+
 <body>
 
 <section id="loading" class="screen active center">
@@ -41,7 +47,11 @@ input{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #5
 
 <section id="entry" class="screen center">
 <div class="hero">
-<div><div class="logo">BD GAME</div><h2>BATTLE ROYALE</h2><p>YOUR BATTLE. YOUR LEGEND.</p></div>
+<div>
+<div class="logo">BD GAME</div>
+<h2>BATTLE ROYALE</h2>
+<p>YOUR BATTLE. YOUR LEGEND.</p>
+</div>
 </div>
 <button style="width:100%" onclick="show('login')">ENTER GAME</button>
 </section>
@@ -66,13 +76,19 @@ input{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #5
 </div>
 
 <div class="panel top">
-<div>👤 <b id="playername">Guest Player</b>
-<p class="small">Level <span id="level">1</span></p></div>
+<div>
+👤 <b id="playername">Guest Player</b>
+<p class="small">Level <span id="level">1</span></p>
+</div>
 <button onclick="openPage('Profile')">PROFILE</button>
 </div>
 
 <div class="hero">
-<div><div class="logo">BD GAME</div><h2>WELCOME TO THE LOBBY</h2><p>🪂 BATTLE ROYALE ARENA</p></div>
+<div>
+<div class="logo">BD GAME</div>
+<h2>WELCOME TO THE LOBBY</h2>
+<p>🪂 BATTLE ROYALE ARENA</p>
+</div>
 </div>
 
 <div class="panel">
@@ -128,38 +144,44 @@ input{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #5
 
 <section id="airplane" class="screen center">
 <div class="top">
-<button onclick="show('lobby')">← BACK</button>
+<button onclick="backToLobby()">← BACK</button>
 <b>BD GAME</b>
 </div>
+
 <div class="hero">
-<div><div style="font-size:65px">✈️</div><h2>AIRPLANE LOBBY</h2><p>PLAYER WAITING</p></div>
+<div>
+<div style="font-size:65px">✈️</div>
+<h2>AIRPLANE LOBBY</h2>
+<p>PLAYER WAITING</p>
 </div>
+</div>
+
 <h2 id="planeMode">SOLO</h2>
 <h3>MAP: <span id="planeMap">Island</span></h3>
+
 <div class="panel">
-<h2 class="gold">50 / 50</h2>
-<p>Demo Player Slots</p>
+<h2 class="gold"><span id="onlineCount">0</span> / 50</h2>
+<p id="onlineStatus">অনলাইন সার্ভারের অপেক্ষায়</p>
 <button style="width:100%" onclick="startFlight()">START FLIGHT</button>
 <button style="width:100%;margin-top:8px" onclick="jump()">ENTER DEMO MATCH</button>
 </div>
+<div id="playerList" class="small"></div>
 </section>
 
 <section id="match" class="screen center">
 <div class="top">
 <b>BD GAME MATCH</b>
-<button onclick="show('lobby')">EXIT MATCH</button>
+<button onclick="backToLobby()">EXIT MATCH</button>
 </div>
-<div class="hero" style="min-height:330px">
-<div>
-<h2 id="matchMap">🏝️ ISLAND</h2>
-<div style="font-size:65px">🌲 🏠 🌳</div>
-<p>BD GAME DEMO MAP</p>
-</div>
-</div>
+
+<h2 id="matchMap">ISLAND</h2>
+<div id="island3d"></div>
+
 <div class="panel">
 <h3 id="matchMode">SOLO</h3>
-<p>Demo Match Running</p>
-<p class="small">এটি একটি Demo। বাস্তব Multiplayer Server এখনো যুক্ত হয়নি।</p>
+<p>BD GAME 3D DEMO MAP</p>
+<p>Online Players: <b id="matchOnlineCount">0</b></p>
+<p class="small">এটি 3D ম্যাপের প্রাথমিক সংস্করণ।</p>
 </div>
 </section>
 
@@ -175,14 +197,30 @@ input{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #5
 </section>
 
 <script>
+/* নিজের আগের Supabase Publishable Key বসাবেন।
+   Password বা Secret Key এখানে বসাবেন না। */
 const SUPABASE_URL="https://qgcvhflehoxsjyzntxmp.supabase.co";
 const SUPABASE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY";
+
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 let data=JSON.parse(localStorage.getItem("bdgame_data")||"null")||{
-name:"Guest Player",coins:500,diamonds:0,level:1,
-br:0,cs:0,items:[],mode:"SOLO",map:"Island"
+name:"Guest Player",
+coins:500,
+diamonds:0,
+level:1,
+br:0,
+cs:0,
+items:[],
+mode:"SOLO",
+map:"Island"
 };
+
+let onlineSocket=null;
+let islandRenderer=null;
+let islandScene=null;
+let islandCamera=null;
+let islandAnimation=null;
 
 function save(){
 localStorage.setItem("bdgame_data",JSON.stringify(data));
@@ -192,6 +230,10 @@ update();
 function show(id){
 document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
 document.getElementById(id).classList.add("active");
+
+if(id==="match"){
+setTimeout(initIsland3D,100);
+}
 }
 
 function update(){
@@ -221,10 +263,75 @@ save();
 document.getElementById("notice").textContent=map+" selected!";
 }
 
+function connectOnlineRoom(){
+leaveOnlineRoom();
+
+const protocol=location.protocol==="https:"?"wss:":"ws:";
+const name=encodeURIComponent(data.name||"Guest Player");
+
+const url=
+`${protocol}//${location.host}/api/ws`+
+`?room=public&mode=${encodeURIComponent(data.mode)}&name=${name}`;
+
+const status=document.getElementById("onlineStatus");
+const count=document.getElementById("onlineCount");
+const list=document.getElementById("playerList");
+
+status.textContent="Connecting to server...";
+count.textContent="0";
+list.textContent="";
+
+onlineSocket=new WebSocket(url);
+
+onlineSocket.onopen=()=>{
+status.textContent="ONLINE SERVER CONNECTED";
+};
+
+onlineSocket.onmessage=event=>{
+let message;
+try{
+message=JSON.parse(event.data);
+}catch{
+return;
+}
+
+if(message.type==="welcome"||message.type==="room_update"){
+count.textContent=message.count;
+document.getElementById("matchOnlineCount").textContent=message.count;
+
+if(message.players){
+list.textContent="Players: "+message.players.map(p=>p.name).join(", ");
+}
+}
+};
+
+onlineSocket.onerror=()=>{
+status.textContent="SERVER CONNECTION ERROR";
+};
+
+onlineSocket.onclose=()=>{
+status.textContent="SERVER DISCONNECTED";
+};
+}
+
+function leaveOnlineRoom(){
+if(onlineSocket){
+onlineSocket.onclose=null;
+onlineSocket.close();
+onlineSocket=null;
+}
+}
+
+function backToLobby(){
+leaveOnlineRoom();
+show("lobby");
+}
+
 function startMatch(){
 document.getElementById("planeMode").textContent=data.mode;
 document.getElementById("planeMap").textContent=data.map;
 show("airplane");
+connectOnlineRoom();
 }
 
 function startFlight(){
@@ -232,17 +339,163 @@ document.getElementById("planeMode").textContent=data.mode+" — FLIGHT READY";
 }
 
 function jump(){
-document.getElementById("matchMap").textContent="🗺️ "+data.map.toUpperCase();
+document.getElementById("matchMap").textContent=data.map.toUpperCase();
 document.getElementById("matchMode").textContent=data.mode;
 show("match");
+}
+
+function sendGameUpdate(x,z){
+if(onlineSocket&&onlineSocket.readyState===WebSocket.OPEN){
+onlineSocket.send(JSON.stringify({
+type:"player_update",
+x:x,
+z:z
+}));
+}
+}
+
+/* 3D ISLAND DEMO */
+function initIsland3D(){
+const container=document.getElementById("island3d");
+
+if(!container||!window.THREE||islandRenderer)return;
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x87ceeb);
+islandScene=scene;
+
+const camera=new THREE.PerspectiveCamera(
+60,
+container.clientWidth/container.clientHeight,
+0.1,
+1000
+);
+islandCamera=camera;
+camera.position.set(0,12,24);
+camera.lookAt(0,0,0);
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setSize(container.clientWidth,container.clientHeight);
+container.appendChild(renderer.domElement);
+islandRenderer=renderer;
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x496b3c,2));
+
+const sunlight=new THREE.DirectionalLight(0xffffff,2);
+sunlight.position.set(10,20,10);
+scene.add(sunlight);
+
+const sea=new THREE.Mesh(
+new THREE.CircleGeometry(80,64),
+new THREE.MeshStandardMaterial({color:0x1676a5})
+);
+sea.rotation.x=-Math.PI/2;
+sea.position.y=-1;
+scene.add(sea);
+
+const island=new THREE.Mesh(
+new THREE.CylinderGeometry(13,15,2,64),
+new THREE.MeshStandardMaterial({color:0x4d9b45})
+);
+scene.add(island);
+
+const sand=new THREE.Mesh(
+new THREE.CylinderGeometry(15,16,1,64),
+new THREE.MeshStandardMaterial({color:0xd7bd78})
+);
+sand.position.y=-0.8;
+scene.add(sand);
+
+function addHill(x,y,z,size,color){
+const hill=new THREE.Mesh(
+new THREE.ConeGeometry(size,size*1.5,8),
+new THREE.MeshStandardMaterial({color})
+);
+hill.position.set(x,y,z);
+scene.add(hill);
+}
+
+addHill(-5,2,-4,4,0x4b8745);
+addHill(5,2,-5,3,0x5b984c);
+addHill(2,1,5,2.5,0x659c4b);
+
+function addTree(x,z){
+const trunk=new THREE.Mesh(
+new THREE.CylinderGeometry(0.18,0.25,1.4,8),
+new THREE.MeshStandardMaterial({color:0x79502b})
+);
+trunk.position.set(x,0.8,z);
+scene.add(trunk);
+
+const leaves=new THREE.Mesh(
+new THREE.ConeGeometry(1.1,2.5,8),
+new THREE.MeshStandardMaterial({color:0x176b36})
+);
+leaves.position.set(x,2.5,z);
+scene.add(leaves);
+}
+
+[
+[-8,-4],[-7,4],[-3,7],[5,7],[8,2],
+[7,-6],[2,-8],[-5,-8],[0,4],[4,1]
+].forEach(p=>addTree(p[0],p[1]));
+
+const house=new THREE.Group();
+
+const base=new THREE.Mesh(
+new THREE.BoxGeometry(3,2,3),
+new THREE.MeshStandardMaterial({color:0xd8d0bd})
+);
+base.position.y=1;
+house.add(base);
+
+const roof=new THREE.Mesh(
+new THREE.ConeGeometry(2.5,1.5,4),
+new THREE.MeshStandardMaterial({color:0x9d4938})
+);
+roof.position.y=2.75;
+roof.rotation.y=Math.PI/4;
+house.add(roof);
+
+house.position.set(-2,0,1);
+scene.add(house);
+
+let angle=0;
+
+function animate(){
+islandAnimation=requestAnimationFrame(animate);
+angle+=0.0015;
+camera.position.x=Math.sin(angle)*1.5;
+camera.lookAt(0,0,0);
+renderer.render(scene,camera);
+}
+
+animate();
+
+window.addEventListener("resize",()=>{
+if(!islandRenderer)return;
+const w=container.clientWidth;
+const h=container.clientHeight;
+camera.aspect=w/h;
+camera.updateProjectionMatrix();
+renderer.setSize(w,h);
+});
 }
 
 async function loginUser(){
 const email=document.getElementById("email").value.trim();
 const password=document.getElementById("password").value;
+
 if(!email||!password)return alert("Email ও Password লিখুন।");
-const {data:result,error}=await db.auth.signInWithPassword({email,password});
+
+const {data:result,error}=await db.auth.signInWithPassword({
+email,
+password
+});
+
 if(error)return alert(error.message);
+
 data.name=result.user.email.split("@")[0];
 save();
 show("lobby");
@@ -251,9 +504,18 @@ show("lobby");
 async function signupUser(){
 const email=document.getElementById("email").value.trim();
 const password=document.getElementById("password").value;
-if(!email||password.length<8)return alert("Email ও কমপক্ষে ৮ অক্ষরের Password দিন।");
-const {data:result,error}=await db.auth.signUp({email,password});
+
+if(!email||password.length<8){
+return alert("Email ও কমপক্ষে ৮ অক্ষরের Password দিন।");
+}
+
+const {data:result,error}=await db.auth.signUp({
+email,
+password
+});
+
 if(error)return alert(error.message);
+
 document.getElementById("authNotice").textContent=
 result.session?"Account created!":"Email confirmation প্রয়োজন হতে পারে।";
 }
@@ -286,26 +548,41 @@ Settings:["Graphics: Medium","Sound Settings","Logout"]
 const div=document.createElement("div");
 div.className="item";
 div.textContent=title;
+if(name==="Settings"&&title==="Logout"){
+div.onclick=logout;
+div.style.cursor="pointer";
+}
 c.appendChild(div);
 });
+
 show("page");
 }
 
 async function logout(){
+leaveOnlineRoom();
+try{
 await db.auth.signOut();
+}catch(error){}
 show("entry");
 }
 
 setTimeout(async()=>{
+try{
 const {data:sessionData}=await db.auth.getSession();
+
 if(sessionData.session){
 data.name=sessionData.session.user.email.split("@")[0];
 save();
 show("lobby");
-}else show("entry");
+}else{
+show("entry");
+}
+}catch(error){
+show("entry");
+}
 },1200);
 
 update();
 </script>
 </body>
-</html>
+  </html>
