@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
 
+<!-- APPWRITE SDK -->
+<script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif;overflow-x:hidden}
@@ -44,7 +47,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 .character{height:180px;border-radius:12px;background:radial-gradient(circle,#53647d,#17243a 65%);display:flex;align-items:center;justify-content:center;font-size:100px}
 .listitem{padding:13px;margin:8px 0;border-radius:9px;background:#1b2a42;border:1px solid #526078}
 .bottomspace{height:75px}
-
 @media(orientation:landscape) and (max-height:600px){
 .screen{padding:8px}
 .brand{font-size:38px}
@@ -57,12 +59,10 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 
 <body>
 
-<!-- SPLASH: LOGO ONLY BD -->
 <section id="splash" class="screen active center">
  <div class="brand">BD</div>
 </section>
 
-<!-- LOADING -->
 <section id="loading" class="screen center">
  <div class="brand">BD</div>
  <h2>LOADING...</h2>
@@ -71,39 +71,37 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <p id="progress" class="gold">0%</p>
 </section>
 
-<!-- LOGIN -->
 <section id="login" class="screen center">
  <div class="brand">BD</div>
  <p class="sub">PLAYER LOGIN</p>
  <div class="panel">
   <h2 class="gold">WELCOME PLAYER</h2>
-  <button class="wide blue" onclick="message('Facebook Login পরে সংযুক্ত হবে')">f &nbsp; Continue with Facebook</button>
-  <button class="wide" onclick="message('Google Login পরে সংযুক্ত হবে')">G &nbsp; Continue with Google</button>
+  <button class="wide blue" onclick="message('Facebook Login এখনো সংযুক্ত হয়নি')">f &nbsp; Continue with Facebook</button>
+  <button class="wide" onclick="message('Google Login এখনো সংযুক্ত হয়নি')">G &nbsp; Continue with Google</button>
   <p class="sub">OR LOGIN WITH EMAIL</p>
   <input id="email" type="email" placeholder="Email address">
   <input id="password" type="password" placeholder="Password">
-  <button class="wide" onclick="message('Email Login পরে সংযুক্ত হবে')">LOGIN</button>
+  <button class="wide" onclick="loginPlayer()">LOGIN</button>
   <button class="wide dark" onclick="go('register')">CREATE ACCOUNT</button>
   <button class="wide dark" onclick="guest()">GUEST LOGIN</button>
   <p id="authNotice" class="notice"></p>
  </div>
 </section>
 
-<!-- REGISTER -->
 <section id="register" class="screen center">
  <div class="brand" style="font-size:40px">BD</div>
  <div class="panel">
   <h2 class="gold">CREATE PLAYER ACCOUNT</h2>
   <input id="newPlayerName" placeholder="Player Name">
-  <input type="email" placeholder="Email">
-  <input type="password" placeholder="Password">
-  <input type="password" placeholder="Confirm Password">
-  <button class="wide" onclick="message('Registration পরে সংযুক্ত হবে')">REGISTER</button>
+  <input id="newEmail" type="email" placeholder="Email">
+  <input id="newPassword" type="password" placeholder="Password">
+  <input id="confirmPassword" type="password" placeholder="Confirm Password">
+  <button class="wide" onclick="registerPlayer()">REGISTER</button>
   <button class="wide dark" onclick="go('login')">BACK TO LOGIN</button>
+  <p id="registerNotice" class="notice"></p>
  </div>
 </section>
 
-<!-- EVENTS -->
 <section id="events" class="screen">
  <div class="brand" style="font-size:38px;text-align:center">BD</div>
  <h2 class="pageTitle">EVENT CENTER</h2>
@@ -118,25 +116,18 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <button class="wide" onclick="go('lobby')">ENTER LOBBY</button>
 </section>
 
-<!-- MAIN LOBBY -->
 <section id="lobby" class="screen">
  <div class="top">
   <b class="gold">BD GAME</b>
   <span class="coins">🪙 1000 &nbsp; 💎 100</span>
   <button onclick="go('profile')">👤</button>
  </div>
-
  <div class="content">
   <div class="hero">
-   <div>
-    <h2>WELCOME TO BD</h2>
-    <p>THE BATTLE STARTS HERE</p>
-   </div>
+   <div><h2>WELCOME TO BD</h2><p>THE BATTLE STARTS HERE</p></div>
   </div>
-
   <div class="character">🦸</div>
   <p class="gold" style="text-align:center">PLAYER CHARACTER</p>
-
   <div class="card">
    <h3 class="gold">SELECT GAME MODE</h3>
    <div class="grid">
@@ -148,7 +139,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
    <p id="selectedMode" class="gold">Selected: SOLO</p>
    <button class="wide" onclick="go('match')">START MATCH</button>
   </div>
-
   <h3 class="gold">GAME FEATURES</h3>
   <div class="grid">
    <div class="tile" onclick="go('character')"><span class="emoji">🧍</span><b>CHARACTER</b></div>
@@ -165,7 +155,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
    <div class="tile" onclick="go('security')"><span class="emoji">🛡️</span><b>SECURITY</b></div>
   </div>
  </div>
-
  <nav class="nav">
   <button onclick="go('lobby')"><span>🏠</span>Home</button>
   <button onclick="go('friends')"><span>👥</span>Friends</button>
@@ -174,7 +163,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </nav>
 </section>
 
-<!-- CHARACTER -->
 <section id="character" class="screen">
  <div class="top"><b class="gold">CHARACTER</b><button onclick="go('lobby')">BACK</button></div>
  <div class="character">🦸</div>
@@ -187,7 +175,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- OUTFIT -->
 <section id="outfit" class="screen">
  <div class="top"><b class="gold">OUTFIT & SKIN</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">CUSTOMIZE PLAYER</h2>
@@ -202,7 +189,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- PET -->
 <section id="pet" class="screen">
  <div class="top"><b class="gold">PET COLLECTION</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">YOUR PETS</h2>
@@ -214,7 +200,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- GEAR -->
 <section id="gear" class="screen">
  <div class="top"><b class="gold">GEAR COLLECTION</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">PLAYER EQUIPMENT</h2>
@@ -226,7 +211,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- SHOP -->
 <section id="shop" class="screen">
  <div class="top"><b class="gold">BD GAME SHOP</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">GAME STORE</h2>
@@ -240,7 +224,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- MAP -->
 <section id="map" class="screen">
  <div class="top"><b class="gold">MAP SELECTION</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">SELECT YOUR MAP</h2>
@@ -253,7 +236,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <p id="mapNotice" class="gold">Selected: BD ISLAND</p>
 </section>
 
-<!-- FRIENDS -->
 <section id="friends" class="screen">
  <div class="top"><b class="gold">FRIENDS & TEAM</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">PLAYER SOCIAL</h2>
@@ -266,7 +248,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- ROOM -->
 <section id="room" class="screen">
  <div class="top"><b class="gold">ROOM & MATCH</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">CUSTOM ROOM</h2>
@@ -278,7 +259,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- MATCH PLACEHOLDER -->
 <section id="match" class="screen center">
  <div class="brand" style="font-size:40px">BD</div>
  <div class="panel">
@@ -289,7 +269,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- RANK -->
 <section id="rank" class="screen">
  <div class="top"><b class="gold">RANK & LEADERBOARD</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">PLAYER RANK</h2>
@@ -297,7 +276,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <div class="card"><h3>🏆 LEADERBOARD</h3><p class="sub">Top players will appear here.</p></div>
 </section>
 
-<!-- MISSIONS -->
 <section id="mission" class="screen">
  <div class="top"><b class="gold">MISSIONS & REWARDS</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">DAILY MISSIONS</h2>
@@ -306,7 +284,6 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <div class="listitem">🎁 Login Reward <span class="gold">Reward: 50 Coins</span></div>
 </section>
 
-<!-- PROFILE -->
 <section id="profile" class="screen">
  <div class="top"><b class="gold">PLAYER PROFILE</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">YOUR PROFILE</h2>
@@ -316,10 +293,10 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
   <p>Player ID: <span id="playerId">BD-000001</span></p>
   <p>Level: 1</p>
   <p>Rank: Bronze</p>
+  <button class="wide dark" onclick="logoutPlayer()">LOG OUT</button>
  </div>
 </section>
 
-<!-- SETTINGS -->
 <section id="settings" class="screen">
  <div class="top"><b class="gold">SETTINGS</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">GAME SETTINGS</h2>
@@ -327,10 +304,9 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <div class="listitem">🔊 Sound Settings <button onclick="message('Sound settings পরে যুক্ত হবে')">OPEN</button></div>
  <div class="listitem">🎥 Controls Settings <button onclick="message('Control settings পরে যুক্ত হবে')">OPEN</button></div>
  <div class="listitem">🌐 Language <button onclick="message('Language settings পরে যুক্ত হবে')">OPEN</button></div>
- <button class="wide dark" onclick="go('login')">LOG OUT</button>
+ <button class="wide dark" onclick="logoutPlayer()">LOG OUT</button>
 </section>
 
-<!-- SECURITY -->
 <section id="security" class="screen">
  <div class="top"><b class="gold">BD GAME SECURITY</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">PLAYER PROTECTION</h2>
@@ -349,75 +325,197 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 </section>
 
 <script>
-let playerName="Guest Player";
-let mode="SOLO";
-let mapName="BD ISLAND";
+// =====================================
+// BD GAME - APPWRITE CONFIGURATION
+// =====================================
 
+const APPWRITE_ENDPOINT = "https://sgp.cloud.appwrite.io/v1";
+const APPWRITE_PROJECT_ID = "6af4c610002ee336af01";
+
+const client = new Appwrite.Client()
+  .setEndpoint(APPWRITE_ENDPOINT)
+  .setProject(APPWRITE_PROJECT_ID);
+
+const account = new Appwrite.Account(client);
+
+let currentUser = null;
+let playerName = "Guest Player";
+let mode = "SOLO";
+let mapName = "BD ISLAND";
+
+// Check existing Appwrite session
+async function checkAppwriteSession(){
+  try{
+    const user = await account.get();
+    currentUser = user;
+    playerName = user.name || user.email || "Player";
+    console.log("BD GAME Appwrite session active");
+  }catch(error){
+    currentUser = null;
+    console.log("No active player session:", error.code || error.message);
+  }
+}
+
+// Email registration
+async function registerPlayer(){
+  const name = document.getElementById("newPlayerName").value.trim();
+  const email = document.getElementById("newEmail").value.trim();
+  const password = document.getElementById("newPassword").value;
+  const confirm = document.getElementById("confirmPassword").value;
+  const notice = document.getElementById("registerNotice");
+
+  if(!name || !email || !password || !confirm){
+    notice.textContent = "সব তথ্য পূরণ করো।";
+    return;
+  }
+
+  if(password.length < 8){
+    notice.textContent = "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।";
+    return;
+  }
+
+  if(password !== confirm){
+    notice.textContent = "দুটি পাসওয়ার্ড মিলছে না।";
+    return;
+  }
+
+  notice.textContent = "অ্যাকাউন্ট তৈরি হচ্ছে...";
+
+  try{
+    await account.create(
+      Appwrite.ID.unique(),
+      email,
+      password,
+      name
+    );
+
+    notice.textContent = "অ্যাকাউন্ট তৈরি হয়েছে। এখন Login করো।";
+    document.getElementById("email").value = email;
+    go("login");
+    document.getElementById("authNotice").textContent =
+      "নতুন অ্যাকাউন্ট দিয়ে লগইন করো।";
+  }catch(error){
+    notice.textContent = error.message || "Registration করা যায়নি।";
+  }
+}
+
+// Email login
+async function loginPlayer(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const notice = document.getElementById("authNotice");
+
+  if(!email || !password){
+    notice.textContent = "Email এবং Password দাও।";
+    return;
+  }
+
+  notice.textContent = "Login হচ্ছে...";
+
+  try{
+    await account.createEmailPasswordSession(email,password);
+    const user = await account.get();
+
+    currentUser = user;
+    playerName = user.name || user.email || "Player";
+
+    notice.textContent = "Login সফল হয়েছে!";
+    go("events");
+  }catch(error){
+    notice.textContent = error.message || "Login করা যায়নি।";
+  }
+}
+
+// Logout
+async function logoutPlayer(){
+  try{
+    if(currentUser){
+      await account.deleteSession("current");
+    }
+  }catch(error){
+    console.log("Logout message:",error.message);
+  }
+
+  currentUser = null;
+  playerName = "Guest Player";
+  go("login");
+}
+
+// Screen navigation
 function go(id){
- document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(s=>{
+    s.classList.remove("active");
+  });
 
- const page=document.getElementById(id);
- if(page)page.classList.add("active");
+  const page = document.getElementById(id);
+  if(page) page.classList.add("active");
 
- if(id==="profile"){
-  document.getElementById("profileName").textContent=playerName;
- }
+  if(id==="profile"){
+    document.getElementById("profileName").textContent=playerName;
+  }
 
- if(id==="match"){
-  document.getElementById("matchMode").textContent=mode;
- }
+  if(id==="match"){
+    document.getElementById("matchMode").textContent=mode;
+  }
 }
 
 function message(text){
- const n=document.getElementById("authNotice");
+  const n=document.getElementById("authNotice");
 
- if(n){
-  n.textContent=text;
- }else{
-  alert(text);
- }
+  if(n){
+    n.textContent=text;
+  }else{
+    alert(text);
+  }
 }
 
 function guest(){
- playerName="Guest Player";
- go("events");
+  playerName="Guest Player";
+  currentUser=null;
+  go("events");
 }
 
 function selectMode(value){
- mode=value;
- document.getElementById("selectedMode").textContent="Selected: "+value;
+  mode=value;
+  document.getElementById("selectedMode").textContent="Selected: "+value;
 }
 
 function selectMap(value){
- mapName=value;
- document.getElementById("mapNotice").textContent="Selected: "+value;
+  mapName=value;
+  document.getElementById("mapNotice").textContent="Selected: "+value;
 }
 
 function startGame(){
- go("splash");
+  go("splash");
 
- setTimeout(()=>{
-  go("loading");
+  setTimeout(()=>{
+    go("loading");
 
-  let p=0;
+    let p=0;
 
-  const timer=setInterval(()=>{
-   p=Math.min(100,p+5);
+    const timer=setInterval(()=>{
+      p=Math.min(100,p+5);
 
-   document.getElementById("bar").style.width=p+"%";
-   document.getElementById("progress").textContent=p+"%";
+      document.getElementById("bar").style.width=p+"%";
+      document.getElementById("progress").textContent=p+"%";
 
-   if(p===100){
-    clearInterval(timer);
-    go("login");
-   }
-  },80);
-
- },1200);
+      if(p===100){
+        clearInterval(timer);
+        checkAppwriteSession().then(()=>{
+          if(currentUser){
+            go("events");
+          }else{
+            go("login");
+          }
+        });
+      }
+    },80);
+  },1200);
 }
 
+// Start BD GAME
 startGame();
 </script>
 
 </body>
-   </html>
+ </html>
