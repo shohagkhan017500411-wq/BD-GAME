@@ -2,232 +2,377 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
-.screen{display:none;min-height:100vh;padding:20px}
-.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
-.brand{font-size:clamp(38px,10vw,65px);font-weight:1000;letter-spacing:5px;color:#ffd36a;text-shadow:0 0 25px #b77a25}
+body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif;overflow-x:hidden}
+button{cursor:pointer;font-weight:bold;border:0;border-radius:8px;padding:12px;color:#17110a;background:linear-gradient(135deg,#ffe29a,#bd812b)}
+button:active{transform:scale(.97)}
+input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #53647d;border-radius:8px;color:white}
+.screen{display:none;min-height:100vh;padding:15px;background:radial-gradient(ellipse at top,#26364d,#080d18 70%)}
+.screen.active{display:block}
+.center{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.brand{font-size:clamp(42px,9vw,75px);font-weight:1000;letter-spacing:6px;color:#ffd36a;text-shadow:0 0 25px #bd812b}
 .sub{color:#aebbd0;letter-spacing:3px;font-size:12px}
-.panel{width:100%;max-width:420px;padding:22px;background:linear-gradient(145deg,#1b2941,#101827);border:1px solid #596981;border-radius:14px}
-input{width:100%;padding:14px;margin:8px 0;background:#172238;color:white;border:1px solid #52627b;border-radius:8px;font-size:16px}
-button{width:100%;padding:14px;margin-top:9px;border:1px solid #a87930;border-radius:8px;background:linear-gradient(#f5ce78,#b77a25);color:#17110a;font-size:15px;font-weight:900;cursor:pointer}
-.secondary{background:#263954;color:white;border-color:#61728a}
 .gold{color:#ffd36a}
-.muted{font-size:12px;color:#aebbd0;text-align:center}
-.loader{width:min(300px,80vw);height:10px;background:#263954;border-radius:20px;overflow:hidden;margin-top:25px}
-.bar{height:100%;width:0;background:linear-gradient(90deg,#b77a25,#ffe29a);border-radius:20px;transition:width .25s}
-#progressText{color:#ffd36a;margin-top:12px;font-size:13px}
-.eventGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;margin:20px 0}
-.event{padding:20px 8px;text-align:center;background:#1b2a42;border:1px solid #4c5b72;border-radius:10px}
-.event span{display:block;font-size:28px;margin-bottom:8px}
-.event b{color:#ffd36a;font-size:13px}
-.notice{font-size:13px;color:#ffd36a;text-align:center;min-height:20px}
+.panel{width:100%;max-width:420px;padding:20px;background:#17243a;border:1px solid #6a7890;border-radius:14px}
+.wide{width:100%;max-width:420px;margin:7px auto;display:block}
+.blue{background:linear-gradient(135deg,#3b83d4,#164b91);color:white}
+.dark{background:#263954;color:white;border:1px solid #60738d}
+.notice{color:#ffd36a;font-size:12px}
+.loader{width:min(300px,80vw);height:10px;background:#263954;border-radius:20px;overflow:hidden}
+.bar{height:100%;width:0;background:#ffd36a;transition:.2s}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 3px;border-bottom:1px solid #526078}
+.coins{color:#ffd36a;font-weight:bold;font-size:13px}
+.pageTitle{text-align:center;color:#ffd36a;font-size:22px;margin:17px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+.tile{min-height:105px;padding:14px 8px;background:linear-gradient(145deg,#263b58,#111c30);border:1px solid #53647d;border-radius:12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px}
+.tile .emoji{font-size:32px}
+.tile b{font-size:13px;color:#ffd36a}
+.tile small{color:#b8c4d5}
+.card{background:#17243a;border:1px solid #53647d;border-radius:12px;padding:14px;margin:10px 0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#101a2b;border-top:1px solid #53647d;display:flex;justify-content:space-around;padding:9px 3px;z-index:10}
+.nav button{background:transparent;color:white;padding:8px 5px;font-size:11px;flex:1}
+.nav button span{display:block;font-size:20px;margin-bottom:3px}
+.content{padding-bottom:75px;max-width:1000px;margin:auto}
+.hero{min-height:160px;border-radius:15px;background:linear-gradient(120deg,#70421e,#263c5b,#101a2c);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;margin:15px 0;border:1px solid #a87930}
+.hero h2{color:#ffe09a}
+.character{height:180px;border-radius:12px;background:radial-gradient(circle,#53647d,#17243a 65%);display:flex;align-items:center;justify-content:center;font-size:100px}
+.listitem{padding:13px;margin:8px 0;border-radius:9px;background:#1b2a42;border:1px solid #526078}
+.bottomspace{height:75px}
+@media(orientation:landscape) and (max-height:600px){
+.screen{padding:8px}
+.brand{font-size:38px}
+.grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tile{min-height:75px}
+.character{height:120px}
+}
 </style>
 </head>
 <body>
 
-<!-- SPLASH SCREEN -->
-<section id="splash" class="screen active">
-  <div class="brand">BD GAME</div>
-  <p class="sub">YOUR BATTLE. YOUR LEGEND.</p>
-  <p class="muted">ORIGINAL BATTLE ARENA</p>
+<!-- SPLASH -->
+<section id="splash" class="screen active center">
+ <div class="brand">BD</div>
+ <h2 class="gold">BATTLE ARENA</h2>
+ <p class="sub">YOUR BATTLE · YOUR LEGEND</p>
 </section>
 
-<!-- LOADING SCREEN -->
-<section id="loading" class="screen">
-  <div class="brand">BD GAME</div>
-  <h2>LOADING GAME...</h2>
-  <p class="muted">Preparing your game experience</p>
-  <div class="loader"><div class="bar" id="bar"></div></div>
-  <div id="progressText">0%</div>
+<!-- LOADING -->
+<section id="loading" class="screen center">
+ <div class="brand">BD</div>
+ <h2>LOADING...</h2>
+ <p class="sub">PREPARING GAME</p>
+ <div class="loader"><div class="bar" id="bar"></div></div>
+ <p id="progress" class="gold">0%</p>
 </section>
 
-<!-- LOGIN SCREEN -->
-<section id="login" class="screen">
-  <div class="brand" style="font-size:40px">BD GAME</div>
-  <p class="sub">PLAYER ACCESS</p>
-  <div class="panel">
-    <h2 class="gold" style="text-align:center">PLAYER LOGIN</h2>
-    <input id="email" type="email" placeholder="Email address" autocomplete="email">
-    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-    <button onclick="loginUser()">LOGIN</button>
-    <button onclick="signupUser()">REGISTER</button>
-    <button class="secondary" onclick="guestLogin()">GUEST LOGIN</button>
-    <p id="authNotice" class="notice"></p>
-  </div>
+<!-- LOGIN -->
+<section id="login" class="screen center">
+ <div class="brand">BD</div>
+ <p class="sub">PLAYER LOGIN</p>
+ <div class="panel">
+  <h2 class="gold">WELCOME PLAYER</h2>
+  <button class="wide blue" onclick="message('Facebook Login পরে সংযুক্ত হবে')">f &nbsp; Continue with Facebook</button>
+  <button class="wide" onclick="message('Google Login পরে সংযুক্ত হবে')">G &nbsp; Continue with Google</button>
+  <p class="sub">OR LOGIN WITH EMAIL</p>
+  <input id="email" type="email" placeholder="Email address">
+  <input id="password" type="password" placeholder="Password">
+  <button class="wide" onclick="message('Email Login পরে সংযুক্ত হবে')">LOGIN</button>
+  <button class="wide dark" onclick="go('register')">CREATE ACCOUNT</button>
+  <button class="wide dark" onclick="guest()">GUEST LOGIN</button>
+  <p id="authNotice" class="notice"></p>
+ </div>
 </section>
 
-<!-- EVENTS SCREEN -->
+<!-- REGISTER -->
+<section id="register" class="screen center">
+ <div class="brand" style="font-size:40px">BD</div>
+ <div class="panel">
+  <h2 class="gold">CREATE PLAYER ACCOUNT</h2>
+  <input placeholder="Player Name">
+  <input type="email" placeholder="Email">
+  <input type="password" placeholder="Password">
+  <input type="password" placeholder="Confirm Password">
+  <button class="wide" onclick="message('Registration পরে সংযুক্ত হবে')">REGISTER</button>
+  <button class="wide dark" onclick="go('login')">BACK TO LOGIN</button>
+ </div>
+</section>
+
+<!-- EVENTS -->
 <section id="events" class="screen">
-  <div class="brand" style="font-size:38px">BD GAME</div>
-  <h2 class="gold">EVENT CENTER</h2>
-  <p class="muted">WELCOME TO BD GAME</p>
-  <div class="eventGrid">
-    <div class="event"><span>🎁</span><b>WELCOME EVENT</b></div>
-    <div class="event"><span>📅</span><b>DAILY LOGIN</b></div>
-    <div class="event"><span>🎯</span><b>MISSIONS</b></div>
-    <div class="event"><span>🏆</span><b>RANK CHALLENGE</b></div>
-    <div class="event"><span>🪙</span><b>GOLD RUSH</b></div>
-    <div class="event"><span>⚡</span><b>SPECIAL EVENT</b></div>
-  </div>
-  <button onclick="continueToLobby()">CONTINUE TO LOBBY</button>
+ <div class="brand" style="font-size:38px;text-align:center">BD</div>
+ <h2 class="pageTitle">EVENT CENTER</h2>
+ <div class="grid">
+  <div class="tile"><span class="emoji">🎁</span><b>WELCOME EVENT</b></div>
+  <div class="tile"><span class="emoji">📅</span><b>DAILY LOGIN</b></div>
+  <div class="tile"><span class="emoji">🎯</span><b>MISSIONS</b></div>
+  <div class="tile"><span class="emoji">🏆</span><b>RANK CHALLENGE</b></div>
+  <div class="tile"><span class="emoji">🪙</span><b>GOLD RUSH</b></div>
+  <div class="tile"><span class="emoji">⚡</span><b>SPECIAL EVENT</b></div>
+ </div>
+ <button class="wide" onclick="go('lobby')">ENTER LOBBY</button>
 </section>
 
-<!-- TEMPORARY LOBBY PLACEHOLDER -->
+<!-- MAIN LOBBY -->
 <section id="lobby" class="screen">
-  <div class="brand">BD GAME</div>
-  <h2 class="gold">MAIN LOBBY</h2>
-  <p id="playerName">Guest Player</p>
-  <p class="muted">পরবর্তী ধাপে সম্পূর্ণ Lobby যুক্ত হবে।</p>
-  <button onclick="logout()">LOGOUT</button>
+ <div class="top">
+  <b class="gold">BD GAME</b>
+  <span class="coins">🪙 1000 &nbsp; 💎 100</span>
+  <button onclick="go('profile')">👤</button>
+ </div>
+ <div class="content">
+  <div class="hero">
+   <div><h2>WELCOME TO BD</h2><p>THE BATTLE STARTS HERE</p></div>
+  </div>
+  <div class="character">🦸</div>
+  <p class="gold" style="text-align:center">PLAYER CHARACTER</p>
+  <div class="card">
+   <h3 class="gold">SELECT GAME MODE</h3>
+   <div class="grid">
+    <div class="tile" onclick="selectMode('SOLO')"><span class="emoji">👤</span><b>SOLO</b></div>
+    <div class="tile" onclick="selectMode('DUO')"><span class="emoji">👥</span><b>DUO</b></div>
+    <div class="tile" onclick="selectMode('SQUAD')"><span class="emoji">👨‍👩‍👧‍👦</span><b>SQUAD</b></div>
+    <div class="tile" onclick="go('room')"><span class="emoji">🏠</span><b>ROOM</b></div>
+   </div>
+   <p id="selectedMode" class="gold">Selected: SOLO</p>
+   <button class="wide" onclick="go('match')">START MATCH</button>
+  </div>
+  <h3 class="gold">GAME FEATURES</h3>
+  <div class="grid">
+   <div class="tile" onclick="go('character')"><span class="emoji">🧍</span><b>CHARACTER</b></div>
+   <div class="tile" onclick="go('outfit')"><span class="emoji">👕</span><b>OUTFIT & SKIN</b></div>
+   <div class="tile" onclick="go('pet')"><span class="emoji">🐾</span><b>PET</b></div>
+   <div class="tile" onclick="go('weapon')"><span class="emoji">🎯</span><b>WEAPON</b></div>
+   <div class="tile" onclick="go('shop')"><span class="emoji">🛒</span><b>GAME SHOP</b></div>
+   <div class="tile" onclick="go('map')"><span class="emoji">🗺️</span><b>MAP</b></div>
+   <div class="tile" onclick="go('friends')"><span class="emoji">👥</span><b>FRIENDS</b></div>
+   <div class="tile" onclick="go('rank')"><span class="emoji">🏆</span><b>RANK</b></div>
+   <div class="tile" onclick="go('mission')"><span class="emoji">📜</span><b>MISSIONS</b></div>
+   <div class="tile" onclick="go('profile')"><span class="emoji">👤</span><b>PROFILE</b></div>
+   <div class="tile" onclick="go('settings')"><span class="emoji">⚙️</span><b>SETTINGS</b></div>
+   <div class="tile" onclick="go('security')"><span class="emoji">🛡️</span><b>SECURITY</b></div>
+  </div>
+ </div>
+ <nav class="nav">
+  <button onclick="go('lobby')"><span>🏠</span>Home</button>
+  <button onclick="go('friends')"><span>👥</span>Friends</button>
+  <button onclick="go('shop')"><span>🛒</span>Shop</button>
+  <button onclick="go('profile')"><span>👤</span>Profile</button>
+ </nav>
+</section>
+
+<!-- CHARACTER -->
+<section id="character" class="screen">
+ <div class="top"><b class="gold">CHARACTER</b><button onclick="go('lobby')">BACK</button></div>
+ <div class="character">🦸</div>
+ <h2 class="pageTitle">PLAYER CHARACTERS</h2>
+ <div class="grid">
+  <div class="tile"><span class="emoji">🦸</span><b>BD WARRIOR</b><small>Selected</small></div>
+  <div class="tile"><span class="emoji">🥷</span><b>SHADOW</b><small>Locked</small></div>
+  <div class="tile"><span class="emoji">🧑‍🚀</span><b>SPACE GUARD</b><small>Locked</small></div>
+  <div class="tile"><span class="emoji">🧙</span><b>MYSTIC</b><small>Locked</small></div>
+ </div>
+</section>
+
+<!-- OUTFIT -->
+<section id="outfit" class="screen">
+ <div class="top"><b class="gold">OUTFIT & SKIN</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">CUSTOMIZE PLAYER</h2>
+ <div class="character">🦸</div>
+ <div class="grid">
+  <div class="tile"><span class="emoji">👕</span><b>SHIRTS</b></div>
+  <div class="tile"><span class="emoji">👖</span><b>PANTS</b></div>
+  <div class="tile"><span class="emoji">👟</span><b>SHOES</b></div>
+  <div class="tile"><span class="emoji">🎭</span><b>MASKS</b></div>
+  <div class="tile"><span class="emoji">🎩</span><b>HATS</b></div>
+  <div class="tile"><span class="emoji">🎒</span><b>BACKPACKS</b></div>
+ </div>
+</section>
+
+<!-- PET -->
+<section id="pet" class="screen">
+ <div class="top"><b class="gold">PET COLLECTION</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">YOUR PETS</h2>
+ <div class="grid">
+  <div class="tile"><span class="emoji">🐶</span><b>BD DOG</b></div>
+  <div class="tile"><span class="emoji">🐱</span><b>BD CAT</b></div>
+  <div class="tile"><span class="emoji">🦊</span><b>FOX</b></div>
+  <div class="tile"><span class="emoji">🐼</span><b>PANDA</b></div>
+ </div>
+</section>
+
+<!-- WEAPON -->
+<section id="weapon" class="screen">
+ <div class="top"><b class="gold">WEAPON COLLECTION</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">WEAPON INVENTORY</h2>
+ <div class="grid">
+  <div class="tile"><span class="emoji">🎯</span><b>RIFLE COLLECTION</b></div>
+  <div class="tile"><span class="emoji">🔫</span><b>PISTOL COLLECTION</b></div>
+  <div class="tile"><span class="emoji">🛡️</span><b>DEFENSE GEAR</b></div>
+  <div class="tile"><span class="emoji">🎨</span><b>WEAPON SKINS</b></div>
+ </div>
+</section>
+
+<!-- SHOP -->
+<section id="shop" class="screen">
+ <div class="top"><b class="gold">BD GAME SHOP</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">GAME STORE</h2>
+ <div class="grid">
+  <div class="tile"><span class="emoji">💎</span><b>DIAMONDS</b><small>Coming soon</small></div>
+  <div class="tile"><span class="emoji">🪙</span><b>COINS</b><small>Coming soon</small></div>
+  <div class="tile"><span class="emoji">👕</span><b>OUTFITS</b></div>
+  <div class="tile"><span class="emoji">🎁</span><b>CRATES</b></div>
+  <div class="tile"><span class="emoji">🎨</span><b>SKINS</b></div>
+  <div class="tile"><span class="emoji">⭐</span><b>SPECIAL ITEMS</b></div>
+ </div>
+</section>
+
+<!-- MAP -->
+<section id="map" class="screen">
+ <div class="top"><b class="gold">MAP SELECTION</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">SELECT YOUR MAP</h2>
+ <div class="grid">
+  <div class="tile" onclick="selectMap('BD ISLAND')"><span class="emoji">🏝️</span><b>BD ISLAND</b></div>
+  <div class="tile" onclick="selectMap('DESERT ZONE')"><span class="emoji">🏜️</span><b>DESERT ZONE</b></div>
+  <div class="tile" onclick="selectMap('GREEN VALLEY')"><span class="emoji">🌳</span><b>GREEN VALLEY</b></div>
+  <div class="tile" onclick="selectMap('CITY ARENA')"><span class="emoji">🏙️</span><b>CITY ARENA</b></div>
+ </div>
+ <p id="mapNotice" class="gold">Selected: BD ISLAND</p>
+</section>
+
+<!-- FRIENDS -->
+<section id="friends" class="screen">
+ <div class="top"><b class="gold">FRIENDS & TEAM</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">PLAYER SOCIAL</h2>
+ <div class="card"><b>FRIENDS LIST</b><p class="sub">Your friends will appear here.</p></div>
+ <div class="card"><b>TEAM INVITATIONS</b><p class="sub">Team invitations will appear here.</p></div>
+ <div class="card"><b>ADD FRIEND</b><input placeholder="Player ID"><button onclick="message('Friend system পরে সংযুক্ত হবে')">SEARCH PLAYER</button></div>
+</section>
+
+<!-- ROOM -->
+<section id="room" class="screen">
+ <div class="top"><b class="gold">ROOM & MATCH</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">CUSTOM ROOM</h2>
+ <div class="panel">
+  <input placeholder="Enter Room ID">
+  <input placeholder="Room Password">
+  <button class="wide" onclick="message('Room system পরে সংযুক্ত হবে')">JOIN ROOM</button>
+  <button class="wide dark" onclick="message('Room creation পরে সংযুক্ত হবে')">CREATE ROOM</button>
+ </div>
+</section>
+
+<!-- MATCH -->
+<section id="match" class="screen center">
+ <div class="brand" style="font-size:40px">BD</div>
+ <h2 class="gold">BATTLE ARENA</h2>
+ <div class="panel">
+  <h2>PREPARING MATCH</h2>
+  <p id="matchMode">SOLO</p>
+  <p class="sub">MULTIPLAYER MATCH WILL BE CONNECTED LATER</p>
+  <button class="wide" onclick="go('lobby')">BACK TO LOBBY</button>
+ </div>
+</section>
+
+<!-- RANK -->
+<section id="rank" class="screen">
+ <div class="top"><b class="gold">RANK & LEADERBOARD</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">PLAYER RANK</h2>
+ <div class="card"><h2 class="gold">🥉 BRONZE</h2><p>Current Rank</p></div>
+ <div class="card"><h3>🏆 LEADERBOARD</h3><p class="sub">Top players will appear here.</p></div>
+</section>
+
+<!-- MISSIONS -->
+<section id="mission" class="screen">
+ <div class="top"><b class="gold">MISSIONS & REWARDS</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">DAILY MISSIONS</h2>
+ <div class="listitem">🎯 Daily Mission <span class="gold">Reward: 100 Coins</span></div>
+ <div class="listitem">🏆 Weekly Challenge <span class="gold">Reward: 500 Coins</span></div>
+ <div class="listitem">🎁 Login Reward <span class="gold">Reward: 50 Coins</span></div>
+</section>
+
+<!-- PROFILE -->
+<section id="profile" class="screen">
+ <div class="top"><b class="gold">PLAYER PROFILE</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">YOUR PROFILE</h2>
+ <div class="character">👤</div>
+ <div class="card">
+  <h3 class="gold" id="profileName">Guest Player</h3>
+  <p>Player ID: <span id="playerId">BD-000001</span></p>
+  <p>Level: 1</p>
+  <p>Rank: Bronze</p>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="screen">
+ <div class="top"><b class="gold">SETTINGS</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">GAME SETTINGS</h2>
+ <div class="listitem">🎮 Graphics Settings <button onclick="message('Graphics settings পরে যুক্ত হবে')">OPEN</button></div>
+ <div class="listitem">🔊 Sound Settings <button onclick="message('Sound settings পরে যুক্ত হবে')">OPEN</button></div>
+ <div class="listitem">🎥 Controls Settings <button onclick="message('Control settings পরে যুক্ত হবে')">OPEN</button></div>
+ <div class="listitem">🌐 Language <button onclick="message('Language settings পরে যুক্ত হবে')">OPEN</button></div>
+ <button class="wide dark" onclick="go('login')">LOG OUT</button>
+</section>
+
+<!-- SECURITY -->
+<section id="security" class="screen">
+ <div class="top"><b class="gold">BD GAME SECURITY</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">PLAYER PROTECTION</h2>
+ <div class="card"><h3 class="gold">🛡️ ANTI-CHEAT</h3><p>Anti-cheat interface preview. Server-side protection will be connected later.</p></div>
+ <div class="card"><h3 class="gold">🔐 ACCOUNT SECURITY</h3><p>Account verification and security controls will be connected later.</p></div>
+ <div class="card"><h3 class="gold">⚖️ FAIR PLAY</h3><p>Fair play rules and player reports.</p></div>
 </section>
 
 <script>
-const SUPABASE_URL="https://qgcvhflehoxsjyzntxmp.supabase.co";
-const SUPABASE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY";
+let playerName="Guest Player";
+let mode="SOLO";
+let mapName="BD ISLAND";
 
-const db=window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-let player={
-  name:"Guest Player",
-  guest:true
-};
-
-function showScreen(id){
-  document.querySelectorAll(".screen").forEach(screen=>{
-    screen.classList.remove("active");
-  });
-  document.getElementById(id).classList.add("active");
+function go(id){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+ const page=document.getElementById(id);
+ if(page)page.classList.add("active");
+ if(id==="profile")document.getElementById("profileName").textContent=playerName;
+ if(id==="match")document.getElementById("matchMode").textContent=mode;
 }
-
-function loadGame(){
-  showScreen("splash");
-
-  setTimeout(()=>{
-    showScreen("loading");
-
-    let progress=0;
-    const bar=document.getElementById("bar");
-    const text=document.getElementById("progressText");
-
-    const timer=setInterval(async()=>{
-      progress=Math.min(progress+5,100);
-      bar.style.width=progress+"%";
-      text.textContent=progress+"%";
-
-      if(progress>=100){
-        clearInterval(timer);
-        await checkLogin();
-      }
-    },100);
-  },1500);
+function message(text){
+ const n=document.getElementById("authNotice");
+ if(n)n.textContent=text;
+ else alert(text);
 }
-
-async function checkLogin(){
-  try{
-    const {data,error}=await db.auth.getSession();
-    if(error)throw error;
-
-    if(data.session){
-      player.name=data.session.user.email.split("@")[0];
-      player.guest=false;
-      showScreen("events");
-    }else{
-      showScreen("login");
-    }
-  }catch(error){
-    showScreen("login");
-    document.getElementById("authNotice").textContent=
-      "Login server unavailable. Check your connection and Supabase settings.";
-  }
+function guest(){
+ playerName="Guest Player";
+ go("events");
 }
-
-async function loginUser(){
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-  const notice=document.getElementById("authNotice");
-
-  if(!email||!password){
-    notice.textContent="Email and password দিন।";
-    return;
-  }
-
-  notice.textContent="Logging in...";
-
-  try{
-    const {data,error}=await db.auth.signInWithPassword({
-      email,password
-    });
-
-    if(error)throw error;
-
-    player.name=data.user.email.split("@")[0];
-    player.guest=false;
-    showScreen("events");
-  }catch(error){
-    notice.textContent="Login failed: "+error.message;
-  }
+function selectMode(value){
+ mode=value;
+ document.getElementById("selectedMode").textContent="Selected: "+value;
 }
-
-async function signupUser(){
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-  const notice=document.getElementById("authNotice");
-
-  if(!email||password.length<8){
-    notice.textContent="Email এবং কমপক্ষে ৮ অক্ষরের Password দিন।";
-    return;
-  }
-
-  notice.textContent="Creating account...";
-
-  try{
-    const {data,error}=await db.auth.signUp({
-      email,password
-    });
-
-    if(error)throw error;
-
-    if(data.session){
-      player.name=data.user.email.split("@")[0];
-      player.guest=false;
-      showScreen("events");
-    }else{
-      notice.textContent="Email confirmation লাগলে আপনার Email যাচাই করুন।";
-    }
-  }catch(error){
-    notice.textContent="Registration failed: "+error.message;
-  }
+function selectMap(value){
+ mapName=value;
+ document.getElementById("mapNotice").textContent="Selected: "+value;
 }
-
-async function guestLogin(){
-  player.name="Guest Player";
-  player.guest=true;
-  showScreen("events");
+function startGame(){
+ go("splash");
+ setTimeout(()=>{
+  go("loading");
+  let p=0;
+  const timer=setInterval(()=>{
+   p=Math.min(100,p+5);
+   document.getElementById("bar").style.width=p+"%";
+   document.getElementById("progress").textContent=p+"%";
+   if(p===100){
+    clearInterval(timer);
+    go("login");
+   }
+  },80);
+ },1200);
 }
-
-function continueToLobby(){
-  document.getElementById("playerName").textContent=player.name;
-  showScreen("lobby");
-}
-
-async function logout(){
-  try{
-    await db.auth.signOut();
-  }catch(error){}
-  player={name:"Guest Player",guest:true};
-  showScreen("login");
-}
-
-loadGame();
+startGame();
 </script>
 </body>
- </html>
+    </html>
