@@ -1,894 +1,233 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
-button,input{font:inherit}
-button{cursor:pointer;border:1px solid #a87930;border-radius:7px;padding:10px 13px;background:linear-gradient(#f5ce78,#b77a25);color:#17110a;font-weight:900}
-button:disabled{opacity:.5}
-input{width:100%;padding:13px;margin:7px 0;background:#172238;color:white;border:1px solid #52627b;border-radius:8px}
-.screen{display:none;min-height:100vh;padding:12px}
-.screen.active{display:block}
+body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
+.screen{display:none;min-height:100vh;padding:20px}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.brand{font-size:clamp(38px,10vw,65px);font-weight:1000;letter-spacing:5px;color:#ffd36a;text-shadow:0 0 25px #b77a25}
+.sub{color:#aebbd0;letter-spacing:3px;font-size:12px}
+.panel{width:100%;max-width:420px;padding:22px;background:linear-gradient(145deg,#1b2941,#101827);border:1px solid #596981;border-radius:14px}
+input{width:100%;padding:14px;margin:8px 0;background:#172238;color:white;border:1px solid #52627b;border-radius:8px;font-size:16px}
+button{width:100%;padding:14px;margin-top:9px;border:1px solid #a87930;border-radius:8px;background:linear-gradient(#f5ce78,#b77a25);color:#17110a;font-size:15px;font-weight:900;cursor:pointer}
+.secondary{background:#263954;color:white;border-color:#61728a}
 .gold{color:#ffd36a}
-.muted{color:#aebbd0;font-size:12px}
-.brand{font-size:27px;font-weight:1000;letter-spacing:3px;color:#ffd36a;text-shadow:0 2px 14px #b66d20}
-.panel{background:linear-gradient(145deg,#1b2941,#101827);border:1px solid #46536a;border-radius:11px;padding:12px;margin:9px 0}
-.top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.wide{width:100%}
-.chip{padding:7px 9px;background:#17243a;border:1px solid #4a5870;border-radius:7px;font-size:12px}
-.sectionTitle{font-weight:900;color:#ffd36a;margin:5px 0 10px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.tile{background:linear-gradient(145deg,#263954,#152238);border:1px solid #52627a;border-radius:9px;padding:13px;text-align:center;min-height:65px;color:white}
-.tile strong{display:block;color:#ffd36a;margin-bottom:5px}
-.selected{outline:2px solid #ffd36a!important;background:#60451f!important}
-.hero{min-height:70vh;border:1px solid #8e6a34;border-radius:12px;background:radial-gradient(ellipse at 50% 30%,#687c8e,#273c53 43%,#111a2b 80%);display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
-.hero:before,.hero:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:#d6a34b18;filter:blur(12px)}
-.hero:before{left:-100px;bottom:-130px}.hero:after{right:-100px;top:-130px}
-.heroContent{position:relative;z-index:2}
-.heroTitle{font-size:clamp(38px,10vw,76px);font-weight:1000;letter-spacing:5px;text-shadow:0 5px 20px #000}
-.heroSub{letter-spacing:4px;color:#f5cf78}
-.authWrap{max-width:420px;margin:8vh auto}
-.eventGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.event{background:#1b2a42;border:1px solid #4c5b72;border-radius:9px;padding:13px;text-align:center}
-.eventIcon{font-size:30px}.eventName{font-weight:bold;color:#ffd36a;margin:6px}
-.lobbyGrid{display:grid;grid-template-columns:74px minmax(0,1fr) 74px;gap:7px}
-.side{display:flex;flex-direction:column;gap:7px}
-.side button{min-height:55px;padding:7px 2px;background:#1d2b42;color:white;border:1px solid #596981;font-size:10px}
-.avatarStage{height:310px;position:relative;overflow:hidden;border:1px solid #65758b;border-radius:10px;background:radial-gradient(ellipse at 50% 30%,#758899,#354b61 50%,#121d2d 90%);display:flex;align-items:center;justify-content:center;text-align:center}
-.avatarEmoji{font-size:100px;filter:drop-shadow(0 10px 12px #000)}
-.avatarCaption{position:absolute;bottom:10px;font-size:10px;color:#dce7f5}
-.modeRow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.bottomNav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.bottomNav button{background:#1b2a42;color:white;border:1px solid #53637b;font-size:10px;padding:10px 2px}
-#notice,#onlineStatus{color:#ffd36a;text-align:center;font-size:12px}
-#game3d{width:100%;height:55vh;min-height:320px;background:#152b3d;border-radius:10px;overflow:hidden}
-#game3d canvas,#preview3d canvas{display:block;width:100%;height:100%}
-#preview3d{position:absolute;inset:0}
-#preview3d canvas{opacity:.9}
-.gameHud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none}
-.gameHud span{background:#07111dcc;padding:8px;border-radius:7px;font-size:12px}
-.gameArea{position:relative}
-.controlPad{display:grid;grid-template-columns:repeat(3,55px);gap:5px;justify-content:center;margin:10px}
-.controlPad button{padding:12px 5px;background:#263954;color:white;border-color:#61728a}
-.pageCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.pageCard{background:#1b2a42;border:1px solid #4a5a72;border-radius:9px;padding:13px;min-height:75px}
-.pageCard b{color:#ffd36a;display:block;margin-bottom:6px}
-.smallBtn{padding:7px 9px;font-size:11px}
-@media(max-width:390px){
- .lobbyGrid{grid-template-columns:59px minmax(0,1fr) 59px}
- .side button{font-size:9px}
- .avatarEmoji{font-size:75px}
- .brand{font-size:22px}
- .avatarStage{height:270px}
-}
+.muted{font-size:12px;color:#aebbd0;text-align:center}
+.loader{width:min(300px,80vw);height:10px;background:#263954;border-radius:20px;overflow:hidden;margin-top:25px}
+.bar{height:100%;width:0;background:linear-gradient(90deg,#b77a25,#ffe29a);border-radius:20px;transition:width .25s}
+#progressText{color:#ffd36a;margin-top:12px;font-size:13px}
+.eventGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;margin:20px 0}
+.event{padding:20px 8px;text-align:center;background:#1b2a42;border:1px solid #4c5b72;border-radius:10px}
+.event span{display:block;font-size:28px;margin-bottom:8px}
+.event b{color:#ffd36a;font-size:13px}
+.notice{font-size:13px;color:#ffd36a;text-align:center;min-height:20px}
 </style>
 </head>
-
 <body>
 
-<!-- LOADING -->
-<section id="loading" class="screen active" style="text-align:center;padding-top:28vh">
+<!-- SPLASH SCREEN -->
+<section id="splash" class="screen active">
   <div class="brand">BD GAME</div>
-  <h2>LOADING...</h2>
-  <p class="muted">YOUR BATTLE. YOUR LEGEND.</p>
+  <p class="sub">YOUR BATTLE. YOUR LEGEND.</p>
+  <p class="muted">ORIGINAL BATTLE ARENA</p>
 </section>
 
-<!-- INTRO -->
-<section id="intro" class="screen">
-  <div class="hero">
-    <div id="preview3d"></div>
-    <div class="heroContent">
-      <div class="brand" style="font-size:clamp(32px,8vw,52px)">BD GAME</div>
-      <div class="heroTitle">BATTLE<br>ARENA</div>
-      <p class="heroSub">YOUR BATTLE. YOUR LEGEND.</p>
-    </div>
-  </div>
-  <div style="max-width:500px;margin:12px auto">
-    <button class="wide" style="font-size:19px" onclick="show('login')">TAP TO START</button>
-    <p class="muted" style="text-align:center">ORIGINAL BD GAME EXPERIENCE</p>
-  </div>
+<!-- LOADING SCREEN -->
+<section id="loading" class="screen">
+  <div class="brand">BD GAME</div>
+  <h2>LOADING GAME...</h2>
+  <p class="muted">Preparing your game experience</p>
+  <div class="loader"><div class="bar" id="bar"></div></div>
+  <div id="progressText">0%</div>
 </section>
 
-<!-- LOGIN -->
+<!-- LOGIN SCREEN -->
 <section id="login" class="screen">
-  <div class="authWrap">
-    <div class="brand" style="text-align:center">BD GAME</div>
-    <h2 style="text-align:center">PLAYER LOGIN</h2>
-    <div class="panel">
-      <input id="email" type="email" placeholder="Email address" autocomplete="email">
-      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-      <button class="wide" onclick="loginUser()">LOGIN</button>
-      <button class="wide" style="margin-top:8px" onclick="signupUser()">REGISTER</button>
-      <button class="wide" style="margin-top:8px;background:#34445d;color:white" onclick="guestLogin()">GUEST LOGIN</button>
-      <p id="authNotice" class="muted"></p>
-      <button class="wide smallBtn" style="background:#263954;color:white" onclick="show('intro')">BACK</button>
-    </div>
+  <div class="brand" style="font-size:40px">BD GAME</div>
+  <p class="sub">PLAYER ACCESS</p>
+  <div class="panel">
+    <h2 class="gold" style="text-align:center">PLAYER LOGIN</h2>
+    <input id="email" type="email" placeholder="Email address" autocomplete="email">
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+    <button onclick="loginUser()">LOGIN</button>
+    <button onclick="signupUser()">REGISTER</button>
+    <button class="secondary" onclick="guestLogin()">GUEST LOGIN</button>
+    <p id="authNotice" class="notice"></p>
   </div>
 </section>
 
-<!-- EVENTS -->
+<!-- EVENTS SCREEN -->
 <section id="events" class="screen">
-  <div class="top">
-    <div class="brand">BD GAME</div>
-    <span class="chip">SEASON 01 · EVENT CENTER</span>
+  <div class="brand" style="font-size:38px">BD GAME</div>
+  <h2 class="gold">EVENT CENTER</h2>
+  <p class="muted">WELCOME TO BD GAME</p>
+  <div class="eventGrid">
+    <div class="event"><span>🎁</span><b>WELCOME EVENT</b></div>
+    <div class="event"><span>📅</span><b>DAILY LOGIN</b></div>
+    <div class="event"><span>🎯</span><b>MISSIONS</b></div>
+    <div class="event"><span>🏆</span><b>RANK CHALLENGE</b></div>
+    <div class="event"><span>🪙</span><b>GOLD RUSH</b></div>
+    <div class="event"><span>⚡</span><b>SPECIAL EVENT</b></div>
   </div>
-  <div class="panel">
-    <h2 class="gold">EVENTS & ACTIVITIES</h2>
-    <p class="muted">WELCOME TO BD GAME</p>
-    <div class="eventGrid">
-      <div class="event"><div class="eventIcon">🎁</div><div class="eventName">WELCOME EVENT</div><small>Welcome reward</small></div>
-      <div class="event"><div class="eventIcon">📅</div><div class="eventName">DAILY LOGIN</div><small>Daily activity</small></div>
-      <div class="event"><div class="eventIcon">🎯</div><div class="eventName">MISSIONS</div><small>Mission center</small></div>
-      <div class="event"><div class="eventIcon">🏆</div><div class="eventName">RANK CHALLENGE</div><small>Rank progress</small></div>
-      <div class="event"><div class="eventIcon">🪙</div><div class="eventName">GOLD RUSH</div><small>Coin activities</small></div>
-      <div class="event"><div class="eventIcon">⚡</div><div class="eventName">SPECIAL EVENT</div><small>Coming soon</small></div>
-    </div>
-  </div>
-  <button class="wide" onclick="show('lobby')">CONTINUE TO LOBBY ▶</button>
+  <button onclick="continueToLobby()">CONTINUE TO LOBBY</button>
 </section>
 
-<!-- MAIN LOBBY -->
+<!-- TEMPORARY LOBBY PLACEHOLDER -->
 <section id="lobby" class="screen">
-  <div class="top">
-    <div class="brand">BD GAME</div>
-    <div class="row">
-      <span class="chip">🪙 <b id="coins">500</b></span>
-      <span class="chip">💎 <b id="diamonds">0</b></span>
-      <button class="smallBtn" onclick="openPage('Settings')">⚙</button>
-    </div>
-  </div>
-
-  <div class="panel top">
-    <div>
-      <b id="playername">Guest Player</b>
-      <div class="muted">UID: <span id="uid">BD-000001</span> · LEVEL <span id="level">1</span></div>
-    </div>
-    <button class="smallBtn" onclick="openPage('Profile')">PROFILE</button>
-  </div>
-
-  <div class="lobbyGrid">
-    <div class="side">
-      <button onclick="openPage('Store')">🛒<br>STORE</button>
-      <button onclick="openPage('Luck Royale')">🎡<br>LUCK ROYALE</button>
-      <button onclick="openPage('Booyah Pass')">🎫<br>BOOYAH PASS</button>
-      <button onclick="openPage('Missions')">🎯<br>MISSIONS</button>
-      <button onclick="openPage('Events')">🎉<br>EVENTS</button>
-    </div>
-
-    <div class="avatarStage">
-      <div>
-        <div class="avatarEmoji">🧍</div>
-        <div class="gold"><b>BD GAME WARRIOR</b></div>
-      </div>
-      <div class="avatarCaption">CHARACTER PREVIEW · 3D MODEL UPDATE AREA</div>
-    </div>
-
-    <div class="side">
-      <button onclick="openPage('Friends')">👥<br>FRIENDS</button>
-      <button onclick="openPage('Mail')">✉️<br>MAIL</button>
-      <button onclick="openPage('Notifications')">🔔<br>ALERTS</button>
-      <button onclick="openPage('News')">📰<br>NEWS</button>
-      <button onclick="openPage('Rewards')">🎁<br>REWARDS</button>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="sectionTitle">GAME MODE</div>
-    <div class="modeRow">
-      <button id="modeSOLO" onclick="selectMode('SOLO')">SOLO</button>
-      <button id="modeDUO" onclick="selectMode('DUO')">DUO</button>
-      <button id="modeSQUAD" onclick="selectMode('SQUAD')">SQUAD</button>
-    </div>
-    <p class="muted">Selected: <b id="selectedMode" class="gold">SOLO</b></p>
-
-    <div class="sectionTitle">MAP SELECTION</div>
-    <div class="grid">
-      <button id="mapIsland" class="tile" onclick="selectMap('Island')">🏝️ ISLAND</button>
-      <button id="mapCity" class="tile" onclick="selectMap('City')">🏙️ CITY</button>
-      <button id="mapForest" class="tile" onclick="selectMap('Forest')">🌲 FOREST</button>
-      <button id="mapDesert" class="tile" onclick="selectMap('Desert')">🏜️ DESERT</button>
-    </div>
-    <p class="muted">Selected Map: <b id="selectedMap" class="gold">Island</b></p>
-    <button class="wide" style="font-size:19px" onclick="startMatch()">▶ START</button>
-    <div id="notice"></div>
-  </div>
-
-  <div class="panel">
-    <div class="bottomNav">
-      <button onclick="openPage('Vault')">🎒<br>VAULT</button>
-      <button onclick="openPage('Character')">🧍<br>CHARACTER</button>
-      <button onclick="openPage('Pet')">🐾<br>PET</button>
-      <button onclick="openPage('Preset')">🧩<br>PRESET</button>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="top"><b>TEAM VOICE</b><span id="voiceStatus" class="muted">Not connected</span></div>
-    <div class="row">
-      <button onclick="voiceNotice('Microphone permission and a voice server are required.')">🎙 MIC</button>
-      <button onclick="voiceNotice('Speaker control will be connected in a later update.')">🔊 SPEAKER</button>
-      <button onclick="voiceNotice('Push-to-talk will be connected in a later update.')">PUSH TO TALK</button>
-    </div>
-  </div>
-</section>
-
-<!-- AIRPLANE / MATCH WAITING -->
-<section id="airplane" class="screen">
-  <div class="top">
-    <button onclick="backToLobby()">← BACK</button>
-    <b class="brand">BD GAME</b>
-  </div>
-  <div class="hero">
-    <div>
-      <div style="font-size:65px">✈️</div>
-      <h2>AIRPLANE LOBBY</h2>
-      <p>PLAYER WAITING</p>
-    </div>
-  </div>
-  <div class="panel">
-    <h2 id="planeMode" class="gold">SOLO</h2>
-    <h3>MAP: <span id="planeMap">Island</span></h3>
-    <h2 class="gold"><span id="onlineCount">0</span> / 50</h2>
-    <p id="onlineStatus">Waiting for server...</p>
-    <button class="wide" onclick="startFlight()">START FLIGHT</button>
-    <button class="wide" style="margin-top:8px" onclick="jump()">ENTER DEMO MATCH</button>
-  </div>
-  <div id="playerList" class="muted"></div>
-</section>
-
-<!-- 3D MATCH -->
-<section id="match" class="screen">
-  <div class="top">
-    <b class="brand">BD GAME MATCH</b>
-    <button onclick="backToLobby()">EXIT MATCH</button>
-  </div>
-  <div class="gameArea">
-    <div id="game3d"></div>
-    <div class="gameHud">
-      <span id="matchMap">ISLAND</span>
-      <span>DEMO MATCH</span>
-    </div>
-  </div>
-  <div class="panel">
-    <div class="top">
-      <b id="matchMode" class="gold">SOLO</b>
-      <span class="muted">Players online: <b id="matchOnlineCount">0</b></span>
-    </div>
-    <p class="muted">Move around the demo map using the controls below or WASD / arrow keys.</p>
-    <div class="controlPad">
-      <span></span><button onpointerdown="movePlayer(0,-1)">▲</button><span></span>
-      <button onpointerdown="movePlayer(-1,0)">◀</button>
-      <button onpointerdown="movePlayer(0,0)">●</button>
-      <button onpointerdown="movePlayer(1,0)">▶</button>
-      <span></span><button onpointerdown="movePlayer(0,1)">▼</button><span></span>
-    </div>
-  </div>
-</section>
-
-<!-- GENERAL PAGE -->
-<section id="page" class="screen">
-  <div class="top">
-    <button onclick="show('lobby')">← BACK</button>
-    <div class="brand">BD GAME</div>
-  </div>
-  <div class="panel">
-    <h2 id="pageTitle" class="gold">GAME CENTER</h2>
-    <div id="pageContent"></div>
-  </div>
+  <div class="brand">BD GAME</div>
+  <h2 class="gold">MAIN LOBBY</h2>
+  <p id="playerName">Guest Player</p>
+  <p class="muted">পরবর্তী ধাপে সম্পূর্ণ Lobby যুক্ত হবে।</p>
+  <button onclick="logout()">LOGOUT</button>
 </section>
 
 <script>
-/* Keep the Supabase project URL. Add your own publishable key in GitHub.
-   Never share your private/service-role key. */
 const SUPABASE_URL="https://qgcvhflehoxsjyzntxmp.supabase.co";
 const SUPABASE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let data=JSON.parse(localStorage.getItem("bdgame_data")||"null")||{
+const db=window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let player={
   name:"Guest Player",
-  uid:"BD-"+String(Math.floor(100000+Math.random()*899999)),
-  coins:500,diamonds:0,level:1,
-  items:[],mode:"SOLO",map:"Island"
+  guest:true
 };
 
-let onlineSocket=null;
-let gameRenderer=null;
-let gameScene=null;
-let gameCamera=null;
-let gamePlayer=null;
-let gameAnimation=null;
-let playerPosition={x:0,z:0};
-
-function save(){
-  localStorage.setItem("bdgame_data",JSON.stringify(data));
-  updateUI();
-}
-
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  const target=document.getElementById(id);
-  if(target)target.classList.add("active");
-
-  if(id==="match"){
-    setTimeout(initGame3D,100);
-  }
-  if(id==="intro"){
-    setTimeout(initIntro3D,100);
-  }
-}
-
-function updateUI(){
-  document.getElementById("coins").textContent=data.coins;
-  document.getElementById("diamonds").textContent=data.diamonds;
-  document.getElementById("playername").textContent=data.name;
-  document.getElementById("uid").textContent=data.uid;
-  document.getElementById("level").textContent=data.level;
-  document.getElementById("selectedMode").textContent=data.mode;
-  document.getElementById("selectedMap").textContent=data.map;
-
-  ["SOLO","DUO","SQUAD"].forEach(m=>{
-    document.getElementById("mode"+m).classList.toggle("selected",data.mode===m);
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(screen=>{
+    screen.classList.remove("active");
   });
-
-  ["Island","City","Forest","Desert"].forEach(m=>{
-    document.getElementById("map"+m).classList.toggle("selected",data.map===m);
-  });
+  document.getElementById(id).classList.add("active");
 }
 
-function selectMode(mode){
-  data.mode=mode;
-  save();
-}
+function loadGame(){
+  showScreen("splash");
 
-function selectMap(map){
-  data.map=map;
-  save();
-  document.getElementById("notice").textContent=map+" selected";
-}
+  setTimeout(()=>{
+    showScreen("loading");
 
-function voiceNotice(message){
-  alert(message);
-}
+    let progress=0;
+    const bar=document.getElementById("bar");
+    const text=document.getElementById("progressText");
 
-/* ONLINE ROOM CONNECTION */
-function connectOnlineRoom(){
-  leaveOnlineRoom();
+    const timer=setInterval(async()=>{
+      progress=Math.min(progress+5,100);
+      bar.style.width=progress+"%";
+      text.textContent=progress+"%";
 
-  const protocol=location.protocol==="https:"?"wss:":"ws:";
-  const url=protocol+"//"+location.host+
-    "/api/ws?room=public&mode="+encodeURIComponent(data.mode)+
-    "&name="+encodeURIComponent(data.name);
-
-  document.getElementById("onlineStatus").textContent="Connecting...";
-  document.getElementById("onlineCount").textContent="0";
-
-  try{
-    onlineSocket=new WebSocket(url);
-
-    onlineSocket.onopen=()=>{
-      document.getElementById("onlineStatus").textContent="ONLINE SERVER CONNECTED";
-    };
-
-    onlineSocket.onmessage=(event)=>{
-      let message;
-      try{message=JSON.parse(event.data)}catch(e){return}
-
-      if(message.type==="welcome"||message.type==="room_update"){
-        document.getElementById("onlineCount").textContent=message.count||0;
-        document.getElementById("matchOnlineCount").textContent=message.count||0;
-
-        if(message.players){
-          document.getElementById("playerList").textContent=
-            "Players: "+message.players.map(p=>p.name).join(", ");
-        }
+      if(progress>=100){
+        clearInterval(timer);
+        await checkLogin();
       }
-    };
+    },100);
+  },1500);
+}
 
-    onlineSocket.onerror=()=>{
-      document.getElementById("onlineStatus").textContent="SERVER CONNECTION ERROR";
-    };
+async function checkLogin(){
+  try{
+    const {data,error}=await db.auth.getSession();
+    if(error)throw error;
 
-    onlineSocket.onclose=()=>{
-      document.getElementById("onlineStatus").textContent="SERVER DISCONNECTED";
-    };
+    if(data.session){
+      player.name=data.session.user.email.split("@")[0];
+      player.guest=false;
+      showScreen("events");
+    }else{
+      showScreen("login");
+    }
   }catch(error){
-    document.getElementById("onlineStatus").textContent="ONLINE SERVER NOT AVAILABLE";
+    showScreen("login");
+    document.getElementById("authNotice").textContent=
+      "Login server unavailable. Check your connection and Supabase settings.";
   }
 }
 
-function leaveOnlineRoom(){
-  if(onlineSocket){
-    onlineSocket.onclose=null;
-    onlineSocket.close();
-    onlineSocket=null;
-  }
-}
-
-function startMatch(){
-  document.getElementById("planeMode").textContent=data.mode;
-  document.getElementById("planeMap").textContent=data.map;
-  show("airplane");
-  connectOnlineRoom();
-}
-
-function startFlight(){
-  document.getElementById("onlineStatus").textContent=
-    "Flight demo started. Waiting for match gameplay update.";
-}
-
-function jump(){
-  document.getElementById("matchMap").textContent=data.map.toUpperCase();
-  document.getElementById("matchMode").textContent=data.mode;
-  show("match");
-}
-
-function backToLobby(){
-  leaveOnlineRoom();
-  stopGame3D();
-  show("lobby");
-}
-
-/* THREE.JS ENVIRONMENT */
-function createEnvironment(container,interactive){
-  if(!window.THREE||!container)return null;
-
-  const width=container.clientWidth||window.innerWidth;
-  const height=container.clientHeight||350;
-
-  const scene=new THREE.Scene();
-  scene.background=new THREE.Color(0x8cc5dc);
-  scene.fog=new THREE.Fog(0x8cc5dc,35,100);
-
-  const camera=new THREE.PerspectiveCamera(60,width/height,.1,300);
-  camera.position.set(0,8,17);
-
-  const renderer=new THREE.WebGLRenderer({antialias:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-  renderer.setSize(width,height);
-  container.innerHTML="";
-  container.appendChild(renderer.domElement);
-
-  scene.add(new THREE.HemisphereLight(0xffffff,0x47613e,2));
-
-  const sun=new THREE.DirectionalLight(0xffffff,2);
-  sun.position.set(10,20,10);
-  scene.add(sun);
-
-  const water=new THREE.Mesh(
-    new THREE.CircleGeometry(75,64),
-    new THREE.MeshStandardMaterial({color:0x1676a5,roughness:.7})
-  );
-  water.rotation.x=-Math.PI/2;
-  water.position.y=-1.2;
-  scene.add(water);
-
-  const island=new THREE.Mesh(
-    new THREE.CylinderGeometry(17,19,2,64),
-    new THREE.MeshStandardMaterial({color:0x4d9848})
-  );
-  island.position.y=-.1;
-  scene.add(island);
-
-  const shore=new THREE.Mesh(
-    new THREE.CylinderGeometry(19,20,1,64),
-    new THREE.MeshStandardMaterial({color:0xd5bd7c})
-  );
-  shore.position.y=-.8;
-  scene.add(shore);
-
-  function addHill(x,z,size){
-    const hill=new THREE.Mesh(
-      new THREE.ConeGeometry(size,size*1.5,8),
-      new THREE.MeshStandardMaterial({color:0x4c8746})
-    );
-    hill.position.set(x,size*.55,z);
-    scene.add(hill);
-  }
-
-  function addTree(x,z){
-    const trunk=new THREE.Mesh(
-      new THREE.CylinderGeometry(.16,.22,1.4,8),
-      new THREE.MeshStandardMaterial({color:0x79502b})
-    );
-    trunk.position.set(x,.7,z);
-    scene.add(trunk);
-
-    const leaves=new THREE.Mesh(
-      new THREE.ConeGeometry(1.1,2.4,8),
-      new THREE.MeshStandardMaterial({color:0x176b36})
-    );
-    leaves.position.set(x,2.25,z);
-    scene.add(leaves);
-  }
-
-  addHill(-7,-5,4);
-  addHill(6,-5,3);
-  addHill(3,7,2.5);
-
-  [[-10,-5],[-8,5],[-4,8],[5,8],[10,3],[8,-7],
-   [2,-10],[-6,-9],[0,5],[5,1]].forEach(p=>addTree(p[0],p[1]));
-
-  /* Small original demo buildings */
-  function addHouse(x,z,color){
-    const group=new THREE.Group();
-
-    const body=new THREE.Mesh(
-      new THREE.BoxGeometry(3,2.2,3),
-      new THREE.MeshStandardMaterial({color:color})
-    );
-    body.position.y=1.1;
-    group.add(body);
-
-    const roof=new THREE.Mesh(
-      new THREE.ConeGeometry(2.5,1.4,4),
-      new THREE.MeshStandardMaterial({color:0x9d4938})
-    );
-    roof.position.y=2.9;
-    roof.rotation.y=Math.PI/4;
-    group.add(roof);
-
-    group.position.set(x,0,z);
-    scene.add(group);
-  }
-
-  addHouse(-3,1,0xd8d0bd);
-  addHouse(7,1,0xc5c5bd);
-  addHouse(-8,1,0xb6c3c9);
-
-  /* Simple original 3D player model */
-  const player=new THREE.Group();
-
-  const body=new THREE.Mesh(
-    new THREE.CapsuleGeometry(.48,.9,4,8),
-    new THREE.MeshStandardMaterial({color:0x243f69})
-  );
-  body.position.y=1.35;
-  player.add(body);
-
-  const head=new THREE.Mesh(
-    new THREE.SphereGeometry(.38,16,12),
-    new THREE.MeshStandardMaterial({color:0xd6a47b})
-  );
-  head.position.y=2.25;
-  player.add(head);
-
-  const backpack=new THREE.Mesh(
-    new THREE.BoxGeometry(.65,.75,.3),
-    new THREE.MeshStandardMaterial({color:0xb77a25})
-  );
-  backpack.position.set(0,1.45,-.45);
-  player.add(backpack);
-
-  player.position.set(0,0,0);
-  scene.add(player);
-
-  return {scene,camera,renderer,player};
-}
-
-/* INTRO PREVIEW */
-let introWorld=null;
-let introFrame=null;
-
-function initIntro3D(){
-  if(introWorld||!document.getElementById("intro").classList.contains("active"))return;
-
-  const container=document.getElementById("preview3d");
-  introWorld=createEnvironment(container,false);
-  if(!introWorld)return;
-
-  let angle=0;
-  function animate(){
-    if(!introWorld)return;
-    introFrame=requestAnimationFrame(animate);
-    angle+=.002;
-    introWorld.camera.position.set(Math.sin(angle)*2,5,13);
-    introWorld.camera.lookAt(0,1,0);
-    introWorld.renderer.render(introWorld.scene,introWorld.camera);
-  }
-  animate();
-}
-
-/* MATCH 3D */
-function initGame3D(){
-  if(gameRenderer||!document.getElementById("match").classList.contains("active"))return;
-
-  const world=createEnvironment(document.getElementById("game3d"),true);
-  if(!world)return;
-
-  gameScene=world.scene;
-  gameCamera=world.camera;
-  gameRenderer=world.renderer;
-  gamePlayer=world.player;
-
-  playerPosition={x:0,z:0};
-
-  function animate(){
-    if(!gameRenderer)return;
-    gameAnimation=requestAnimationFrame(animate);
-
-    gamePlayer.position.x=playerPosition.x;
-    gamePlayer.position.z=playerPosition.z;
-
-    gameCamera.position.set(
-      gamePlayer.position.x,
-      7,
-      gamePlayer.position.z+12
-    );
-    gameCamera.lookAt(
-      gamePlayer.position.x,
-      1,
-      gamePlayer.position.z
-    );
-
-    gameRenderer.render(gameScene,gameCamera);
-  }
-  animate();
-}
-
-function stopGame3D(){
-  if(gameAnimation)cancelAnimationFrame(gameAnimation);
-  gameAnimation=null;
-
-  if(gameRenderer){
-    gameRenderer.dispose();
-    gameRenderer.domElement.remove();
-  }
-
-  gameRenderer=null;
-  gameScene=null;
-  gameCamera=null;
-  gamePlayer=null;
-}
-
-function movePlayer(x,z){
-  if(!gameRenderer)return;
-
-  playerPosition.x=Math.max(-14,Math.min(14,playerPosition.x+x));
-  playerPosition.z=Math.max(-14,Math.min(14,playerPosition.z+z));
-
-  if(onlineSocket&&onlineSocket.readyState===WebSocket.OPEN){
-    try{
-      onlineSocket.send(JSON.stringify({
-        type:"player_update",
-        x:playerPosition.x,
-        z:playerPosition.z
-      }));
-    }catch(e){}
-  }
-}
-
-window.addEventListener("keydown",event=>{
-  if(!document.getElementById("match").classList.contains("active"))return;
-
-  const key=event.key.toLowerCase();
-  if(key==="w"||key==="arrowup")movePlayer(0,-1);
-  if(key==="s"||key==="arrowdown")movePlayer(0,1);
-  if(key==="a"||key==="arrowleft")movePlayer(-1,0);
-  if(key==="d"||key==="arrowright")movePlayer(1,0);
-});
-
-/* AUTHENTICATION */
 async function loginUser(){
   const email=document.getElementById("email").value.trim();
   const password=document.getElementById("password").value;
+  const notice=document.getElementById("authNotice");
 
   if(!email||!password){
-    alert("Email and password are required.");
+    notice.textContent="Email and password দিন।";
     return;
   }
 
+  notice.textContent="Logging in...";
+
   try{
-    const {data:result,error}=await db.auth.signInWithPassword({email,password});
+    const {data,error}=await db.auth.signInWithPassword({
+      email,password
+    });
+
     if(error)throw error;
 
-    data.name=result.user.email.split("@")[0];
-    save();
-    show("events");
+    player.name=data.user.email.split("@")[0];
+    player.guest=false;
+    showScreen("events");
   }catch(error){
-    alert("Login failed: "+error.message);
+    notice.textContent="Login failed: "+error.message;
   }
 }
 
 async function signupUser(){
   const email=document.getElementById("email").value.trim();
   const password=document.getElementById("password").value;
+  const notice=document.getElementById("authNotice");
 
   if(!email||password.length<8){
-    alert("Enter email and a password with at least 8 characters.");
+    notice.textContent="Email এবং কমপক্ষে ৮ অক্ষরের Password দিন।";
     return;
   }
 
+  notice.textContent="Creating account...";
+
   try{
-    const {data:result,error}=await db.auth.signUp({email,password});
+    const {data,error}=await db.auth.signUp({
+      email,password
+    });
+
     if(error)throw error;
 
-    document.getElementById("authNotice").textContent=
-      result.session?"Account created.":"Check your email if confirmation is required.";
+    if(data.session){
+      player.name=data.user.email.split("@")[0];
+      player.guest=false;
+      showScreen("events");
+    }else{
+      notice.textContent="Email confirmation লাগলে আপনার Email যাচাই করুন।";
+    }
   }catch(error){
-    alert("Registration failed: "+error.message);
+    notice.textContent="Registration failed: "+error.message;
   }
 }
 
-function guestLogin(){
-  data.name="Guest Player";
-  save();
-  show("events");
+async function guestLogin(){
+  player.name="Guest Player";
+  player.guest=true;
+  showScreen("events");
 }
 
-/* GAME PAGES */
-const pageData={
-  "Store":[
-    ["Outfit Store","Browse character outfits"],
-    ["Fashion Collection","More items coming soon"],
-    ["Pet Store","Pet collection"],
-    ["Special Offers","Offers coming soon"]
-  ],
-  "Luck Royale":[
-    ["Lucky Spin","Feature coming soon"],
-    ["Prize Collection","Feature coming soon"],
-    ["Special Draw","Feature coming soon"]
-  ],
-  "Booyah Pass":[
-    ["Season 01","Season progress"],
-    ["Free Rewards","Reward track coming soon"],
-    ["Premium Rewards","Feature coming soon"]
-  ],
-  "Missions":[
-    ["Daily Missions","Daily activities"],
-    ["Weekly Missions","Weekly activities"],
-    ["Progress","Mission progress"]
-  ],
-  "Events":[
-    ["Welcome Event","Welcome to BD GAME"],
-    ["Daily Login","Daily activity"],
-    ["Special Event","Coming soon"]
-  ],
-  "Friends":[
-    ["Friends List","Online friends feature coming soon"],
-    ["Add Friend","Friend search coming soon"],
-    ["Team Invitations","Invitations coming soon"]
-  ],
-  "Mail":[
-    ["Inbox","No new messages"],
-    ["System Messages","System messages will appear here"]
-  ],
-  "Notifications":[
-    ["Game Alerts","No new notifications"],
-    ["Updates","Update notices will appear here"]
-  ],
-  "News":[
-    ["BD GAME News","News center"],
-    ["Announcements","Announcements coming soon"]
-  ],
-  "Rewards":[
-    ["Daily Rewards","Daily rewards coming soon"],
-    ["Achievement Rewards","Achievement system coming soon"]
-  ],
-  "Vault":[
-    ["Outfits","Collected outfits"],
-    ["Collections","Collected items"],
-    ["Backgrounds","Background collection"]
-  ],
-  "Character":[
-    ["Character List","Character collection"],
-    ["Character Details","Character details coming soon"],
-    ["Appearance","Appearance settings"]
-  ],
-  "Pet":[
-    ["Pet Collection","Pet collection coming soon"],
-    ["Pet Details","Pet details coming soon"]
-  ],
-  "Preset":[
-    ["Preset 1","Default preset"],
-    ["Preset 2","Coming soon"],
-    ["Preset 3","Coming soon"]
-  ],
-  "Profile":[
-    ["Player Name",""],
-    ["UID",""],
-    ["Level",""],
-    ["Coins",""],
-    ["Diamonds",""]
-  ],
-  "Settings":[
-    ["Graphics","Graphics options coming soon"],
-    ["Sound","Sound settings coming soon"],
-    ["Language","Language options coming soon"],
-    ["Account","Account settings"],
-    ["Logout",""]
-  ]
-};
-
-function openPage(name){
-  document.getElementById("pageTitle").textContent=name.toUpperCase();
-  const content=document.getElementById("pageContent");
-  content.innerHTML="";
-
-  let items=pageData[name]||[["Coming Soon","This feature will be updated later."]];
-
-  items.forEach(([title,description])=>{
-    const card=document.createElement("div");
-    card.className="pageCard";
-
-    const heading=document.createElement("b");
-    heading.textContent=title;
-    card.appendChild(heading);
-
-    const detail=document.createElement("div");
-    detail.className="muted";
-
-    if(name==="Profile"){
-      const values={
-        "Player Name":data.name,
-        "UID":data.uid,
-        "Level":data.level,
-        "Coins":data.coins,
-        "Diamonds":data.diamonds
-      };
-      detail.textContent=values[title]||"";
-    }else{
-      detail.textContent=description||"";
-    }
-
-    card.appendChild(detail);
-
-    if(title==="Logout"){
-      const button=document.createElement("button");
-      button.textContent="LOGOUT";
-      button.style.marginTop="10px";
-      button.onclick=logout;
-      card.appendChild(button);
-    }
-
-    content.appendChild(card);
-  });
-
-  show("page");
+function continueToLobby(){
+  document.getElementById("playerName").textContent=player.name;
+  showScreen("lobby");
 }
 
 async function logout(){
-  leaveOnlineRoom();
-  stopGame3D();
-
   try{
     await db.auth.signOut();
   }catch(error){}
-
-  show("intro");
+  player={name:"Guest Player",guest:true};
+  showScreen("login");
 }
 
-/* STARTUP */
-async function startup(){
-  updateUI();
-
-  try{
-    const {data:sessionData}=await db.auth.getSession();
-
-    if(sessionData&&sessionData.session){
-      data.name=sessionData.session.user.email.split("@")[0];
-      save();
-      show("events");
-    }else{
-      show("intro");
-      setTimeout(initIntro3D,150);
-    }
-  }catch(error){
-    show("intro");
-    setTimeout(initIntro3D,150);
-  }
-}
-
-setTimeout(startup,700);
+loadGame();
 </script>
 </body>
-        </html>
+ </html>
