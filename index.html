@@ -1,342 +1,894 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
+body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
 button,input{font:inherit}
-button{border:1px solid #a87930;border-radius:9px;padding:11px;background:linear-gradient(#f6ca68,#b77a25);color:#17110a;font-weight:bold;cursor:pointer}
-input{width:100%;padding:13px;margin:7px 0;border:1px solid #536078;border-radius:8px;background:#172238;color:white}
+button{cursor:pointer;border:1px solid #a87930;border-radius:7px;padding:10px 13px;background:linear-gradient(#f5ce78,#b77a25);color:#17110a;font-weight:900}
+button:disabled{opacity:.5}
+input{width:100%;padding:13px;margin:7px 0;background:#172238;color:white;border:1px solid #52627b;border-radius:8px}
 .screen{display:none;min-height:100vh;padding:12px}
-.active{display:block}
+.screen.active{display:block}
 .gold{color:#ffd36a}
 .muted{color:#aebbd0;font-size:12px}
-.brand{font-size:28px;font-weight:1000;letter-spacing:2px;color:#ffd36a;text-shadow:0 2px 12px #9a5c18}
-.panel{background:linear-gradient(145deg,#18243a,#10192b);border:1px solid #34435b;border-radius:12px;padding:12px;margin:9px 0}
+.brand{font-size:27px;font-weight:1000;letter-spacing:3px;color:#ffd36a;text-shadow:0 2px 14px #b66d20}
+.panel{background:linear-gradient(145deg,#1b2941,#101827);border:1px solid #46536a;border-radius:11px;padding:12px;margin:9px 0}
 .top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.chip{background:#18243a;border:1px solid #45546d;border-radius:8px;padding:8px;font-size:12px}
-.hero{min-height:190px;border:1px solid #6f542d;border-radius:12px;background:radial-gradient(circle at 50% 25%,#596a7d,#263a4f 45%,#111a2b 80%);display:flex;align-items:center;justify-content:center;text-align:center}
+.row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .wide{width:100%}
+.chip{padding:7px 9px;background:#17243a;border:1px solid #4a5870;border-radius:7px;font-size:12px}
+.sectionTitle{font-weight:900;color:#ffd36a;margin:5px 0 10px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.tile{background:#202f49;border:1px solid #40516d;border-radius:9px;padding:11px;text-align:center;color:white}
-.sectionTitle{font-weight:900;color:#ffd36a;margin:5px 0 9px}
+.tile{background:linear-gradient(145deg,#263954,#152238);border:1px solid #52627a;border-radius:9px;padding:13px;text-align:center;min-height:65px;color:white}
+.tile strong{display:block;color:#ffd36a;margin-bottom:5px}
+.selected{outline:2px solid #ffd36a!important;background:#60451f!important}
+.hero{min-height:70vh;border:1px solid #8e6a34;border-radius:12px;background:radial-gradient(ellipse at 50% 30%,#687c8e,#273c53 43%,#111a2b 80%);display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.hero:before,.hero:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:#d6a34b18;filter:blur(12px)}
+.hero:before{left:-100px;bottom:-130px}.hero:after{right:-100px;top:-130px}
+.heroContent{position:relative;z-index:2}
+.heroTitle{font-size:clamp(38px,10vw,76px);font-weight:1000;letter-spacing:5px;text-shadow:0 5px 20px #000}
+.heroSub{letter-spacing:4px;color:#f5cf78}
+.authWrap{max-width:420px;margin:8vh auto}
 .eventGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.event{background:#1a2940;border:1px solid #45536b;border-radius:10px;padding:10px;text-align:center}
-.eventIcon{font-size:28px}
-.eventName{font-weight:bold;color:#ffd36a;margin-top:5px}
-.eventFooter{position:sticky;bottom:0;padding:10px;background:#080d18}
-.lobbyGrid{display:grid;grid-template-columns:70px minmax(0,1fr) 70px;gap:7px}
+.event{background:#1b2a42;border:1px solid #4c5b72;border-radius:9px;padding:13px;text-align:center}
+.eventIcon{font-size:30px}.eventName{font-weight:bold;color:#ffd36a;margin:6px}
+.lobbyGrid{display:grid;grid-template-columns:74px minmax(0,1fr) 74px;gap:7px}
 .side{display:flex;flex-direction:column;gap:7px}
-.side button{padding:9px 3px;min-height:54px;font-size:10px;background:#1d2b42;color:white;border:1px solid #52627a}
-.avatarStage{min-height:290px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:12px;border:1px solid #52627a;background:radial-gradient(ellipse at 50% 30%,#69798b,#293c52 45%,#111a29 80%);position:relative}
-.avatar{font-size:95px}
-.avatarCaption{position:absolute;bottom:10px;font-size:11px;color:#d9e5f5}
+.side button{min-height:55px;padding:7px 2px;background:#1d2b42;color:white;border:1px solid #596981;font-size:10px}
+.avatarStage{height:310px;position:relative;overflow:hidden;border:1px solid #65758b;border-radius:10px;background:radial-gradient(ellipse at 50% 30%,#758899,#354b61 50%,#121d2d 90%);display:flex;align-items:center;justify-content:center;text-align:center}
+.avatarEmoji{font-size:100px;filter:drop-shadow(0 10px 12px #000)}
+.avatarCaption{position:absolute;bottom:10px;font-size:10px;color:#dce7f5}
 .modeRow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.selected{outline:2px solid #ffd36a!important;background:#6c4c20!important}
 .bottomNav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.bottomNav button{font-size:11px;padding:9px 3px;background:#1d2b42;color:white;border:1px solid #52627a}
+.bottomNav button{background:#1b2a42;color:white;border:1px solid #53637b;font-size:10px;padding:10px 2px}
 #notice,#onlineStatus{color:#ffd36a;text-align:center;font-size:12px}
-#island3d{height:330px;width:100%;overflow:hidden;border-radius:12px;background:#122238}
-#island3d canvas{display:block;width:100%;height:100%}
-.authWrap{max-width:420px;margin:10vh auto}
-@media(max-width:380px){.lobbyGrid{grid-template-columns:60px minmax(0,1fr) 60px}.side button{font-size:9px}.avatar{font-size:75px}.brand{font-size:23px}}
+#game3d{width:100%;height:55vh;min-height:320px;background:#152b3d;border-radius:10px;overflow:hidden}
+#game3d canvas,#preview3d canvas{display:block;width:100%;height:100%}
+#preview3d{position:absolute;inset:0}
+#preview3d canvas{opacity:.9}
+.gameHud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none}
+.gameHud span{background:#07111dcc;padding:8px;border-radius:7px;font-size:12px}
+.gameArea{position:relative}
+.controlPad{display:grid;grid-template-columns:repeat(3,55px);gap:5px;justify-content:center;margin:10px}
+.controlPad button{padding:12px 5px;background:#263954;color:white;border-color:#61728a}
+.pageCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pageCard{background:#1b2a42;border:1px solid #4a5a72;border-radius:9px;padding:13px;min-height:75px}
+.pageCard b{color:#ffd36a;display:block;margin-bottom:6px}
+.smallBtn{padding:7px 9px;font-size:11px}
+@media(max-width:390px){
+ .lobbyGrid{grid-template-columns:59px minmax(0,1fr) 59px}
+ .side button{font-size:9px}
+ .avatarEmoji{font-size:75px}
+ .brand{font-size:22px}
+ .avatarStage{height:270px}
+}
 </style>
 </head>
+
 <body>
 
+<!-- LOADING -->
 <section id="loading" class="screen active" style="text-align:center;padding-top:28vh">
-<div class="brand">BD GAME</div><h2>LOADING...</h2>
-<p class="muted">YOUR BATTLE. YOUR LEGEND.</p>
+  <div class="brand">BD GAME</div>
+  <h2>LOADING...</h2>
+  <p class="muted">YOUR BATTLE. YOUR LEGEND.</p>
 </section>
 
-<section id="entry" class="screen">
-<div class="hero" style="min-height:70vh">
-<div><div class="brand" style="font-size:42px">BD GAME</div>
-<h1>BATTLE ARENA</h1><p class="gold">YOUR BATTLE. YOUR LEGEND.</p></div>
-</div>
-<button class="wide" onclick="show('login')">ENTER GAME</button>
+<!-- INTRO -->
+<section id="intro" class="screen">
+  <div class="hero">
+    <div id="preview3d"></div>
+    <div class="heroContent">
+      <div class="brand" style="font-size:clamp(32px,8vw,52px)">BD GAME</div>
+      <div class="heroTitle">BATTLE<br>ARENA</div>
+      <p class="heroSub">YOUR BATTLE. YOUR LEGEND.</p>
+    </div>
+  </div>
+  <div style="max-width:500px;margin:12px auto">
+    <button class="wide" style="font-size:19px" onclick="show('login')">TAP TO START</button>
+    <p class="muted" style="text-align:center">ORIGINAL BD GAME EXPERIENCE</p>
+  </div>
 </section>
 
+<!-- LOGIN -->
 <section id="login" class="screen">
-<div class="authWrap">
-<div class="brand" style="text-align:center">BD GAME</div>
-<h2 style="text-align:center">PLAYER LOGIN</h2>
-<div class="panel">
-<input id="email" type="email" placeholder="Email address">
-<input id="password" type="password" placeholder="Password">
-<button class="wide" onclick="loginUser()">LOGIN</button>
-<button class="wide" style="margin-top:8px" onclick="signupUser()">REGISTER</button>
-<button class="wide" style="margin-top:8px;background:#34445d;color:white" onclick="guestLogin()">GUEST LOGIN</button>
-<p id="authNotice" class="muted"></p>
-</div></div>
+  <div class="authWrap">
+    <div class="brand" style="text-align:center">BD GAME</div>
+    <h2 style="text-align:center">PLAYER LOGIN</h2>
+    <div class="panel">
+      <input id="email" type="email" placeholder="Email address" autocomplete="email">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="wide" onclick="loginUser()">LOGIN</button>
+      <button class="wide" style="margin-top:8px" onclick="signupUser()">REGISTER</button>
+      <button class="wide" style="margin-top:8px;background:#34445d;color:white" onclick="guestLogin()">GUEST LOGIN</button>
+      <p id="authNotice" class="muted"></p>
+      <button class="wide smallBtn" style="background:#263954;color:white" onclick="show('intro')">BACK</button>
+    </div>
+  </div>
 </section>
 
+<!-- EVENTS -->
 <section id="events" class="screen">
-<div class="top"><div class="brand">BD GAME</div><span class="chip">SEASON 01 · EVENT CENTER</span></div>
-<div class="panel">
-<h2 class="gold">EVENTS & ACTIVITIES</h2>
-<p class="muted">সব Event এক স্ক্রিনে</p>
-<div class="eventGrid">
-<div class="event"><div class="eventIcon">🎁</div><div class="eventName">WELCOME EVENT</div><small>Login reward</small></div>
-<div class="event"><div class="eventIcon">📅</div><div class="eventName">DAILY LOGIN</div><small>Daily activity</small></div>
-<div class="event"><div class="eventIcon">🎯</div><div class="eventName">MISSIONS</div><small>Complete missions</small></div>
-<div class="event"><div class="eventIcon">🏆</div><div class="eventName">RANK CHALLENGE</div><small>Rank matches</small></div>
-<div class="event"><div class="eventIcon">🪙</div><div class="eventName">GOLD RUSH</div><small>Earn coins</small></div>
-<div class="event"><div class="eventIcon">⚡</div><div class="eventName">SPECIAL EVENT</div><small>Coming soon</small></div>
-</div></div>
-<div class="eventFooter"><button class="wide" onclick="show('lobby')">CONTINUE TO LOBBY ▶</button></div>
+  <div class="top">
+    <div class="brand">BD GAME</div>
+    <span class="chip">SEASON 01 · EVENT CENTER</span>
+  </div>
+  <div class="panel">
+    <h2 class="gold">EVENTS & ACTIVITIES</h2>
+    <p class="muted">WELCOME TO BD GAME</p>
+    <div class="eventGrid">
+      <div class="event"><div class="eventIcon">🎁</div><div class="eventName">WELCOME EVENT</div><small>Welcome reward</small></div>
+      <div class="event"><div class="eventIcon">📅</div><div class="eventName">DAILY LOGIN</div><small>Daily activity</small></div>
+      <div class="event"><div class="eventIcon">🎯</div><div class="eventName">MISSIONS</div><small>Mission center</small></div>
+      <div class="event"><div class="eventIcon">🏆</div><div class="eventName">RANK CHALLENGE</div><small>Rank progress</small></div>
+      <div class="event"><div class="eventIcon">🪙</div><div class="eventName">GOLD RUSH</div><small>Coin activities</small></div>
+      <div class="event"><div class="eventIcon">⚡</div><div class="eventName">SPECIAL EVENT</div><small>Coming soon</small></div>
+    </div>
+  </div>
+  <button class="wide" onclick="show('lobby')">CONTINUE TO LOBBY ▶</button>
 </section>
 
+<!-- MAIN LOBBY -->
 <section id="lobby" class="screen">
-<div class="top">
-<div class="brand">BD GAME</div>
-<div class="row"><span class="chip">🪙 <b id="coins">500</b></span><span class="chip">💎 <b id="diamonds">0</b></span><button onclick="openPage('Settings')">⚙</button></div>
-</div>
-<div class="panel top">
-<div><b id="playername">Guest Player</b><div class="muted">UID: <span id="uid">BD-000001</span> · LEVEL <span id="level">1</span></div></div>
-<button onclick="openPage('Profile')">PROFILE</button>
-</div>
+  <div class="top">
+    <div class="brand">BD GAME</div>
+    <div class="row">
+      <span class="chip">🪙 <b id="coins">500</b></span>
+      <span class="chip">💎 <b id="diamonds">0</b></span>
+      <button class="smallBtn" onclick="openPage('Settings')">⚙</button>
+    </div>
+  </div>
 
-<div class="lobbyGrid">
-<div class="side">
-<button onclick="openPage('Store')">🛒<br>STORE</button>
-<button onclick="openPage('Luck Royale')">🎡<br>LUCK ROYALE</button>
-<button onclick="openPage('Booyah Pass')">🎫<br>BOOYAH PASS</button>
-<button onclick="openPage('Missions')">🎯<br>MISSIONS</button>
-<button onclick="openPage('Events')">🎉<br>EVENTS</button>
-</div>
-<div class="avatarStage">
-<div><div class="avatar">🧍</div><div class="gold">BD GAME WARRIOR</div></div>
-<div class="avatarCaption">CHARACTER PREVIEW · 3D CHARACTER NEXT UPDATE</div>
-</div>
-<div class="side">
-<button onclick="openPage('Friends')">👥<br>FRIENDS</button>
-<button onclick="openPage('Mail')">✉️<br>MAIL</button>
-<button onclick="openPage('Notifications')">🔔<br>ALERTS</button>
-<button onclick="openPage('News')">📰<br>NEWS</button>
-<button onclick="openPage('Rewards')">🎁<br>REWARDS</button>
-</div>
-</div>
+  <div class="panel top">
+    <div>
+      <b id="playername">Guest Player</b>
+      <div class="muted">UID: <span id="uid">BD-000001</span> · LEVEL <span id="level">1</span></div>
+    </div>
+    <button class="smallBtn" onclick="openPage('Profile')">PROFILE</button>
+  </div>
 
-<div class="panel">
-<div class="sectionTitle">GAME MODE</div>
-<div class="modeRow">
-<button id="modeSOLO" onclick="selectMode('SOLO')">SOLO</button>
-<button id="modeDUO" onclick="selectMode('DUO')">DUO</button>
-<button id="modeSQUAD" onclick="selectMode('SQUAD')">SQUAD</button>
-</div>
-<p class="muted">Selected: <b id="selectedMode" class="gold">SOLO</b></p>
-<div class="sectionTitle">MAP SELECTION</div>
-<div class="grid">
-<button id="mapIsland" class="tile" onclick="selectMap('Island')">🏝️ ISLAND</button>
-<button id="mapCity" class="tile" onclick="selectMap('City')">🏙️ CITY</button>
-<button id="mapForest" class="tile" onclick="selectMap('Forest')">🌲 FOREST</button>
-<button id="mapDesert" class="tile" onclick="selectMap('Desert')">🏜️ DESERT</button>
-</div>
-<p class="muted">Selected Map: <b id="selectedMap" class="gold">Island</b></p>
-<button class="wide" style="font-size:19px" onclick="startMatch()">▶ START</button>
-<div id="notice"></div>
-</div>
+  <div class="lobbyGrid">
+    <div class="side">
+      <button onclick="openPage('Store')">🛒<br>STORE</button>
+      <button onclick="openPage('Luck Royale')">🎡<br>LUCK ROYALE</button>
+      <button onclick="openPage('Booyah Pass')">🎫<br>BOOYAH PASS</button>
+      <button onclick="openPage('Missions')">🎯<br>MISSIONS</button>
+      <button onclick="openPage('Events')">🎉<br>EVENTS</button>
+    </div>
 
-<div class="panel">
-<div class="bottomNav">
-<button onclick="openPage('Vault')">🎒<br>VAULT</button>
-<button onclick="openPage('Weapon')">🔫<br>WEAPON</button>
-<button onclick="openPage('Pet')">🐾<br>PET</button>
-<button onclick="openPage('Preset')">🧩<br>PRESET</button>
-</div>
-</div>
+    <div class="avatarStage">
+      <div>
+        <div class="avatarEmoji">🧍</div>
+        <div class="gold"><b>BD GAME WARRIOR</b></div>
+      </div>
+      <div class="avatarCaption">CHARACTER PREVIEW · 3D MODEL UPDATE AREA</div>
+    </div>
 
-<div class="panel">
-<div class="top"><b>TEAM VOICE</b><span id="voiceStatus" class="muted">Voice chat not connected</span></div>
-<div class="row">
-<button onclick="voiceNotice('Voice chat চালু করতে microphone permission ও voice server লাগবে।')">🎙 MIC</button>
-<button onclick="voiceNotice('Speaker control পরের আপডেটে যুক্ত হবে।')">🔊 SPEAKER</button>
-<button onclick="voiceNotice('Push-to-talk পরের আপডেটে যুক্ত হবে।')">PUSH TO TALK</button>
-</div>
-</div>
+    <div class="side">
+      <button onclick="openPage('Friends')">👥<br>FRIENDS</button>
+      <button onclick="openPage('Mail')">✉️<br>MAIL</button>
+      <button onclick="openPage('Notifications')">🔔<br>ALERTS</button>
+      <button onclick="openPage('News')">📰<br>NEWS</button>
+      <button onclick="openPage('Rewards')">🎁<br>REWARDS</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="sectionTitle">GAME MODE</div>
+    <div class="modeRow">
+      <button id="modeSOLO" onclick="selectMode('SOLO')">SOLO</button>
+      <button id="modeDUO" onclick="selectMode('DUO')">DUO</button>
+      <button id="modeSQUAD" onclick="selectMode('SQUAD')">SQUAD</button>
+    </div>
+    <p class="muted">Selected: <b id="selectedMode" class="gold">SOLO</b></p>
+
+    <div class="sectionTitle">MAP SELECTION</div>
+    <div class="grid">
+      <button id="mapIsland" class="tile" onclick="selectMap('Island')">🏝️ ISLAND</button>
+      <button id="mapCity" class="tile" onclick="selectMap('City')">🏙️ CITY</button>
+      <button id="mapForest" class="tile" onclick="selectMap('Forest')">🌲 FOREST</button>
+      <button id="mapDesert" class="tile" onclick="selectMap('Desert')">🏜️ DESERT</button>
+    </div>
+    <p class="muted">Selected Map: <b id="selectedMap" class="gold">Island</b></p>
+    <button class="wide" style="font-size:19px" onclick="startMatch()">▶ START</button>
+    <div id="notice"></div>
+  </div>
+
+  <div class="panel">
+    <div class="bottomNav">
+      <button onclick="openPage('Vault')">🎒<br>VAULT</button>
+      <button onclick="openPage('Character')">🧍<br>CHARACTER</button>
+      <button onclick="openPage('Pet')">🐾<br>PET</button>
+      <button onclick="openPage('Preset')">🧩<br>PRESET</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="top"><b>TEAM VOICE</b><span id="voiceStatus" class="muted">Not connected</span></div>
+    <div class="row">
+      <button onclick="voiceNotice('Microphone permission and a voice server are required.')">🎙 MIC</button>
+      <button onclick="voiceNotice('Speaker control will be connected in a later update.')">🔊 SPEAKER</button>
+      <button onclick="voiceNotice('Push-to-talk will be connected in a later update.')">PUSH TO TALK</button>
+    </div>
+  </div>
 </section>
 
+<!-- AIRPLANE / MATCH WAITING -->
 <section id="airplane" class="screen">
-<div class="top"><button onclick="backToLobby()">← BACK</button><b class="brand">BD GAME</b></div>
-<div class="hero"><div><div style="font-size:55px">✈️</div><h2>AIRPLANE LOBBY</h2><p>PLAYER WAITING</p></div></div>
-<h2 id="planeMode" class="gold">SOLO</h2>
-<h3>MAP: <span id="planeMap">Island</span></h3>
-<div class="panel">
-<h2 class="gold"><span id="onlineCount">0</span> / 50</h2>
-<p id="onlineStatus">অনলাইন সার্ভারের অপেক্ষায়</p>
-<button class="wide" onclick="startFlight()">START FLIGHT</button>
-<button class="wide" style="margin-top:8px" onclick="jump()">ENTER DEMO MATCH</button>
-</div>
-<div id="playerList" class="muted"></div>
+  <div class="top">
+    <button onclick="backToLobby()">← BACK</button>
+    <b class="brand">BD GAME</b>
+  </div>
+  <div class="hero">
+    <div>
+      <div style="font-size:65px">✈️</div>
+      <h2>AIRPLANE LOBBY</h2>
+      <p>PLAYER WAITING</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h2 id="planeMode" class="gold">SOLO</h2>
+    <h3>MAP: <span id="planeMap">Island</span></h3>
+    <h2 class="gold"><span id="onlineCount">0</span> / 50</h2>
+    <p id="onlineStatus">Waiting for server...</p>
+    <button class="wide" onclick="startFlight()">START FLIGHT</button>
+    <button class="wide" style="margin-top:8px" onclick="jump()">ENTER DEMO MATCH</button>
+  </div>
+  <div id="playerList" class="muted"></div>
 </section>
 
+<!-- 3D MATCH -->
 <section id="match" class="screen">
-<div class="top"><b>BD GAME MATCH</b><button onclick="backToLobby()">EXIT MATCH</button></div>
-<h2 id="matchMap">ISLAND</h2>
-<div id="island3d"></div>
-<div class="panel">
-<h3 id="matchMode">SOLO</h3>
-<p>BD GAME 3D DEMO MAP</p>
-<p>Online Players: <b id="matchOnlineCount">0</b></p>
-<p class="muted">এটি 3D ম্যাপের প্রাথমিক সংস্করণ।</p>
-</div>
+  <div class="top">
+    <b class="brand">BD GAME MATCH</b>
+    <button onclick="backToLobby()">EXIT MATCH</button>
+  </div>
+  <div class="gameArea">
+    <div id="game3d"></div>
+    <div class="gameHud">
+      <span id="matchMap">ISLAND</span>
+      <span>DEMO MATCH</span>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="top">
+      <b id="matchMode" class="gold">SOLO</b>
+      <span class="muted">Players online: <b id="matchOnlineCount">0</b></span>
+    </div>
+    <p class="muted">Move around the demo map using the controls below or WASD / arrow keys.</p>
+    <div class="controlPad">
+      <span></span><button onpointerdown="movePlayer(0,-1)">▲</button><span></span>
+      <button onpointerdown="movePlayer(-1,0)">◀</button>
+      <button onpointerdown="movePlayer(0,0)">●</button>
+      <button onpointerdown="movePlayer(1,0)">▶</button>
+      <span></span><button onpointerdown="movePlayer(0,1)">▼</button><span></span>
+    </div>
+  </div>
 </section>
 
+<!-- GENERAL PAGE -->
 <section id="page" class="screen">
-<div class="top"><button onclick="show('lobby')">← BACK</button><div class="brand">BD GAME</div></div>
-<div class="panel"><h2 id="pageTitle">Game Center</h2><div id="pageContent"></div></div>
+  <div class="top">
+    <button onclick="show('lobby')">← BACK</button>
+    <div class="brand">BD GAME</div>
+  </div>
+  <div class="panel">
+    <h2 id="pageTitle" class="gold">GAME CENTER</h2>
+    <div id="pageContent"></div>
+  </div>
 </section>
 
 <script>
+/* Keep the Supabase project URL. Add your own publishable key in GitHub.
+   Never share your private/service-role key. */
 const SUPABASE_URL="https://qgcvhflehoxsjyzntxmp.supabase.co";
 const SUPABASE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 let data=JSON.parse(localStorage.getItem("bdgame_data")||"null")||{
-name:"Guest Player",coins:500,diamonds:0,level:1,br:0,cs:0,
-items:[],mode:"SOLO",map:"Island"
+  name:"Guest Player",
+  uid:"BD-"+String(Math.floor(100000+Math.random()*899999)),
+  coins:500,diamonds:0,level:1,
+  items:[],mode:"SOLO",map:"Island"
 };
-let onlineSocket=null,islandRenderer=null;
 
-function save(){localStorage.setItem("bdgame_data",JSON.stringify(data));update()}
+let onlineSocket=null;
+let gameRenderer=null;
+let gameScene=null;
+let gameCamera=null;
+let gamePlayer=null;
+let gameAnimation=null;
+let playerPosition={x:0,z:0};
+
+function save(){
+  localStorage.setItem("bdgame_data",JSON.stringify(data));
+  updateUI();
+}
+
 function show(id){
-document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-if(id==="match")setTimeout(initIsland3D,100);
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  const target=document.getElementById(id);
+  if(target)target.classList.add("active");
+
+  if(id==="match"){
+    setTimeout(initGame3D,100);
+  }
+  if(id==="intro"){
+    setTimeout(initIntro3D,100);
+  }
 }
-function rank(points){
-const levels=["Bronze","Silver","Gold","Platinum","Diamond","Heroic","Master","Grandmaster"];
-return levels[Math.min(7,Math.floor(points/100))];
+
+function updateUI(){
+  document.getElementById("coins").textContent=data.coins;
+  document.getElementById("diamonds").textContent=data.diamonds;
+  document.getElementById("playername").textContent=data.name;
+  document.getElementById("uid").textContent=data.uid;
+  document.getElementById("level").textContent=data.level;
+  document.getElementById("selectedMode").textContent=data.mode;
+  document.getElementById("selectedMap").textContent=data.map;
+
+  ["SOLO","DUO","SQUAD"].forEach(m=>{
+    document.getElementById("mode"+m).classList.toggle("selected",data.mode===m);
+  });
+
+  ["Island","City","Forest","Desert"].forEach(m=>{
+    document.getElementById("map"+m).classList.toggle("selected",data.map===m);
+  });
 }
-function update(){
-coins.textContent=data.coins;diamonds.textContent=data.diamonds;
-playername.textContent=data.name;level.textContent=data.level;
-selectedMode.textContent=data.mode;selectedMap.textContent=data.map;
-["SOLO","DUO","SQUAD"].forEach(m=>document.getElementById("mode"+m).classList.toggle("selected",data.mode===m));
-["Island","City","Forest","Desert"].forEach(m=>document.getElementById("map"+m).classList.toggle("selected",data.map===m));
+
+function selectMode(mode){
+  data.mode=mode;
+  save();
 }
-function selectMode(m){data.mode=m;save()}
-function selectMap(m){data.map=m;save();notice.textContent=m+" selected"}
-function voiceNotice(t){alert(t)}
+
+function selectMap(map){
+  data.map=map;
+  save();
+  document.getElementById("notice").textContent=map+" selected";
+}
+
+function voiceNotice(message){
+  alert(message);
+}
+
+/* ONLINE ROOM CONNECTION */
 function connectOnlineRoom(){
-leaveOnlineRoom();
-const protocol=location.protocol==="https:"?"wss:":"ws:";
-const url=protocol+"//"+location.host+"/api/ws?room=public&mode="+encodeURIComponent(data.mode)+"&name="+encodeURIComponent(data.name);
-onlineStatus.textContent="Connecting to server...";
-onlineCount.textContent="0";
-onlineSocket=new WebSocket(url);
-onlineSocket.onopen=()=>onlineStatus.textContent="ONLINE SERVER CONNECTED";
-onlineSocket.onmessage=e=>{
-let m;try{m=JSON.parse(e.data)}catch{return}
-if(m.type==="welcome"||m.type==="room_update"){
-onlineCount.textContent=m.count;
-matchOnlineCount.textContent=m.count;
-if(m.players)playerList.textContent="Players: "+m.players.map(p=>p.name).join(", ");
-}
-};
-onlineSocket.onerror=()=>onlineStatus.textContent="SERVER CONNECTION ERROR";
-onlineSocket.onclose=()=>onlineStatus.textContent="SERVER DISCONNECTED";
-}
-function leaveOnlineRoom(){if(onlineSocket){onlineSocket.onclose=null;onlineSocket.close();onlineSocket=null}}
-function backToLobby(){leaveOnlineRoom();show("lobby")}
-function startMatch(){planeMode.textContent=data.mode;planeMap.textContent=data.map;show("airplane");connectOnlineRoom()}
-function startFlight(){planeMode.textContent=data.mode+" — FLIGHT READY"}
-function jump(){matchMap.textContent=data.map.toUpperCase();matchMode.textContent=data.mode;show("match")}
+  leaveOnlineRoom();
 
-function initIsland3D(){
-const c=document.getElementById("island3d");
-if(!c||!window.THREE||islandRenderer)return;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x87ceeb);
-const camera=new THREE.PerspectiveCamera(60,c.clientWidth/c.clientHeight,.1,1000);
-camera.position.set(0,12,24);
-const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(c.clientWidth,c.clientHeight);c.appendChild(renderer.domElement);islandRenderer=renderer;
-scene.add(new THREE.HemisphereLight(0xffffff,0x496b3c,2));
-const sun=new THREE.DirectionalLight(0xffffff,2);sun.position.set(10,20,10);scene.add(sun);
-const sea=new THREE.Mesh(new THREE.CircleGeometry(80,64),new THREE.MeshStandardMaterial({color:0x1676a5}));
-sea.rotation.x=-Math.PI/2;sea.position.y=-1;scene.add(sea);
-const island=new THREE.Mesh(new THREE.CylinderGeometry(13,15,2,64),new THREE.MeshStandardMaterial({color:0x4d9b45}));scene.add(island);
-const sand=new THREE.Mesh(new THREE.CylinderGeometry(15,16,1,64),new THREE.MeshStandardMaterial({color:0xd7bd78}));sand.position.y=-.8;scene.add(sand);
-function hill(x,z,s){let o=new THREE.Mesh(new THREE.ConeGeometry(s,s*1.5,8),new THREE.MeshStandardMaterial({color:0x4b8745}));o.position.set(x,s,z);scene.add(o)}
-hill(-5,-4,4);hill(5,-5,3);hill(2,5,2.5);
-function tree(x,z){
-let a=new THREE.Mesh(new THREE.CylinderGeometry(.18,.25,1.4,8),new THREE.MeshStandardMaterial({color:0x79502b}));a.position.set(x,.8,z);scene.add(a);
-let b=new THREE.Mesh(new THREE.ConeGeometry(1.1,2.5,8),new THREE.MeshStandardMaterial({color:0x176b36}));b.position.set(x,2.5,z);scene.add(b);
-}
-[[-8,-4],[-7,4],[-3,7],[5,7],[8,2],[7,-6],[2,-8],[-5,-8],[0,4],[4,1]].forEach(p=>tree(...p));
-const house=new THREE.Group();
-let base=new THREE.Mesh(new THREE.BoxGeometry(3,2,3),new THREE.MeshStandardMaterial({color:0xd8d0bd}));base.position.y=1;house.add(base);
-let roof=new THREE.Mesh(new THREE.ConeGeometry(2.5,1.5,4),new THREE.MeshStandardMaterial({color:0x9d4938}));roof.position.y=2.75;roof.rotation.y=Math.PI/4;house.add(roof);
-house.position.set(-2,0,1);scene.add(house);
-let angle=0;
-function animate(){requestAnimationFrame(animate);angle+=.0015;camera.position.x=Math.sin(angle)*1.5;camera.lookAt(0,0,0);renderer.render(scene,camera)}
-animate();
-window.addEventListener("resize",()=>{if(!islandRenderer)return;camera.aspect=c.clientWidth/c.clientHeight;camera.updateProjectionMatrix();renderer.setSize(c.clientWidth,c.clientHeight)});
+  const protocol=location.protocol==="https:"?"wss:":"ws:";
+  const url=protocol+"//"+location.host+
+    "/api/ws?room=public&mode="+encodeURIComponent(data.mode)+
+    "&name="+encodeURIComponent(data.name);
+
+  document.getElementById("onlineStatus").textContent="Connecting...";
+  document.getElementById("onlineCount").textContent="0";
+
+  try{
+    onlineSocket=new WebSocket(url);
+
+    onlineSocket.onopen=()=>{
+      document.getElementById("onlineStatus").textContent="ONLINE SERVER CONNECTED";
+    };
+
+    onlineSocket.onmessage=(event)=>{
+      let message;
+      try{message=JSON.parse(event.data)}catch(e){return}
+
+      if(message.type==="welcome"||message.type==="room_update"){
+        document.getElementById("onlineCount").textContent=message.count||0;
+        document.getElementById("matchOnlineCount").textContent=message.count||0;
+
+        if(message.players){
+          document.getElementById("playerList").textContent=
+            "Players: "+message.players.map(p=>p.name).join(", ");
+        }
+      }
+    };
+
+    onlineSocket.onerror=()=>{
+      document.getElementById("onlineStatus").textContent="SERVER CONNECTION ERROR";
+    };
+
+    onlineSocket.onclose=()=>{
+      document.getElementById("onlineStatus").textContent="SERVER DISCONNECTED";
+    };
+  }catch(error){
+    document.getElementById("onlineStatus").textContent="ONLINE SERVER NOT AVAILABLE";
+  }
 }
 
-async function loginUser(){
-const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
-if(!email||!password)return alert("Email ও Password লিখুন।");
-const {data:r,error}=await db.auth.signInWithPassword({email,password});
-if(error)return alert(error.message);
-data.name=r.user.email.split("@")[0];save();show("events");
+function leaveOnlineRoom(){
+  if(onlineSocket){
+    onlineSocket.onclose=null;
+    onlineSocket.close();
+    onlineSocket=null;
+  }
 }
-async function signupUser(){
-const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
-if(!email||password.length<8)return alert("Email ও কমপক্ষে ৮ অক্ষরের Password দিন।");
-const {data:r,error}=await db.auth.signUp({email,password});
-if(error)return alert(error.message);
-authNotice.textContent=r.session?"Account created.":"Email confirmation প্রয়োজন হতে পারে।";
+
+function startMatch(){
+  document.getElementById("planeMode").textContent=data.mode;
+  document.getElementById("planeMap").textContent=data.map;
+  show("airplane");
+  connectOnlineRoom();
 }
-function guestLogin(){data.name="Guest Player";save();show("events")}
-function openPage(name){
-pageTitle.textContent=name;pageContent.innerHTML="";
-const opts={
-"Store":["Outfit Shop — demo","Pet Shop — coming soon"],
-"Luck Royale":["Luck Royale — coming soon"],
-"Booyah Pass":["Season 01 — coming soon"],
-"Missions":["Play a demo match","Visit the lobby","Daily login"],
-"Events":["Welcome Event","Daily Login Event"],
-"Friends":["Friends list — online friends feature pending"],
-"Team":["Create Team — demo","Team Members — demo"],
-"Mail":["No new messages"],
-"Notifications":["No new notifications"],
-"News":["BD GAME news — coming soon"],
-"Rewards":["Daily rewards — coming soon"],
-"Vault":["Your collected items"],
-"Weapon":["Weapon collection — coming soon"],
-"Pet":["Pet collection — coming soon"],
-"Preset":["Character presets — coming soon"],
-"Character":["Default character"],
-"Outfit":["Basic outfit"],
-"Profile":["Player: "+data.name,"Level: "+data.level,"Coins: "+data.coins],
-"Settings":["Graphics: Medium","Sound Settings","Logout"]
-};
-(opts[name]||["Coming soon"]).forEach(t=>{
-let d=document.createElement("div");d.className="tile";d.textContent=t;
-if(t==="Logout"){d.onclick=logout;d.style.cursor="pointer"}
-pageContent.appendChild(d);
+
+function startFlight(){
+  document.getElementById("onlineStatus").textContent=
+    "Flight demo started. Waiting for match gameplay update.";
+}
+
+function jump(){
+  document.getElementById("matchMap").textContent=data.map.toUpperCase();
+  document.getElementById("matchMode").textContent=data.mode;
+  show("match");
+}
+
+function backToLobby(){
+  leaveOnlineRoom();
+  stopGame3D();
+  show("lobby");
+}
+
+/* THREE.JS ENVIRONMENT */
+function createEnvironment(container,interactive){
+  if(!window.THREE||!container)return null;
+
+  const width=container.clientWidth||window.innerWidth;
+  const height=container.clientHeight||350;
+
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x8cc5dc);
+  scene.fog=new THREE.Fog(0x8cc5dc,35,100);
+
+  const camera=new THREE.PerspectiveCamera(60,width/height,.1,300);
+  camera.position.set(0,8,17);
+
+  const renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.setSize(width,height);
+  container.innerHTML="";
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.HemisphereLight(0xffffff,0x47613e,2));
+
+  const sun=new THREE.DirectionalLight(0xffffff,2);
+  sun.position.set(10,20,10);
+  scene.add(sun);
+
+  const water=new THREE.Mesh(
+    new THREE.CircleGeometry(75,64),
+    new THREE.MeshStandardMaterial({color:0x1676a5,roughness:.7})
+  );
+  water.rotation.x=-Math.PI/2;
+  water.position.y=-1.2;
+  scene.add(water);
+
+  const island=new THREE.Mesh(
+    new THREE.CylinderGeometry(17,19,2,64),
+    new THREE.MeshStandardMaterial({color:0x4d9848})
+  );
+  island.position.y=-.1;
+  scene.add(island);
+
+  const shore=new THREE.Mesh(
+    new THREE.CylinderGeometry(19,20,1,64),
+    new THREE.MeshStandardMaterial({color:0xd5bd7c})
+  );
+  shore.position.y=-.8;
+  scene.add(shore);
+
+  function addHill(x,z,size){
+    const hill=new THREE.Mesh(
+      new THREE.ConeGeometry(size,size*1.5,8),
+      new THREE.MeshStandardMaterial({color:0x4c8746})
+    );
+    hill.position.set(x,size*.55,z);
+    scene.add(hill);
+  }
+
+  function addTree(x,z){
+    const trunk=new THREE.Mesh(
+      new THREE.CylinderGeometry(.16,.22,1.4,8),
+      new THREE.MeshStandardMaterial({color:0x79502b})
+    );
+    trunk.position.set(x,.7,z);
+    scene.add(trunk);
+
+    const leaves=new THREE.Mesh(
+      new THREE.ConeGeometry(1.1,2.4,8),
+      new THREE.MeshStandardMaterial({color:0x176b36})
+    );
+    leaves.position.set(x,2.25,z);
+    scene.add(leaves);
+  }
+
+  addHill(-7,-5,4);
+  addHill(6,-5,3);
+  addHill(3,7,2.5);
+
+  [[-10,-5],[-8,5],[-4,8],[5,8],[10,3],[8,-7],
+   [2,-10],[-6,-9],[0,5],[5,1]].forEach(p=>addTree(p[0],p[1]));
+
+  /* Small original demo buildings */
+  function addHouse(x,z,color){
+    const group=new THREE.Group();
+
+    const body=new THREE.Mesh(
+      new THREE.BoxGeometry(3,2.2,3),
+      new THREE.MeshStandardMaterial({color:color})
+    );
+    body.position.y=1.1;
+    group.add(body);
+
+    const roof=new THREE.Mesh(
+      new THREE.ConeGeometry(2.5,1.4,4),
+      new THREE.MeshStandardMaterial({color:0x9d4938})
+    );
+    roof.position.y=2.9;
+    roof.rotation.y=Math.PI/4;
+    group.add(roof);
+
+    group.position.set(x,0,z);
+    scene.add(group);
+  }
+
+  addHouse(-3,1,0xd8d0bd);
+  addHouse(7,1,0xc5c5bd);
+  addHouse(-8,1,0xb6c3c9);
+
+  /* Simple original 3D player model */
+  const player=new THREE.Group();
+
+  const body=new THREE.Mesh(
+    new THREE.CapsuleGeometry(.48,.9,4,8),
+    new THREE.MeshStandardMaterial({color:0x243f69})
+  );
+  body.position.y=1.35;
+  player.add(body);
+
+  const head=new THREE.Mesh(
+    new THREE.SphereGeometry(.38,16,12),
+    new THREE.MeshStandardMaterial({color:0xd6a47b})
+  );
+  head.position.y=2.25;
+  player.add(head);
+
+  const backpack=new THREE.Mesh(
+    new THREE.BoxGeometry(.65,.75,.3),
+    new THREE.MeshStandardMaterial({color:0xb77a25})
+  );
+  backpack.position.set(0,1.45,-.45);
+  player.add(backpack);
+
+  player.position.set(0,0,0);
+  scene.add(player);
+
+  return {scene,camera,renderer,player};
+}
+
+/* INTRO PREVIEW */
+let introWorld=null;
+let introFrame=null;
+
+function initIntro3D(){
+  if(introWorld||!document.getElementById("intro").classList.contains("active"))return;
+
+  const container=document.getElementById("preview3d");
+  introWorld=createEnvironment(container,false);
+  if(!introWorld)return;
+
+  let angle=0;
+  function animate(){
+    if(!introWorld)return;
+    introFrame=requestAnimationFrame(animate);
+    angle+=.002;
+    introWorld.camera.position.set(Math.sin(angle)*2,5,13);
+    introWorld.camera.lookAt(0,1,0);
+    introWorld.renderer.render(introWorld.scene,introWorld.camera);
+  }
+  animate();
+}
+
+/* MATCH 3D */
+function initGame3D(){
+  if(gameRenderer||!document.getElementById("match").classList.contains("active"))return;
+
+  const world=createEnvironment(document.getElementById("game3d"),true);
+  if(!world)return;
+
+  gameScene=world.scene;
+  gameCamera=world.camera;
+  gameRenderer=world.renderer;
+  gamePlayer=world.player;
+
+  playerPosition={x:0,z:0};
+
+  function animate(){
+    if(!gameRenderer)return;
+    gameAnimation=requestAnimationFrame(animate);
+
+    gamePlayer.position.x=playerPosition.x;
+    gamePlayer.position.z=playerPosition.z;
+
+    gameCamera.position.set(
+      gamePlayer.position.x,
+      7,
+      gamePlayer.position.z+12
+    );
+    gameCamera.lookAt(
+      gamePlayer.position.x,
+      1,
+      gamePlayer.position.z
+    );
+
+    gameRenderer.render(gameScene,gameCamera);
+  }
+  animate();
+}
+
+function stopGame3D(){
+  if(gameAnimation)cancelAnimationFrame(gameAnimation);
+  gameAnimation=null;
+
+  if(gameRenderer){
+    gameRenderer.dispose();
+    gameRenderer.domElement.remove();
+  }
+
+  gameRenderer=null;
+  gameScene=null;
+  gameCamera=null;
+  gamePlayer=null;
+}
+
+function movePlayer(x,z){
+  if(!gameRenderer)return;
+
+  playerPosition.x=Math.max(-14,Math.min(14,playerPosition.x+x));
+  playerPosition.z=Math.max(-14,Math.min(14,playerPosition.z+z));
+
+  if(onlineSocket&&onlineSocket.readyState===WebSocket.OPEN){
+    try{
+      onlineSocket.send(JSON.stringify({
+        type:"player_update",
+        x:playerPosition.x,
+        z:playerPosition.z
+      }));
+    }catch(e){}
+  }
+}
+
+window.addEventListener("keydown",event=>{
+  if(!document.getElementById("match").classList.contains("active"))return;
+
+  const key=event.key.toLowerCase();
+  if(key==="w"||key==="arrowup")movePlayer(0,-1);
+  if(key==="s"||key==="arrowdown")movePlayer(0,1);
+  if(key==="a"||key==="arrowleft")movePlayer(-1,0);
+  if(key==="d"||key==="arrowright")movePlayer(1,0);
 });
-show("page");
+
+/* AUTHENTICATION */
+async function loginUser(){
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+
+  if(!email||!password){
+    alert("Email and password are required.");
+    return;
+  }
+
+  try{
+    const {data:result,error}=await db.auth.signInWithPassword({email,password});
+    if(error)throw error;
+
+    data.name=result.user.email.split("@")[0];
+    save();
+    show("events");
+  }catch(error){
+    alert("Login failed: "+error.message);
+  }
 }
-async function logout(){leaveOnlineRoom();try{await db.auth.signOut()}catch(e){}show("entry")}
-setTimeout(async()=>{
-try{
-const {data:s}=await db.auth.getSession();
-if(s.session){data.name=s.session.user.email.split("@")[0];save();show("events")}
-else show("entry");
-}catch(e){show("entry")}
-},900);
-update();
+
+async function signupUser(){
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+
+  if(!email||password.length<8){
+    alert("Enter email and a password with at least 8 characters.");
+    return;
+  }
+
+  try{
+    const {data:result,error}=await db.auth.signUp({email,password});
+    if(error)throw error;
+
+    document.getElementById("authNotice").textContent=
+      result.session?"Account created.":"Check your email if confirmation is required.";
+  }catch(error){
+    alert("Registration failed: "+error.message);
+  }
+}
+
+function guestLogin(){
+  data.name="Guest Player";
+  save();
+  show("events");
+}
+
+/* GAME PAGES */
+const pageData={
+  "Store":[
+    ["Outfit Store","Browse character outfits"],
+    ["Fashion Collection","More items coming soon"],
+    ["Pet Store","Pet collection"],
+    ["Special Offers","Offers coming soon"]
+  ],
+  "Luck Royale":[
+    ["Lucky Spin","Feature coming soon"],
+    ["Prize Collection","Feature coming soon"],
+    ["Special Draw","Feature coming soon"]
+  ],
+  "Booyah Pass":[
+    ["Season 01","Season progress"],
+    ["Free Rewards","Reward track coming soon"],
+    ["Premium Rewards","Feature coming soon"]
+  ],
+  "Missions":[
+    ["Daily Missions","Daily activities"],
+    ["Weekly Missions","Weekly activities"],
+    ["Progress","Mission progress"]
+  ],
+  "Events":[
+    ["Welcome Event","Welcome to BD GAME"],
+    ["Daily Login","Daily activity"],
+    ["Special Event","Coming soon"]
+  ],
+  "Friends":[
+    ["Friends List","Online friends feature coming soon"],
+    ["Add Friend","Friend search coming soon"],
+    ["Team Invitations","Invitations coming soon"]
+  ],
+  "Mail":[
+    ["Inbox","No new messages"],
+    ["System Messages","System messages will appear here"]
+  ],
+  "Notifications":[
+    ["Game Alerts","No new notifications"],
+    ["Updates","Update notices will appear here"]
+  ],
+  "News":[
+    ["BD GAME News","News center"],
+    ["Announcements","Announcements coming soon"]
+  ],
+  "Rewards":[
+    ["Daily Rewards","Daily rewards coming soon"],
+    ["Achievement Rewards","Achievement system coming soon"]
+  ],
+  "Vault":[
+    ["Outfits","Collected outfits"],
+    ["Collections","Collected items"],
+    ["Backgrounds","Background collection"]
+  ],
+  "Character":[
+    ["Character List","Character collection"],
+    ["Character Details","Character details coming soon"],
+    ["Appearance","Appearance settings"]
+  ],
+  "Pet":[
+    ["Pet Collection","Pet collection coming soon"],
+    ["Pet Details","Pet details coming soon"]
+  ],
+  "Preset":[
+    ["Preset 1","Default preset"],
+    ["Preset 2","Coming soon"],
+    ["Preset 3","Coming soon"]
+  ],
+  "Profile":[
+    ["Player Name",""],
+    ["UID",""],
+    ["Level",""],
+    ["Coins",""],
+    ["Diamonds",""]
+  ],
+  "Settings":[
+    ["Graphics","Graphics options coming soon"],
+    ["Sound","Sound settings coming soon"],
+    ["Language","Language options coming soon"],
+    ["Account","Account settings"],
+    ["Logout",""]
+  ]
+};
+
+function openPage(name){
+  document.getElementById("pageTitle").textContent=name.toUpperCase();
+  const content=document.getElementById("pageContent");
+  content.innerHTML="";
+
+  let items=pageData[name]||[["Coming Soon","This feature will be updated later."]];
+
+  items.forEach(([title,description])=>{
+    const card=document.createElement("div");
+    card.className="pageCard";
+
+    const heading=document.createElement("b");
+    heading.textContent=title;
+    card.appendChild(heading);
+
+    const detail=document.createElement("div");
+    detail.className="muted";
+
+    if(name==="Profile"){
+      const values={
+        "Player Name":data.name,
+        "UID":data.uid,
+        "Level":data.level,
+        "Coins":data.coins,
+        "Diamonds":data.diamonds
+      };
+      detail.textContent=values[title]||"";
+    }else{
+      detail.textContent=description||"";
+    }
+
+    card.appendChild(detail);
+
+    if(title==="Logout"){
+      const button=document.createElement("button");
+      button.textContent="LOGOUT";
+      button.style.marginTop="10px";
+      button.onclick=logout;
+      card.appendChild(button);
+    }
+
+    content.appendChild(card);
+  });
+
+  show("page");
+}
+
+async function logout(){
+  leaveOnlineRoom();
+  stopGame3D();
+
+  try{
+    await db.auth.signOut();
+  }catch(error){}
+
+  show("intro");
+}
+
+/* STARTUP */
+async function startup(){
+  updateUI();
+
+  try{
+    const {data:sessionData}=await db.auth.getSession();
+
+    if(sessionData&&sessionData.session){
+      data.name=sessionData.session.user.email.split("@")[0];
+      save();
+      show("events");
+    }else{
+      show("intro");
+      setTimeout(initIntro3D,150);
+    }
+  }catch(error){
+    show("intro");
+    setTimeout(initIntro3D,150);
+  }
+}
+
+setTimeout(startup,700);
 </script>
 </body>
-                                                </html>
+        </html>
