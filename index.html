@@ -11,6 +11,7 @@
 body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
 button{cursor:pointer;font-weight:bold;border:0;border-radius:9px;padding:12px;color:#17110a;background:linear-gradient(135deg,#ffe29a,#bd812b)}
 button:active{transform:scale(.97)}
+button:disabled{opacity:.4;cursor:not-allowed}
 input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #53647d;border-radius:8px;color:white}
 .screen{display:none;min-height:100vh;padding:15px;background:radial-gradient(ellipse at top,#26364d,#080d18 70%)}
 .screen.active{display:block}
@@ -49,9 +50,17 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 .controls button:nth-child(2){grid-column:1;grid-row:2}
 .controls button:nth-child(3){grid-column:2;grid-row:2}
 .controls button:nth-child(4){grid-column:3;grid-row:2}
+.aircraftPanel{max-width:900px;margin:12px auto;background:#14243a;border:1px solid #a87930;border-radius:13px;padding:12px;text-align:center}
+#aircraftView{width:100%;height:auto;max-height:48vh;display:block;background:#315f50;border:2px solid #d4b56a;border-radius:10px}
+.flightStats{display:flex;justify-content:space-around;gap:8px;flex-wrap:wrap;color:#ffdf8b;font-weight:bold;margin:10px 0}
+.jumpHero{font-size:100px;animation:floatDown 1.5s ease-in-out infinite alternate}
+@keyframes floatDown{from{transform:translateY(-8px)}to{transform:translateY(10px)}}
 @media(orientation:landscape) and (max-height:600px){
-.screen{padding:8px}.brand{font-size:40px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-.tile{min-height:70px}.character{height:100px}
+.screen{padding:8px}
+.brand{font-size:40px}
+.grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tile{min-height:70px}
+.character{height:100px}
 }
 </style>
 </head>
@@ -229,14 +238,53 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 <section id="room" class="screen">
  <div class="top"><b class="gold">ROOM & MATCH</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">CUSTOM ROOM</h2>
- <div class="panel"><input placeholder="Enter Room ID"><input placeholder="Room Password">
- <button class="wide" onclick="message('Room system পরে সংযুক্ত হবে')">JOIN ROOM</button>
- <button class="wide dark" onclick="message('Room creation পরে সংযুক্ত হবে')">CREATE ROOM</button></div>
+ <div class="panel">
+  <input placeholder="Enter Room ID">
+  <input placeholder="Room Password">
+  <button class="wide" onclick="message('Room system পরে সংযুক্ত হবে')">JOIN ROOM</button>
+  <button class="wide dark" onclick="message('Room creation পরে সংযুক্ত হবে')">CREATE ROOM</button>
+ </div>
 </section>
 
+<!-- AIRPLANE WAITING AREA -->
+<section id="airlobby" class="screen">
+ <div class="top">
+  <b class="gold">BD AIRCRAFT LOBBY</b>
+  <button onclick="cancelAircraft()">CANCEL</button>
+ </div>
+ <div class="aircraftPanel">
+  <h2 class="gold">✈️ AIRPLANE WAITING AREA</h2>
+  <div class="flightStats">
+   <span>👥 PLAYERS: <b id="airPlayers">1 / 50</b></span>
+   <span>🗺️ <b id="airMap">BD ISLAND</b></span>
+  </div>
+  <h2 id="airCountdown" class="gold">MATCH STARTS IN 30</h2>
+  <canvas id="aircraftView" width="900" height="420"></canvas>
+  <p id="airStatus" class="sub">বিমান প্রস্তুত হচ্ছে। কাউন্টডাউন শেষ হলে বিমান উড়বে।</p>
+  <button id="jumpButton" class="wide" disabled onclick="jumpFromPlane()">JUMP</button>
+  <p class="notice">এটি পরীক্ষামূলক বিমান দৃশ্য। প্রকৃত অনলাইন খেলোয়াড় পরে যুক্ত হবে।</p>
+ </div>
+</section>
+
+<!-- PARACHUTE SCREEN -->
+<section id="jump" class="screen center">
+ <div class="brand" style="font-size:42px">BD</div>
+ <div class="jumpHero">🪂</div>
+ <h2 class="gold">PARACHUTE DROP</h2>
+ <p id="jumpStatus" class="sub">তুমি BD ISLAND-এর দিকে নামছো...</p>
+</section>
+
+<!-- 2D GAME -->
 <section id="match" class="screen">
- <div class="top"><b class="gold">BD GAMEPLAY</b><button onclick="exitMatch()">EXIT</button></div>
- <div class="gameHud"><span id="gameMode">SOLO</span><span>⭐ <b id="score">0</b></span><span>⏱️ <b id="timer">90</b>s</span></div>
+ <div class="top">
+  <b class="gold">BD GAMEPLAY</b>
+  <button onclick="exitMatch()">EXIT</button>
+ </div>
+ <div class="gameHud">
+  <span id="gameMode">SOLO</span>
+  <span>⭐ <b id="score">0</b></span>
+  <span>⏱️ <b id="timer">90</b>s</span>
+ </div>
  <canvas id="arena" width="900" height="500"></canvas>
  <div class="controls">
   <button data-dir="up">▲</button>
@@ -267,7 +315,8 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 
 <section id="profile" class="screen">
  <div class="top"><b class="gold">PLAYER PROFILE</b><button onclick="go('lobby')">BACK</button></div>
- <h2 class="pageTitle">YOUR PROFILE</h2><div class="character">👤</div>
+ <h2 class="pageTitle">YOUR PROFILE</h2>
+ <div class="character">👤</div>
  <div class="card">
   <h3 class="gold" id="profileName">Guest Player</h3>
   <p>Player ID: <span id="playerId">BD-GUEST</span></p>
@@ -297,17 +346,22 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 </section>
 
 <script>
-// APPWRITE CONFIG
+// APPWRITE CONFIGURATION
 const client = new Appwrite.Client()
  .setEndpoint("https://sgp.cloud.appwrite.io/v1")
  .setProject("6af4c610002ee336af01");
 const account = new Appwrite.Account(client);
 
-let currentUser=null,playerName="Guest Player",playerEmail="Guest";
-let playerId="BD-GUEST",playerLevel=1,playerRank="Bronze";
-let mode="SOLO",mapName="BD ISLAND";
+let currentUser=null;
+let playerName="Guest Player";
+let playerEmail="Guest";
+let playerId="BD-GUEST";
+let playerLevel=1;
+let playerRank="Bronze";
+let mode="SOLO";
+let mapName="BD ISLAND";
 
-// PROFILE
+// PLAYER PROFILE
 async function loadPlayerProfile(user){
  currentUser=user;
  playerName=user.name||"Player";
@@ -315,14 +369,28 @@ async function loadPlayerProfile(user){
  try{
   const prefs=await account.getPrefs();
   let changed=false;
-  if(!prefs.playerId){prefs.playerId="BD-"+user.$id.toUpperCase();changed=true}
-  if(typeof prefs.level!=="number"){prefs.level=1;changed=true}
-  if(!prefs.rank){prefs.rank="Bronze";changed=true}
+  if(!prefs.playerId){
+   prefs.playerId="BD-"+user.$id.toUpperCase();
+   changed=true;
+  }
+  if(typeof prefs.level!=="number"){
+   prefs.level=1;
+   changed=true;
+  }
+  if(!prefs.rank){
+   prefs.rank="Bronze";
+   changed=true;
+  }
   if(changed) await account.updatePrefs({prefs});
-  playerId=prefs.playerId;playerLevel=prefs.level;playerRank=prefs.rank;
- }catch(e){playerId="BD-"+user.$id.toUpperCase()}
+  playerId=prefs.playerId;
+  playerLevel=prefs.level;
+  playerRank=prefs.rank;
+ }catch(e){
+  playerId="BD-"+user.$id.toUpperCase();
+ }
  updateProfileScreen();
 }
+
 function updateProfileScreen(){
  document.getElementById("profileName").textContent=playerName;
  document.getElementById("playerId").textContent=playerId;
@@ -338,17 +406,34 @@ async function registerPlayer(){
  const password=document.getElementById("newPassword").value;
  const confirm=document.getElementById("confirmPassword").value;
  const notice=document.getElementById("registerNotice");
- if(!name||!email||!password||!confirm){notice.textContent="সব তথ্য পূরণ করো।";return}
- if(password.length<8){notice.textContent="পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।";return}
- if(password!==confirm){notice.textContent="দুটি পাসওয়ার্ড মিলছে না।";return}
+
+ if(!name||!email||!password||!confirm){
+  notice.textContent="সব তথ্য পূরণ করো।";
+  return;
+ }
+ if(password.length<8){
+  notice.textContent="পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।";
+  return;
+ }
+ if(password!==confirm){
+  notice.textContent="দুটি পাসওয়ার্ড মিলছে না।";
+  return;
+ }
+
  notice.textContent="অ্যাকাউন্ট তৈরি হচ্ছে...";
  try{
-  await account.create({userId:Appwrite.ID.unique(),email,password,name});
-  notice.textContent="অ্যাকাউন্ট তৈরি হয়েছে। এখন Login করো।";
+  await account.create({
+   userId:Appwrite.ID.unique(),
+   email,
+   password,
+   name
+  });
   document.getElementById("email").value=email;
   go("login");
-  document.getElementById("authNotice").textContent="নতুন অ্যাকাউন্ট দিয়ে লগইন করো।";
- }catch(e){notice.textContent=e.message||"Registration করা যায়নি।"}
+  document.getElementById("authNotice").textContent="অ্যাকাউন্ট তৈরি হয়েছে। এখন Login করো।";
+ }catch(e){
+  notice.textContent=e.message||"Registration করা যায়নি।";
+ }
 }
 
 // LOGIN
@@ -356,7 +441,12 @@ async function loginPlayer(){
  const email=document.getElementById("email").value.trim();
  const password=document.getElementById("password").value;
  const notice=document.getElementById("authNotice");
- if(!email||!password){notice.textContent="Email এবং Password দাও।";return}
+
+ if(!email||!password){
+  notice.textContent="Email এবং Password দাও।";
+  return;
+ }
+
  notice.textContent="Login হচ্ছে...";
  try{
   await account.createEmailPasswordSession({email,password});
@@ -364,16 +454,32 @@ async function loginPlayer(){
   await loadPlayerProfile(user);
   notice.textContent="Login সফল হয়েছে!";
   go("events");
- }catch(e){notice.textContent=e.message||"Login করা যায়নি।"}
+ }catch(e){
+  notice.textContent=e.message||"Login করা যায়নি।";
+ }
 }
+
 async function checkAppwriteSession(){
- try{const user=await account.get();await loadPlayerProfile(user);return true}
- catch(e){currentUser=null;return false}
+ try{
+  const user=await account.get();
+  await loadPlayerProfile(user);
+  return true;
+ }catch(e){
+  currentUser=null;
+  return false;
+ }
 }
+
 async function logoutPlayer(){
- try{if(currentUser)await account.deleteSession({sessionId:"current"})}catch(e){}
- currentUser=null;playerName="Guest Player";playerEmail="Guest";
- playerId="BD-GUEST";playerLevel=1;playerRank="Bronze";
+ try{
+  if(currentUser) await account.deleteSession({sessionId:"current"});
+ }catch(e){}
+ currentUser=null;
+ playerName="Guest Player";
+ playerEmail="Guest";
+ playerId="BD-GUEST";
+ playerLevel=1;
+ playerRank="Bronze";
  go("login");
 }
 
@@ -381,99 +487,323 @@ async function logoutPlayer(){
 function go(id){
  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
  const page=document.getElementById(id);
- if(page)page.classList.add("active");
- if(id==="profile")updateProfileScreen();
- if(id==="match")document.getElementById("gameMode").textContent=mode;
-}
-function message(text){
- const n=document.getElementById("authNotice");
- if(n)n.textContent=text;else alert(text);
-}
-function guest(){
- currentUser=null;playerName="Guest Player";playerEmail="Guest";
- playerId="BD-GUEST";playerLevel=1;playerRank="Bronze";
- go("events");
-}
-function selectMode(value){
- mode=value;document.getElementById("selectedMode").textContent="Selected: "+value;
-}
-function selectMap(value){
- mapName=value;document.getElementById("mapNotice").textContent="Selected: "+value;
+ if(page) page.classList.add("active");
+ if(id==="profile") updateProfileScreen();
+ if(id==="match") document.getElementById("gameMode").textContent=mode;
 }
 
-// GAME ENGINE - 2D COLLECTION ARENA
+function message(text){
+ const n=document.getElementById("authNotice");
+ if(n) n.textContent=text;
+ else alert(text);
+}
+
+function guest(){
+ currentUser=null;
+ playerName="Guest Player";
+ playerEmail="Guest";
+ playerId="BD-GUEST";
+ playerLevel=1;
+ playerRank="Bronze";
+ go("events");
+}
+
+function selectMode(value){
+ mode=value;
+ document.getElementById("selectedMode").textContent="Selected: "+value;
+}
+
+function selectMap(value){
+ mapName=value;
+ document.getElementById("mapNotice").textContent="Selected: "+value;
+}
+
+// GAME ENGINE
 const canvas=document.getElementById("arena");
 const ctx=canvas.getContext("2d");
 const player={x:450,y:250,r:17,speed:4};
-let stars=[],obstacles=[],score=0,timeLeft=90;
-let running=false,gameLoop=null,timerLoop=null;
-let keys={},touchDir={up:false,down:false,left:false,right:false};
 
-function randomItem(){
- return {x:35+Math.random()*830,y:35+Math.random()*430,r:11};
+let stars=[];
+let obstacles=[];
+let score=0;
+let timeLeft=90;
+let running=false;
+let gameLoop=null;
+let timerLoop=null;
+let keys={};
+let touchDir={up:false,down:false,left:false,right:false};
+
+// AIRPLANE SYSTEM
+let aircraftTimer=null;
+let aircraftAnimation=null;
+let airCountdown=30;
+let planeX=-120;
+let planeFlying=false;
+let jumpTimeout=null;
+
+function startMatch(){
+ stopGame();
+ clearAircraftTimers();
+
+ go("airlobby");
+
+ airCountdown=30;
+ planeX=-120;
+ planeFlying=false;
+
+ document.getElementById("airMap").textContent=mapName;
+ document.getElementById("airCountdown").textContent="MATCH STARTS IN 30";
+ document.getElementById("airStatus").textContent="বিমান প্রস্তুত হচ্ছে। কাউন্টডাউন শেষ হলে বিমান উড়বে।";
+ document.getElementById("jumpButton").disabled=true;
+
+ if(screen.orientation&&screen.orientation.lock){
+  screen.orientation.lock("landscape").catch(()=>{});
+ }
+
+ drawAircraft();
+
+ aircraftTimer=setInterval(()=>{
+  airCountdown--;
+
+  document.getElementById("airCountdown").textContent=
+   airCountdown>0
+   ?"MATCH STARTS IN "+airCountdown
+   :"✈️ AIRPLANE IN FLIGHT";
+
+  if(airCountdown<=0){
+   clearInterval(aircraftTimer);
+   aircraftTimer=null;
+   planeFlying=true;
+
+   document.getElementById("airStatus").textContent="বিমান উড়ছে! এখন JUMP চাপতে পারো।";
+   document.getElementById("jumpButton").disabled=false;
+
+   aircraftAnimation=setInterval(()=>{
+    planeX+=7;
+    if(planeX>980) planeX=-120;
+    drawAircraft();
+   },45);
+  }
+ },1000);
 }
+
+function drawAircraft(){
+ const cv=document.getElementById("aircraftView");
+ if(!cv) return;
+
+ const g=cv.getContext("2d");
+ const w=cv.width;
+
+ g.clearRect(0,0,w,420);
+
+ // Island background
+ g.fillStyle="#39765b";
+ g.fillRect(0,0,w,420);
+
+ g.fillStyle="#4d8a62";
+ for(let i=0;i<9;i++){
+  g.beginPath();
+  g.ellipse((i*137+40)%w,70+(i%3)*110,75,28,0,0,Math.PI*2);
+  g.fill();
+ }
+
+ // Land
+ g.fillStyle="#b4a16b";
+ g.beginPath();
+ g.moveTo(0,330);
+ g.quadraticCurveTo(250,230,470,335);
+ g.quadraticCurveTo(680,410,900,285);
+ g.lineTo(900,420);
+ g.lineTo(0,420);
+ g.fill();
+
+ // Sky label
+ g.fillStyle="#4b9acb";
+ g.fillRect(0,0,w,35);
+ g.fillStyle="#fff";
+ g.font="18px Arial";
+ g.fillText("BD ISLAND • FLIGHT PATH",18,24);
+
+ // Aircraft
+ const x=planeFlying?planeX:Math.max(90,planeX+180);
+ const y=190;
+
+ g.save();
+ g.translate(x,y);
+
+ g.fillStyle="#e8edf4";
+ g.beginPath();
+ g.moveTo(65,0);
+ g.lineTo(-45,-13);
+ g.lineTo(-25,0);
+ g.lineTo(-45,13);
+ g.closePath();
+ g.fill();
+
+ g.fillStyle="#c7d4e4";
+ g.fillRect(-18,-4,55,8);
+
+ g.fillStyle="#ffd36a";
+ g.beginPath();
+ g.moveTo(-35,-5);
+ g.lineTo(-55,-25);
+ g.lineTo(-45,-5);
+ g.fill();
+
+ g.restore();
+
+ g.fillStyle="#fff";
+ g.font="bold 20px Arial";
+ g.fillText(planeFlying?"AIRPLANE FLYING":"AIRPLANE READY",18,390);
+}
+
+function jumpFromPlane(){
+ if(!planeFlying) return;
+
+ clearAircraftTimers();
+ planeFlying=false;
+
+ go("jump");
+
+ document.getElementById("jumpStatus").textContent=
+  "তুমি "+mapName+"-এর দিকে নামছো...";
+
+ jumpTimeout=setTimeout(()=>{
+  jumpTimeout=null;
+  go("match");
+  restartMatch();
+ },2800);
+}
+
+function clearAircraftTimers(){
+ if(aircraftTimer) clearInterval(aircraftTimer);
+ if(aircraftAnimation) clearInterval(aircraftAnimation);
+ if(jumpTimeout) clearTimeout(jumpTimeout);
+
+ aircraftTimer=null;
+ aircraftAnimation=null;
+ jumpTimeout=null;
+}
+
+function cancelAircraft(){
+ clearAircraftTimers();
+ planeFlying=false;
+
+ if(screen.orientation&&screen.orientation.unlock){
+  screen.orientation.unlock();
+ }
+
+ go("lobby");
+}
+
+// ARENA
+function randomItem(){
+ return {
+  x:35+Math.random()*830,
+  y:35+Math.random()*430,
+  r:11
+ };
+}
+
 function setupArena(){
  stars=Array.from({length:12},randomItem);
+
  obstacles=[
-  {x:130,y:100,w:100,h:45},{x:340,y:60,w:65,h:110},
-  {x:620,y:120,w:120,h:45},{x:200,y:340,w:110,h:55},
-  {x:520,y:330,w:90,h:70},{x:760,y:350,w:65,h:55}
+  {x:130,y:100,w:100,h:45},
+  {x:340,y:60,w:65,h:110},
+  {x:620,y:120,w:120,h:45},
+  {x:200,y:340,w:110,h:55},
+  {x:520,y:330,w:90,h:70},
+  {x:760,y:350,w:65,h:55}
  ];
- player.x=450;player.y=250;score=0;timeLeft=90;
+
+ player.x=450;
+ player.y=250;
+ score=0;
+ timeLeft=90;
+
  document.getElementById("score").textContent=score;
  document.getElementById("timer").textContent=timeLeft;
  document.getElementById("gameMessage").textContent="";
 }
-function startMatch(){
- go("match");
- if(screen.orientation&&screen.orientation.lock){
-  screen.orientation.lock("landscape").catch(()=>{});
- }
- restartMatch();
-}
+
 function restartMatch(){
  stopGame();
  setupArena();
+
  running=true;
  gameLoop=setInterval(updateGame,25);
+
  timerLoop=setInterval(()=>{
-  if(!running)return;
+  if(!running) return;
+
   timeLeft--;
   document.getElementById("timer").textContent=timeLeft;
-  if(timeLeft<=0)endGame();
+
+  if(timeLeft<=0) endGame();
  },1000);
+
  drawGame();
 }
+
 function stopGame(){
  running=false;
- if(gameLoop)clearInterval(gameLoop);
- if(timerLoop)clearInterval(timerLoop);
- gameLoop=null;timerLoop=null;
+
+ if(gameLoop) clearInterval(gameLoop);
+ if(timerLoop) clearInterval(timerLoop);
+
+ gameLoop=null;
+ timerLoop=null;
 }
+
 function exitMatch(){
  stopGame();
- if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();
+ clearAircraftTimers();
+
+ if(screen.orientation&&screen.orientation.unlock){
+  screen.orientation.unlock();
+ }
+
  go("lobby");
 }
+
 function endGame(){
  stopGame();
- document.getElementById("gameMessage").textContent="সময় শেষ! তোমার স্কোর: "+score;
+ document.getElementById("gameMessage").textContent=
+  "সময় শেষ! তোমার স্কোর: "+score;
 }
+
 function blocked(x,y){
- return obstacles.some(o=>x+player.r>o.x&&x-player.r<o.x+o.w&&y+player.r>o.y&&y-player.r<o.y+o.h);
+ return obstacles.some(o=>
+  x+player.r>o.x &&
+  x-player.r<o.x+o.w &&
+  y+player.r>o.y &&
+  y-player.r<o.y+o.h
+ );
 }
+
 function updateGame(){
- if(!running)return;
- let dx=0,dy=0;
- if(keys.ArrowUp||keys.w||touchDir.up)dy-=1;
- if(keys.ArrowDown||keys.s||touchDir.down)dy+=1;
- if(keys.ArrowLeft||keys.a||touchDir.left)dx-=1;
- if(keys.ArrowRight||keys.d||touchDir.right)dx+=1;
- if(dx&&dy){dx*=.707;dy*=.707}
+ if(!running) return;
+
+ let dx=0;
+ let dy=0;
+
+ if(keys.ArrowUp||keys.w||keys.W||touchDir.up) dy-=1;
+ if(keys.ArrowDown||keys.s||keys.S||touchDir.down) dy+=1;
+ if(keys.ArrowLeft||keys.a||keys.A||touchDir.left) dx-=1;
+ if(keys.ArrowRight||keys.d||keys.D||touchDir.right) dx+=1;
+
+ if(dx&&dy){
+  dx*=0.707;
+  dy*=0.707;
+ }
+
  let nx=Math.max(player.r,Math.min(900-player.r,player.x+dx*player.speed));
  let ny=Math.max(player.r,Math.min(500-player.r,player.y+dy*player.speed));
- if(!blocked(nx,player.y))player.x=nx;
- if(!blocked(player.x,ny))player.y=ny;
+
+ if(!blocked(nx,player.y)) player.x=nx;
+ if(!blocked(player.x,ny)) player.y=ny;
+
  stars=stars.filter(star=>{
   if(Math.hypot(player.x-star.x,player.y-star.y)<player.r+star.r){
    score+=10;
@@ -482,40 +812,88 @@ function updateGame(){
   }
   return true;
  });
- while(stars.length<12)stars.push(randomItem());
+
+ while(stars.length<12) stars.push(randomItem());
+
  drawGame();
 }
+
 function drawGame(){
  ctx.clearRect(0,0,900,500);
- ctx.fillStyle="#235448";ctx.fillRect(0,0,900,500);
- ctx.strokeStyle="rgba(255,255,255,.08)";ctx.lineWidth=1;
- for(let x=0;x<900;x+=45){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,500);ctx.stroke()}
- for(let y=0;y<500;y+=45){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(900,y);ctx.stroke()}
+
+ ctx.fillStyle="#235448";
+ ctx.fillRect(0,0,900,500);
+
+ ctx.strokeStyle="rgba(255,255,255,.08)";
+ ctx.lineWidth=1;
+
+ for(let x=0;x<900;x+=45){
+  ctx.beginPath();
+  ctx.moveTo(x,0);
+  ctx.lineTo(x,500);
+  ctx.stroke();
+ }
+
+ for(let y=0;y<500;y+=45){
+  ctx.beginPath();
+  ctx.moveTo(0,y);
+  ctx.lineTo(900,y);
+  ctx.stroke();
+ }
+
  obstacles.forEach(o=>{
-  ctx.fillStyle="#687b64";ctx.fillRect(o.x,o.y,o.w,o.h);
-  ctx.strokeStyle="#c5b78b";ctx.strokeRect(o.x,o.y,o.w,o.h);
+  ctx.fillStyle="#687b64";
+  ctx.fillRect(o.x,o.y,o.w,o.h);
+  ctx.strokeStyle="#c5b78b";
+  ctx.strokeRect(o.x,o.y,o.w,o.h);
  });
+
  stars.forEach(s=>{
-  ctx.font="25px Arial";ctx.textAlign="center";ctx.fillText("⭐",s.x,s.y+9);
+  ctx.font="25px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("⭐",s.x,s.y+9);
  });
- ctx.beginPath();ctx.arc(player.x,player.y,player.r,0,Math.PI*2);
- ctx.fillStyle="#ffd36a";ctx.fill();
- ctx.strokeStyle="#fff4c5";ctx.lineWidth=3;ctx.stroke();
- ctx.font="24px Arial";ctx.textAlign="center";ctx.fillText("🙂",player.x,player.y+8);
+
+ ctx.beginPath();
+ ctx.arc(player.x,player.y,player.r,0,Math.PI*2);
+ ctx.fillStyle="#ffd36a";
+ ctx.fill();
+
+ ctx.strokeStyle="#fff4c5";
+ ctx.lineWidth=3;
+ ctx.stroke();
+
+ ctx.font="24px Arial";
+ ctx.textAlign="center";
+ ctx.fillText("🙂",player.x,player.y+8);
 }
 
 // KEYBOARD
 document.addEventListener("keydown",e=>{
- if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key))e.preventDefault();
+ if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)){
+  e.preventDefault();
+ }
  keys[e.key]=true;
 });
-document.addEventListener("keyup",e=>{keys[e.key]=false});
+
+document.addEventListener("keyup",e=>{
+ keys[e.key]=false;
+});
 
 // TOUCH CONTROLS
 document.querySelectorAll("[data-dir]").forEach(btn=>{
  const dir=btn.dataset.dir;
- const down=e=>{e.preventDefault();touchDir[dir]=true};
- const up=e=>{e.preventDefault();touchDir[dir]=false};
+
+ const down=e=>{
+  e.preventDefault();
+  touchDir[dir]=true;
+ };
+
+ const up=e=>{
+  e.preventDefault();
+  touchDir[dir]=false;
+ };
+
  btn.addEventListener("pointerdown",down);
  btn.addEventListener("pointerup",up);
  btn.addEventListener("pointerleave",up);
@@ -525,22 +903,29 @@ document.querySelectorAll("[data-dir]").forEach(btn=>{
 // STARTUP
 async function startGame(){
  go("splash");
+
  setTimeout(()=>{
   go("loading");
+
   let progress=0;
+
   const timer=setInterval(async()=>{
    progress=Math.min(100,progress+5);
+
    document.getElementById("bar").style.width=progress+"%";
    document.getElementById("progress").textContent=progress+"%";
+
    if(progress===100){
     clearInterval(timer);
+
     const loggedIn=await checkAppwriteSession();
     go(loggedIn?"events":"login");
    }
   },80);
  },700);
 }
+
 startGame();
 </script>
 </body>
-   </html>
+    </html>
