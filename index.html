@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif;overflow-x:hidden}
@@ -43,6 +44,7 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 .character{height:180px;border-radius:12px;background:radial-gradient(circle,#53647d,#17243a 65%);display:flex;align-items:center;justify-content:center;font-size:100px}
 .listitem{padding:13px;margin:8px 0;border-radius:9px;background:#1b2a42;border:1px solid #526078}
 .bottomspace{height:75px}
+
 @media(orientation:landscape) and (max-height:600px){
 .screen{padding:8px}
 .brand{font-size:38px}
@@ -52,13 +54,12 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 }
 </style>
 </head>
+
 <body>
 
-<!-- SPLASH -->
+<!-- SPLASH: LOGO ONLY BD -->
 <section id="splash" class="screen active center">
  <div class="brand">BD</div>
- <h2 class="gold">BATTLE ARENA</h2>
- <p class="sub">YOUR BATTLE · YOUR LEGEND</p>
 </section>
 
 <!-- LOADING -->
@@ -93,7 +94,7 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <div class="brand" style="font-size:40px">BD</div>
  <div class="panel">
   <h2 class="gold">CREATE PLAYER ACCOUNT</h2>
-  <input placeholder="Player Name">
+  <input id="newPlayerName" placeholder="Player Name">
   <input type="email" placeholder="Email">
   <input type="password" placeholder="Password">
   <input type="password" placeholder="Confirm Password">
@@ -124,12 +125,18 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
   <span class="coins">🪙 1000 &nbsp; 💎 100</span>
   <button onclick="go('profile')">👤</button>
  </div>
+
  <div class="content">
   <div class="hero">
-   <div><h2>WELCOME TO BD</h2><p>THE BATTLE STARTS HERE</p></div>
+   <div>
+    <h2>WELCOME TO BD</h2>
+    <p>THE BATTLE STARTS HERE</p>
+   </div>
   </div>
+
   <div class="character">🦸</div>
   <p class="gold" style="text-align:center">PLAYER CHARACTER</p>
+
   <div class="card">
    <h3 class="gold">SELECT GAME MODE</h3>
    <div class="grid">
@@ -141,12 +148,13 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
    <p id="selectedMode" class="gold">Selected: SOLO</p>
    <button class="wide" onclick="go('match')">START MATCH</button>
   </div>
+
   <h3 class="gold">GAME FEATURES</h3>
   <div class="grid">
    <div class="tile" onclick="go('character')"><span class="emoji">🧍</span><b>CHARACTER</b></div>
    <div class="tile" onclick="go('outfit')"><span class="emoji">👕</span><b>OUTFIT & SKIN</b></div>
    <div class="tile" onclick="go('pet')"><span class="emoji">🐾</span><b>PET</b></div>
-   <div class="tile" onclick="go('weapon')"><span class="emoji">🎯</span><b>WEAPON</b></div>
+   <div class="tile" onclick="go('gear')"><span class="emoji">🎒</span><b>GEAR & ITEMS</b></div>
    <div class="tile" onclick="go('shop')"><span class="emoji">🛒</span><b>GAME SHOP</b></div>
    <div class="tile" onclick="go('map')"><span class="emoji">🗺️</span><b>MAP</b></div>
    <div class="tile" onclick="go('friends')"><span class="emoji">👥</span><b>FRIENDS</b></div>
@@ -157,6 +165,7 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
    <div class="tile" onclick="go('security')"><span class="emoji">🛡️</span><b>SECURITY</b></div>
   </div>
  </div>
+
  <nav class="nav">
   <button onclick="go('lobby')"><span>🏠</span>Home</button>
   <button onclick="go('friends')"><span>👥</span>Friends</button>
@@ -205,15 +214,15 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- WEAPON -->
-<section id="weapon" class="screen">
- <div class="top"><b class="gold">WEAPON COLLECTION</b><button onclick="go('lobby')">BACK</button></div>
- <h2 class="pageTitle">WEAPON INVENTORY</h2>
+<!-- GEAR -->
+<section id="gear" class="screen">
+ <div class="top"><b class="gold">GEAR COLLECTION</b><button onclick="go('lobby')">BACK</button></div>
+ <h2 class="pageTitle">PLAYER EQUIPMENT</h2>
  <div class="grid">
-  <div class="tile"><span class="emoji">🎯</span><b>RIFLE COLLECTION</b></div>
-  <div class="tile"><span class="emoji">🔫</span><b>PISTOL COLLECTION</b></div>
-  <div class="tile"><span class="emoji">🛡️</span><b>DEFENSE GEAR</b></div>
-  <div class="tile"><span class="emoji">🎨</span><b>WEAPON SKINS</b></div>
+  <div class="tile"><span class="emoji">🎒</span><b>BACKPACK</b></div>
+  <div class="tile"><span class="emoji">🛡️</span><b>PROTECTION GEAR</b></div>
+  <div class="tile"><span class="emoji">🧰</span><b>SUPPORT ITEMS</b></div>
+  <div class="tile"><span class="emoji">🎨</span><b>ITEM SKINS</b></div>
  </div>
 </section>
 
@@ -250,7 +259,11 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  <h2 class="pageTitle">PLAYER SOCIAL</h2>
  <div class="card"><b>FRIENDS LIST</b><p class="sub">Your friends will appear here.</p></div>
  <div class="card"><b>TEAM INVITATIONS</b><p class="sub">Team invitations will appear here.</p></div>
- <div class="card"><b>ADD FRIEND</b><input placeholder="Player ID"><button onclick="message('Friend system পরে সংযুক্ত হবে')">SEARCH PLAYER</button></div>
+ <div class="card">
+  <b>ADD FRIEND</b>
+  <input placeholder="Player ID">
+  <button onclick="message('Friend system পরে সংযুক্ত হবে')">SEARCH PLAYER</button>
+ </div>
 </section>
 
 <!-- ROOM -->
@@ -265,14 +278,13 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
  </div>
 </section>
 
-<!-- MATCH -->
+<!-- MATCH PLACEHOLDER -->
 <section id="match" class="screen center">
  <div class="brand" style="font-size:40px">BD</div>
- <h2 class="gold">BATTLE ARENA</h2>
  <div class="panel">
-  <h2>PREPARING MATCH</h2>
+  <h2 class="gold">PREPARING MATCH</h2>
   <p id="matchMode">SOLO</p>
-  <p class="sub">MULTIPLAYER MATCH WILL BE CONNECTED LATER</p>
+  <p class="sub">REAL GAMEPLAY WILL BE BUILT IN A LATER STAGE</p>
   <button class="wide" onclick="go('lobby')">BACK TO LOBBY</button>
  </div>
 </section>
@@ -322,9 +334,18 @@ input{width:100%;padding:13px;margin:7px 0;background:#101b2e;border:1px solid #
 <section id="security" class="screen">
  <div class="top"><b class="gold">BD GAME SECURITY</b><button onclick="go('lobby')">BACK</button></div>
  <h2 class="pageTitle">PLAYER PROTECTION</h2>
- <div class="card"><h3 class="gold">🛡️ ANTI-CHEAT</h3><p>Anti-cheat interface preview. Server-side protection will be connected later.</p></div>
- <div class="card"><h3 class="gold">🔐 ACCOUNT SECURITY</h3><p>Account verification and security controls will be connected later.</p></div>
- <div class="card"><h3 class="gold">⚖️ FAIR PLAY</h3><p>Fair play rules and player reports.</p></div>
+ <div class="card">
+  <h3 class="gold">🛡️ PLAYER PROTECTION</h3>
+  <p>Player protection interface preview. Server-side protection will be connected later.</p>
+ </div>
+ <div class="card">
+  <h3 class="gold">🔐 ACCOUNT SECURITY</h3>
+  <p>Account verification and security controls will be connected later.</p>
+ </div>
+ <div class="card">
+  <h3 class="gold">⚖️ FAIR PLAY</h3>
+  <p>Fair play rules and player reports.</p>
+ </div>
 </section>
 
 <script>
@@ -334,45 +355,69 @@ let mapName="BD ISLAND";
 
 function go(id){
  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+
  const page=document.getElementById(id);
  if(page)page.classList.add("active");
- if(id==="profile")document.getElementById("profileName").textContent=playerName;
- if(id==="match")document.getElementById("matchMode").textContent=mode;
+
+ if(id==="profile"){
+  document.getElementById("profileName").textContent=playerName;
+ }
+
+ if(id==="match"){
+  document.getElementById("matchMode").textContent=mode;
+ }
 }
+
 function message(text){
  const n=document.getElementById("authNotice");
- if(n)n.textContent=text;
- else alert(text);
+
+ if(n){
+  n.textContent=text;
+ }else{
+  alert(text);
+ }
 }
+
 function guest(){
  playerName="Guest Player";
  go("events");
 }
+
 function selectMode(value){
  mode=value;
  document.getElementById("selectedMode").textContent="Selected: "+value;
 }
+
 function selectMap(value){
  mapName=value;
  document.getElementById("mapNotice").textContent="Selected: "+value;
 }
+
 function startGame(){
  go("splash");
+
  setTimeout(()=>{
   go("loading");
+
   let p=0;
+
   const timer=setInterval(()=>{
    p=Math.min(100,p+5);
+
    document.getElementById("bar").style.width=p+"%";
    document.getElementById("progress").textContent=p+"%";
+
    if(p===100){
     clearInterval(timer);
     go("login");
    }
   },80);
+
  },1200);
 }
+
 startGame();
 </script>
+
 </body>
-    </html>
+   </html>
