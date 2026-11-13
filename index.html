@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -9,10 +10,9 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
-button,input{font:inherit}
+button,input,select{font:inherit}
 button{border:0;border-radius:8px;padding:12px;background:#e8bd62;color:#151515;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-input{width:100%;padding:13px;margin:7px 0;background:#172438;border:1px solid #45536a;border-radius:8px;color:white}
+input,select{width:100%;padding:13px;margin:7px 0;background:#172438;border:1px solid #45536a;border-radius:8px;color:white}
 header{height:55px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
 .logo{font-size:22px;font-weight:1000;color:#f3c76c;letter-spacing:2px}
 .page{display:none;min-height:calc(100vh - 55px);padding:12px 12px 85px}
@@ -26,54 +26,25 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .muted{color:#9eabc0;font-size:13px}
 .center{text-align:center}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.tile{background:#17263b;border:1px solid #35465b;border-radius:10px;padding:17px 5px;text-align:center}
+.tile,.slot{background:#17263b;border:1px solid #35465b;border-radius:10px;padding:17px 5px;text-align:center}
 .nav{position:fixed;bottom:0;left:0;right:0;height:62px;background:#101a2b;border-top:1px solid #344158;display:none;justify-content:space-around;align-items:center;z-index:20}
 .nav button{background:transparent;color:white;font-size:12px;padding:7px}
 .status{padding:10px;background:#17263b;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
 .hide{display:none!important}
 #splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)}
-.splash-wrap{padding-top:13vh;animation:rise 1s ease both}
-.splash-mark{width:130px;height:130px;margin:auto;border:3px solid #ffd36a;border-radius:50%;display:grid;place-items:center;font-size:62px;font-weight:1000;color:#ffd36a;text-shadow:0 0 18px #ffd36a;box-shadow:0 0 25px #bd812b,inset 0 0 18px #bd812b;animation:pulse 2s infinite}
-@keyframes pulse{50%{transform:scale(1.06);box-shadow:0 0 35px #ffd36a}}
-@keyframes rise{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
-.lobby-scene{position:relative;overflow:hidden;background:radial-gradient(ellipse at 65% 28%,#496e61,#1b3941 38%,#101a2a 75%,#080d18);padding-top:10px}
-.lobby-scene:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 40px,#ffffff08 41px 42px);pointer-events:none}
-.top-chips{position:relative;display:flex;justify-content:space-between;z-index:2}
-.chip{background:#101b2b;border:1px solid #d4aa57;color:#f4ce7b;padding:7px 10px;border-radius:6px;font-size:11px}
-.hero{height:330px;position:relative;margin:8px -12px 12px;overflow:hidden;background:linear-gradient(#a9c4b022,#07131c66)}
-.hills{position:absolute;bottom:0;width:120%;height:130px;background:#17352f;clip-path:polygon(0 65%,12% 30%,22% 60%,38% 12%,53% 57%,68% 22%,82% 65%,100% 18%,100% 100%,0 100%)}
-.hills:after{content:"";position:absolute;inset:50px 0 0;background:#0d211f}
-.hero-copy{position:absolute;z-index:3;top:15px;left:17px;text-shadow:0 2px 8px #000}
-.hero-copy small{color:#f4d17d;letter-spacing:3px}
-.hero-copy h1{font-size:29px;margin:8px 0}
-.hero-copy em{color:#f3c45e;font-style:normal}
-.hero-copy p{font-size:10px;letter-spacing:2px}
-.character{position:absolute;z-index:2;width:190px;height:270px;bottom:3px;left:calc(50% - 95px);animation:idle 3s ease-in-out infinite}
-.aura{position:absolute;width:170px;height:170px;top:45px;left:10px;border-radius:50%;background:#f1c66b33;filter:blur(20px)}
-.shadow{position:absolute;bottom:8px;left:20px;width:150px;height:20px;border-radius:50%;background:#0009;filter:blur(7px)}
-.head{position:absolute;top:14px;left:72px;width:42px;height:48px;border-radius:45%;background:linear-gradient(90deg,#986848,#e0aa7b,#895b42);border:3px solid #202b35;z-index:4}
-.head:before{content:"";position:absolute;top:-5px;left:-4px;width:44px;height:19px;border-radius:50%;background:#202b35}
-.bodychar{position:absolute;top:59px;left:50px;width:85px;height:105px;background:linear-gradient(100deg,#172632,#66717a,#182936);clip-path:polygon(25% 0,75% 0,100% 25%,83% 100%,15% 100%,0 25%)}
-.bodychar:after{content:"BD";position:absolute;top:34px;left:29px;color:#f5ce72;font-size:18px;font-weight:900}
-.arm{position:absolute;top:68px;width:25px;height:94px;border-radius:15px;background:linear-gradient(90deg,#26333d,#9b7256);transform-origin:top}
-.arm.left{left:40px;transform:rotate(13deg)}
-.arm.right{left:120px;transform:rotate(-18deg)}
-.leg{position:absolute;top:151px;width:35px;height:100px;border-radius:8px;background:linear-gradient(90deg,#151e29,#46515a)}
-.leg.left{left:56px;transform:rotate(4deg)}
-.leg.right{left:94px;transform:rotate(-5deg)}
-.hero-label{position:absolute;bottom:2px;left:37px;background:#101a2b;color:#f3ce79;border:1px solid #b58a42;padding:5px 8px;font-size:9px;letter-spacing:2px}
-@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.action-panel{position:relative;z-index:3;background:#0d1725ed;border:1px solid #59616a;border-top:2px solid #d8ad57;border-radius:10px;padding:12px}
+.splash-wrap{padding-top:13vh}
+.splash-mark{width:130px;height:130px;margin:auto;border:3px solid #ffd36a;border-radius:50%;display:grid;place-items:center;font-size:62px;font-weight:1000;color:#ffd36a;box-shadow:0 0 25px #bd812b}
+.hero{height:300px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 65% 28%,#496e61,#1b3941 38%,#101a2a 75%,#080d18);margin:10px -12px}
+.hero-copy{position:absolute;top:15px;left:17px}
+.hero-copy h1{font-size:29px}
+.character{font-size:125px;position:absolute;bottom:5px;left:calc(50% - 60px);animation:idle 3s infinite}
+@keyframes idle{50%{transform:translateY(-8px)}}
+.action-panel{background:#0d1725;border:1px solid #59616a;border-radius:10px;padding:12px}
 .mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.mode-card{background:#1c2b3b;color:#dce3e8;border:1px solid #435365;padding:9px 4px;display:flex;flex-direction:column;gap:4px}
-.mode-card b{font-size:20px;color:#f3cb70}
-.mode-card span{font-size:11px}
-.mode-card.selected{background:linear-gradient(135deg,#8e642b,#e0b65d);color:#111;border-color:#ffe19a}
-.mode-card.selected b{color:#111}
-.match-button{margin-top:12px;background:linear-gradient(90deg,#a86d22,#f4cf72,#a86d22);font-size:17px;letter-spacing:2px}
-.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px;position:relative}
-.shortcuts button{background:#142235;border:1px solid #35465a;color:#f1cb74;padding:11px 2px;display:flex;flex-direction:column;gap:5px;align-items:center}
-.shortcuts span{font-size:9px;color:#e5eaf0}
+.mode-card{background:#1c2b3b;color:white;border:1px solid #435365}
+.mode-card.selected{background:#e0b65d;color:#111}
+.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.shortcuts button{background:#142235;color:#f1cb74;padding:11px 2px}
 .map-card{padding:16px;background:#1c3040;border:1px solid #536477;border-radius:10px;margin:8px 0}
 .selected-map{border:2px solid #e8bd62}
 #arena{width:100%;background:#327c55;border-radius:10px;touch-action:none}
@@ -82,7 +53,6 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 </style>
 </head>
 <body>
-
 <header>
  <div class="logo">BD GAME</div>
  <div id="playerName" class="muted">Guest Player</div>
@@ -123,54 +93,56 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
-<section id="lobby" class="page lobby-scene">
- <div class="top-chips">
-  <span class="chip">★ ROOKIE</span>
-  <span class="chip">BD COINS: 0</span>
+<section id="lobby" class="page">
+ <div class="panel">
+  <b>★ ROOKIE</b>
+  <span style="float:right">BD COINS: 0</span>
  </div>
  <div class="hero">
-  <div class="hills"></div>
   <div class="hero-copy">
    <small>WELCOME TO</small>
-   <h1>BD <em>ARENA</em></h1>
+   <h1>BD ARENA</h1>
    <p>LAST PLAYER STANDING</p>
   </div>
-  <div class="character">
-   <div class="aura"></div><div class="shadow"></div>
-   <div class="head"></div><div class="bodychar"></div>
-   <div class="arm left"></div><div class="arm right"></div>
-   <div class="leg left"></div><div class="leg right"></div>
-   <span class="hero-label">BD ELITE SURVIVOR</span>
-  </div>
+  <div class="character" id="lobbyCharacter">🧍</div>
  </div>
  <div class="action-panel">
-  <div style="display:flex;justify-content:space-between;color:#f2cd78;font-size:12px;margin-bottom:10px">
-   <b>SELECT MODE</b><span id="modeLabel">SOLO SELECTED</span>
-  </div>
+  <b>SELECT MODE</b>
   <div class="mode-row">
-   <button class="mode-card selected" id="soloBtn" onclick="setMode('SOLO')"><b>1</b><span>SOLO</span></button>
-   <button class="mode-card" id="duoBtn" onclick="setMode('DUO')"><b>2</b><span>DUO</span></button>
-   <button class="mode-card" id="squadBtn" onclick="setMode('SQUAD')"><b>4</b><span>SQUAD</span></button>
+   <button class="mode-card selected" id="soloBtn" onclick="setMode('SOLO')">1<br>SOLO</button>
+   <button class="mode-card" id="duoBtn" onclick="setMode('DUO')">2<br>DUO</button>
+   <button class="mode-card" id="squadBtn" onclick="setMode('SQUAD')">4<br>SQUAD</button>
   </div>
-  <button class="full match-button" onclick="startMatch()">START MATCH ▶</button>
+  <button class="full" onclick="startMatch()">START MATCH ▶</button>
   <button class="full green" onclick="findMatch()">⚡ RANDOM MATCHMAKING</button>
   <button class="full darkbtn" onclick="go('room')">CREATE / JOIN ROOM</button>
  </div>
  <div class="shortcuts">
-  <button onclick="go('profile')">👤<span>PROFILE</span></button>
-  <button onclick="go('character')">🧍<span>CHARACTER</span></button>
-  <button onclick="go('maps')">🗺️<span>MAPS</span></button>
-  <button onclick="go('rank')">🏆<span>RANK</span></button>
+  <button onclick="go('profile')">👤<br>PROFILE</button>
+  <button onclick="go('character')">🧍<br>CHARACTER</button>
+  <button onclick="go('maps')">🗺️<br>MAPS</button>
+  <button onclick="go('rank')">🏆<br>RANK</button>
+ </div>
+ <div class="shortcuts">
+  <button onclick="go('team')">👥<br>TEAM</button>
+  <button onclick="go('result')">🏆<br>RESULT</button>
+  <button onclick="go('settings')">⚙<br>SETTINGS</button>
+  <button onclick="go('room')">🚪<br>ROOM</button>
  </div>
 </section>
 
 <section id="character" class="page">
  <h2 class="title">CHARACTER & OUTFIT</h2>
  <div class="panel center">
-  <div style="font-size:100px">🧍</div>
-  <h3>BD ELITE SURVIVOR</h3>
-  <p class="muted">Your selected character</p>
-  <button class="full" onclick="alert('আরও Character ও Outfit পরে যুক্ত হবে।')">SELECT CHARACTER</button>
+  <div id="characterPreview" style="font-size:100px">🧍</div>
+  <h3 id="characterName">BD ELITE SURVIVOR</h3>
+  <p class="muted">Choose your character</p>
+ </div>
+ <div class="grid">
+  <button onclick="chooseCharacter('BD Elite Survivor','🧍')">BD ELITE</button>
+  <button onclick="chooseCharacter('Shadow Hunter','🥷')">SHADOW</button>
+  <button onclick="chooseCharacter('Desert Warrior','🧔')">DESERT</button>
+  <button onclick="chooseCharacter('Jungle Ranger','🧑‍🚀')">RANGER</button>
  </div>
  <div class="grid">
   <div class="tile">👕<br>OUTFIT</div>
@@ -178,6 +150,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
   <div class="tile">🎨<br>SKIN</div>
   <div class="tile">🪂<br>PARACHUTE</div>
  </div>
+ <p class="muted">Outfit, Backpack, Skin ও Parachute এখনো নমুনা অপশন।</p>
 </section>
 
 <section id="maps" class="page">
@@ -191,7 +164,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 <section id="room" class="page">
  <h2 class="title">CUSTOM ROOM</h2>
  <div class="panel">
-  <p class="muted">একটি Room তৈরি করে বন্ধুদের Room Code দিয়ে Join করাও। সর্বোচ্চ ৫০ জনের জন্য Backend সেট করা আছে।</p>
+  <p class="muted">Room তৈরি করে Room Code বন্ধুদের দাও। Backend সর্বোচ্চ ৫০ জনের জন্য কনফিগার করা হয়েছে; বাস্তব ম্যাচ এখনো পরীক্ষা করা বাকি।</p>
   <button class="full green" onclick="createRoom()">＋ CREATE PRIVATE ROOM</button>
   <input id="roomCode" placeholder="Enter Room Code">
   <button class="full" onclick="joinRoom()">JOIN ROOM</button>
@@ -210,10 +183,28 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<section id="team" class="page">
+ <h2 class="title">TEAM & PLAYER</h2>
+ <div class="panel">
+  <h3>Your Team</h3>
+  <div class="grid">
+   <div class="slot">👤<br>Player 1<br><small>Team Leader</small></div>
+   <div class="slot">👤<br>Player 2<br><small>Empty Slot</small></div>
+   <div class="slot">👤<br>Player 3<br><small>Empty Slot</small></div>
+   <div class="slot">👤<br>Player 4<br><small>Empty Slot</small></div>
+  </div>
+  <input id="invitePlayerId" placeholder="Friend Player ID">
+  <button class="full" onclick="inviteFriend()">INVITE FRIEND</button>
+  <p id="inviteMessage" class="muted"></p>
+  <button class="full green" onclick="go('room')">GO TO ROOM</button>
+ </div>
+ <p class="muted">Team slot ও Invite UI তৈরি করা হয়েছে। Invite API-র বাস্তব সংযোগ আলাদাভাবে পরীক্ষা করতে হবে।</p>
+</section>
+
 <section id="airlobby" class="page center">
  <h2 class="title">AIRCRAFT FLIGHT</h2>
  <p id="countdownText">Match starting in 30 seconds</p>
- <div style="font-size:100px;animation:idle 2s infinite">✈️</div>
+ <div style="font-size:100px">✈️</div>
  <div style="font-size:80px">🏝️</div>
  <button id="jumpBtn" disabled onclick="jumpFromPlane()">JUMP</button>
  <button class="full darkbtn" onclick="cancelAircraft()">CANCEL</button>
@@ -221,13 +212,13 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 
 <section id="jump" class="page center">
  <h2 class="title">PARACHUTE DESCENT</h2>
- <div style="font-size:110px;animation:idle 2s infinite">🪂</div>
+ <div style="font-size:110px">🪂</div>
  <h3>LANDING...</h3>
  <p class="muted">BD ISLAND</p>
 </section>
 
 <section id="match" class="page center">
- <h2 class="title">BD ISLAND BATTLE</h2>
+ <h2 class="title">BD ISLAND PRACTICE</h2>
  <div class="panel">
   <p>⭐ SCORE: <b id="score">0</b>　⏱ <b id="timeLeft">90</b>s</p>
   <canvas id="arena" width="900" height="500"></canvas>
@@ -237,8 +228,20 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
    <button class="control" data-key="ArrowDown">↓</button>
    <button class="control" data-key="ArrowRight">→</button>
   </div>
-  <p class="muted">Prototype practice: Move your player and collect the stars.</p>
-  <button class="full darkbtn" onclick="go('lobby')">EXIT TO LOBBY</button>
+  <p class="muted">Practice prototype: Move and collect stars.</p>
+  <button class="full darkbtn" onclick="finishPractice()">FINISH PRACTICE</button>
+ </div>
+</section>
+
+<section id="result" class="page">
+ <h2 class="title">MATCH RESULT</h2>
+ <div class="panel center">
+  <div style="font-size:80px">🏆</div>
+  <h1 id="resultTitle">MATCH COMPLETE</h1>
+  <p id="resultRank">Practice Result</p>
+  <p>Score: <b id="resultScore">0</b></p>
+  <p class="muted">এটি Practice-এর ফলাফল; অনলাইন Battle Royale-এর Winner নয়।</p>
+  <button class="full" onclick="go('lobby')">BACK TO LOBBY</button>
  </div>
 </section>
 
@@ -257,13 +260,28 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <div class="panel center">
   <div style="font-size:70px">🏆</div>
   <h2>ROOKIE</h2>
-  <p class="muted">Leaderboard connection will be added later.</p>
+  <p>Rank Points: 0</p>
+  <p class="muted">অনলাইন Leaderboard ও Rank Points সংযোগ এখনো করা হয়নি।</p>
+ </div>
+ <div class="panel">
+  <h3>Rank Levels</h3>
+  <p>🥉 Bronze</p><p>🥈 Silver</p><p>🥇 Gold</p><p>💎 Platinum</p><p>💠 Diamond</p>
  </div>
 </section>
 
 <section id="settings" class="page">
- <h2 class="title">SETTINGS</h2>
+ <h2 class="title">GAME SETTINGS</h2>
  <div class="panel">
+  <label>Graphics</label>
+  <select id="graphics"><option>Low</option><option selected>Medium</option><option>High</option></select>
+  <label>Sound</label>
+  <select id="sound"><option>On</option><option>Off</option></select>
+  <label>Controls</label>
+  <select id="controlStyle"><option>Default</option><option>Custom</option></select>
+  <label>Language</label>
+  <select id="language"><option>বাংলা</option><option>English</option></select>
+  <button class="full" onclick="saveSettings()">SAVE SETTINGS</button>
+  <p id="settingsMessage" class="muted"></p>
   <button class="full darkbtn" onclick="checkConnection()">CHECK SERVER CONNECTION</button>
   <p id="connectionInfo" class="muted"></p>
   <button class="full red" onclick="logoutPlayer()">LOG OUT</button>
@@ -273,12 +291,11 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 <nav class="nav" id="bottomNav">
  <button onclick="go('lobby')">🏠<br>HOME</button>
  <button onclick="go('room')">🚪<br>ROOM</button>
+ <button onclick="go('team')">👥<br>TEAM</button>
  <button onclick="go('profile')">👤<br>PROFILE</button>
- <button onclick="go('settings')">☰<br>MENU</button>
 </nav>
 
 <script>
-/* APPWRITE CONFIG */
 const APPWRITE_ENDPOINT="https://sgp.cloud.appwrite.io/v1";
 const APPWRITE_PROJECT_ID="6af4c610002ee336af01";
 const GAME_FUNCTION_ID="bd-game-match-api";
@@ -286,7 +303,6 @@ const GAME_FUNCTION_ID="bd-game-match-api";
 const client=new Appwrite.Client()
  .setEndpoint(APPWRITE_ENDPOINT)
  .setProject(APPWRITE_PROJECT_ID);
-
 const account=new Appwrite.Account(client);
 const functions=new Appwrite.Functions(client);
 
@@ -308,6 +324,7 @@ let keys={};
 let player={x:450,y:250,speed:5};
 let stars=[];
 let apiBusy=false;
+let selectedCharacter="BD ELITE SURVIVOR";
 
 const pages=document.querySelectorAll(".page");
 
@@ -321,7 +338,6 @@ function go(id){
  document.getElementById("bottomNav").style.display=
  ["splash","login","register","airlobby","jump"].includes(id)?"none":"flex";
 }
-
 function message(id,text){
  const el=document.getElementById(id);
  if(el)el.textContent=text;
@@ -342,7 +358,6 @@ async function registerPlayer(){
   go("login");
  }catch(e){message("regMessage",e.message||"Registration failed")}
 }
-
 async function loginPlayer(){
  const email=document.getElementById("loginEmail").value.trim();
  const password=document.getElementById("loginPassword").value;
@@ -353,7 +368,6 @@ async function loginPlayer(){
   afterLogin();
  }catch(e){message("loginMessage",e.message||"Login failed")}
 }
-
 async function guestLogin(){
  try{
   await account.createAnonymousSession();
@@ -361,7 +375,6 @@ async function guestLogin(){
   afterLogin();
  }catch(e){alert("Guest login failed: "+(e.message||""))}
 }
-
 function afterLogin(){
  const name=currentUser.name||"Guest Player";
  document.getElementById("playerName").textContent=name;
@@ -370,7 +383,6 @@ function afterLogin(){
  document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
  go("lobby");
 }
-
 async function logoutPlayer(){
  stopRoomRefresh();
  stopMatchmakingPolling();
@@ -380,7 +392,7 @@ async function logoutPlayer(){
  go("splash");
 }
 
-/* APPWRITE FUNCTION REQUEST — ROUTE FIXED */
+/* APPWRITE API */
 async function gameApi(path,method="POST",payload={}){
  if(!currentUser)throw new Error("আগে Player Login করুন।");
  if(apiBusy)throw new Error("একটি অনুরোধ চলছে, একটু অপেক্ষা করুন।");
@@ -389,48 +401,38 @@ async function gameApi(path,method="POST",payload={}){
   const execution=await functions.createExecution({
    functionId:GAME_FUNCTION_ID,
    async:false,
-
-   // FIX: Appwrite SDK uses xpath for the function route.
    xpath:path,
-
    method:method,
    headers:{"content-type":"application/json"},
    body:method==="GET"?"":JSON.stringify(payload)
   });
-
   let result={};
-  try{
-   result=JSON.parse(execution.responseBody||"{}");
-  }catch(e){
-   result={message:execution.responseBody||"Invalid server response"};
-  }
-
-  if(execution.responseStatusCode<200||execution.responseStatusCode>=300){
+  try{result=JSON.parse(execution.responseBody||"{}")}
+  catch(e){result={message:execution.responseBody||"Invalid server response"}}
+  if(execution.responseStatusCode<200||execution.responseStatusCode>=300)
    throw new Error(result.message||result.error||"Server error "+execution.responseStatusCode);
-  }
-
   if(result.ok===false)throw new Error(result.message||"Request failed");
   return result;
- }finally{
-  apiBusy=false;
- }
+ }finally{apiBusy=false}
 }
 
-/* MODE AND MAP */
+/* MODE / MAP / CHARACTER */
 function setMode(mode){
  selectedMode=mode;
- message("modeLabel",mode+" SELECTED");
- ["soloBtn","duoBtn","squadBtn"].forEach(id=>{
-  document.getElementById(id).className="mode-card";
- });
+ ["soloBtn","duoBtn","squadBtn"].forEach(id=>document.getElementById(id).className="mode-card");
  document.getElementById(mode.toLowerCase()+"Btn").className="mode-card selected";
 }
-
 function selectMap(name,element){
  selectedMap=name;
  document.querySelectorAll(".map-card").forEach(el=>el.classList.remove("selected-map"));
  element.classList.add("selected-map");
  message("mapMessage","Selected: "+name);
+}
+function chooseCharacter(name,emoji){
+ selectedCharacter=name;
+ document.getElementById("characterName").textContent=name;
+ document.getElementById("characterPreview").textContent=emoji;
+ document.getElementById("lobbyCharacter").textContent=emoji;
 }
 
 /* CUSTOM ROOM */
@@ -443,7 +445,6 @@ async function createRoom(){
   message("roomMessage","Room তৈরি হয়েছে। বন্ধুদের Room Code দাও।");
  }catch(e){message("roomMessage","Room create failed: "+e.message)}
 }
-
 async function joinRoom(){
  const code=document.getElementById("roomCode").value.trim();
  if(!code){message("roomMessage","Room Code লিখুন।");return}
@@ -455,14 +456,12 @@ async function joinRoom(){
   message("roomMessage","Room-এ Join হয়েছে।");
  }catch(e){message("roomMessage","Join failed: "+e.message)}
 }
-
 function showRoom(result){
  const room=result.room||result;
  const code=room.room_code||room.code||"Not available";
  document.getElementById("roomCode").value=code;
  message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode||selectedMode)+" | Maximum: 50 Players");
 }
-
 async function loadRoomPlayers(){
  if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
  try{
@@ -474,15 +473,13 @@ async function loadRoomPlayers(){
    list.length?"Players ("+list.length+"/50): "+list.map(p=>p.display_name||p.name||"Player").join(", "):"এখনো Player list পাওয়া যায়নি।";
  }catch(e){message("roomMessage","Players পাওয়া যায়নি: "+e.message)}
 }
-
 function leaveRoom(){
  currentRoom=null;
  stopRoomRefresh();
  message("roomInfo","No room selected.");
  message("roomPlayers","");
- message("roomMessage","এই ডিভাইসের Room view বন্ধ করা হয়েছে।");
+ message("roomMessage","Room view বন্ধ করা হয়েছে। Server leave API এখনো যুক্ত নয়।");
 }
-
 async function startOnlineMatch(){
  if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
  try{
@@ -491,16 +488,25 @@ async function startOnlineMatch(){
   startMatch();
  }catch(e){message("roomMessage","Start failed: "+e.message)}
 }
-
 function startRoomRefresh(){
  stopRoomRefresh();
- roomRefreshTimer=setInterval(()=>{
-  if(currentRoom&&!apiBusy)loadRoomPlayers();
- },10000);
+ roomRefreshTimer=setInterval(()=>{if(currentRoom&&!apiBusy)loadRoomPlayers()},10000);
 }
 function stopRoomRefresh(){
  if(roomRefreshTimer)clearInterval(roomRefreshTimer);
  roomRefreshTimer=null;
+}
+
+/* FRIEND INVITE */
+async function inviteFriend(){
+ const friendId=document.getElementById("invitePlayerId").value.trim();
+ if(!friendId){message("inviteMessage","Friend Player ID লিখুন।");return}
+ try{
+  const result=await gameApi("/invites/send","POST",{receiver_user_id:friendId,mode:selectedMode});
+  message("inviteMessage",result.message||"Invite request পাঠানো হয়েছে।");
+ }catch(e){
+  message("inviteMessage","Invite API সংযোগ হয়নি: "+e.message);
+ }
 }
 
 /* MATCHMAKING */
@@ -511,80 +517,59 @@ async function findMatch(){
  message("matchmakingInfo","Matchmaking request পাঠানো হচ্ছে...");
  try{
   const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
-  message("matchmakingInfo",result.message||"Searching for players... সর্বোচ্চ ৫০ জনের Match খোঁজা হচ্ছে।");
+  message("matchmakingInfo",result.message||"Searching for players...");
   startMatchmakingPolling();
  }catch(e){
   matchmakingBusy=false;
   message("matchmakingInfo","Matchmaking failed: "+e.message);
  }
 }
-
 function startMatchmakingPolling(){
  stopMatchmakingPolling();
  matchmakingTimer=setInterval(checkMatchmakingStatus,3000);
  checkMatchmakingStatus();
 }
-
 async function checkMatchmakingStatus(){
  if(!matchmakingBusy||apiBusy)return;
  try{
   const result=await gameApi("/matchmaking/status","GET");
   const state=String(result.status||result.state||"").toLowerCase();
   const room=result.room||result.match||null;
-
   if(result.matched===true||state==="matched"||state==="complete"||room){
    stopMatchmakingPolling();
    matchmakingBusy=false;
-   if(room){
-    currentRoom=room;
-    showRoom({room:room});
-    startRoomRefresh();
-   }
+   if(room){currentRoom=room;showRoom({room});startRoomRefresh()}
    message("matchmakingInfo","Match পাওয়া গেছে! Room প্রস্তুত।");
    if(currentRoom)loadRoomPlayers();
    return;
   }
-
-  message("matchmakingInfo",result.message||"৫০ জনের Match-এর জন্য অপেক্ষা চলছে...");
- }catch(e){
-  message("matchmakingInfo","Status check: "+e.message);
- }
+  message("matchmakingInfo",result.message||"Match-এর জন্য অপেক্ষা চলছে...");
+ }catch(e){message("matchmakingInfo","Status check: "+e.message)}
 }
-
 async function cancelMatchmaking(){
  stopMatchmakingPolling();
  const wasSearching=matchmakingBusy;
  matchmakingBusy=false;
-
- if(!wasSearching){
-  message("matchmakingInfo","কোনো Match search চলছে না।");
-  return;
- }
-
+ if(!wasSearching){message("matchmakingInfo","কোনো Match search চলছে না।");return}
  try{
   await gameApi("/matchmaking/cancel","POST",{});
   message("matchmakingInfo","Matchmaking বাতিল হয়েছে।");
- }catch(e){
-  message("matchmakingInfo","Search বন্ধ করা হয়েছে। Server cancel response: "+e.message);
- }
+ }catch(e){message("matchmakingInfo","Search বন্ধ করা হয়েছে। Server response: "+e.message)}
 }
-
 function stopMatchmakingPolling(){
  if(matchmakingTimer)clearInterval(matchmakingTimer);
  matchmakingTimer=null;
 }
 
-/* AIRCRAFT / GAME DEMO */
+/* AIRCRAFT / PRACTICE */
 function startMatch(){
  go("airlobby");
  countdown=30;
  document.getElementById("jumpBtn").disabled=true;
  message("countdownText","Match starting in 30 seconds");
-
  aircraftTimer=setInterval(()=>{
   countdown--;
   message("countdownText",countdown>0?"Match starting in "+countdown+" seconds":"Aircraft is ready. Jump!");
-
   if(countdown<=0){
    clearInterval(aircraftTimer);
    aircraftTimer=null;
@@ -592,19 +577,16 @@ function startMatch(){
   }
  },1000);
 }
-
 function cancelAircraft(){
  if(aircraftTimer)clearInterval(aircraftTimer);
  aircraftTimer=null;
  go("lobby");
 }
-
 function jumpFromPlane(){
  if(countdown>0)return;
  if(aircraftTimer)clearInterval(aircraftTimer);
  aircraftTimer=null;
  go("jump");
-
  landingTimer=setTimeout(()=>{
   landingTimer=null;
   go("match");
@@ -615,12 +597,10 @@ function jumpFromPlane(){
 /* LOCAL PRACTICE PROTOTYPE */
 const arena=document.getElementById("arena");
 const ctx=arena.getContext("2d");
-
 function createStars(){
  stars=[];
  for(let i=0;i<12;i++)stars.push({x:30+Math.random()*840,y:30+Math.random()*440});
 }
-
 function restartMatch(){
  stopGame();
  player={x:450,y:250,speed:5};
@@ -631,121 +611,108 @@ function restartMatch(){
  message("timeLeft",timeLeft);
  drawGame();
  gameLoop=setInterval(updateGame,30);
-
  gameClock=setInterval(()=>{
   timeLeft--;
   message("timeLeft",timeLeft);
-  if(timeLeft<=0){
-   stopGame();
-   alert("Practice Over! Score: "+score);
-  }
+  if(timeLeft<=0)finishPractice();
  },1000);
 }
-
 function stopGame(){
  if(gameLoop)clearInterval(gameLoop);
  if(gameClock)clearInterval(gameClock);
  gameLoop=null;
  gameClock=null;
 }
-
+function finishPractice(){
+ stopGame();
+ message("resultScore",score);
+ message("resultRank",score>=10?"Practice Rank: Skilled":"Practice Rank: Rookie");
+ go("result");
+}
 function updateGame(){
  if(keys.ArrowLeft||keys.a)player.x-=player.speed;
  if(keys.ArrowRight||keys.d)player.x+=player.speed;
  if(keys.ArrowUp||keys.w)player.y-=player.speed;
  if(keys.ArrowDown||keys.s)player.y+=player.speed;
-
  player.x=Math.max(15,Math.min(885,player.x));
  player.y=Math.max(15,Math.min(485,player.y));
-
  stars=stars.filter(s=>{
-  if(Math.hypot(player.x-s.x,player.y-s.y)<25){
-   score++;
-   message("score",score);
-   return false;
-  }
+  if(Math.hypot(player.x-s.x,player.y-s.y)<25){score++;message("score",score);return false}
   return true;
  });
-
  if(stars.length<5)createStars();
  drawGame();
 }
-
 function drawGame(){
  ctx.clearRect(0,0,900,500);
- ctx.fillStyle="#327c55";
- ctx.fillRect(0,0,900,500);
+ ctx.fillStyle="#327c55";ctx.fillRect(0,0,900,500);
  ctx.fillStyle="#4c9a68";
-
  for(let i=0;i<18;i++){
-  ctx.beginPath();
-  ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);
-  ctx.fill();
+  ctx.beginPath();ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);ctx.fill();
  }
-
  ctx.fillStyle="#e5bd45";
- stars.forEach(s=>{
-  ctx.beginPath();
-  ctx.arc(s.x,s.y,9,0,Math.PI*2);
-  ctx.fill();
- });
-
- ctx.fillStyle="white";
- ctx.beginPath();
- ctx.arc(player.x,player.y,20,0,Math.PI*2);
- ctx.fill();
-
- ctx.fillStyle="#1a2a3d";
- ctx.beginPath();
- ctx.arc(player.x,player.y-5,7,0,Math.PI*2);
- ctx.fill();
+ stars.forEach(s=>{ctx.beginPath();ctx.arc(s.x,s.y,9,0,Math.PI*2);ctx.fill()});
+ ctx.fillStyle="white";ctx.beginPath();ctx.arc(player.x,player.y,20,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#1a2a3d";ctx.beginPath();ctx.arc(player.x,player.y-5,7,0,Math.PI*2);ctx.fill();
 }
 
-/* KEYBOARD AND TOUCH */
+/* KEYBOARD / TOUCH */
 document.addEventListener("keydown",e=>{
  keys[e.key]=true;
  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))e.preventDefault();
 });
-
 document.addEventListener("keyup",e=>keys[e.key]=false);
 window.addEventListener("blur",()=>keys={});
-
 document.querySelectorAll(".control").forEach(btn=>{
  const key=btn.dataset.key;
-
  btn.addEventListener("pointerdown",e=>{
-  e.preventDefault();
-  keys[key]=true;
+  e.preventDefault();keys[key]=true;
   try{btn.setPointerCapture(e.pointerId)}catch(_){}
  });
-
  ["pointerup","pointercancel","lostpointercapture"].forEach(event=>{
-  btn.addEventListener(event,e=>{
-   e.preventDefault();
-   keys[key]=false;
-  });
+  btn.addEventListener(event,e=>{e.preventDefault();keys[key]=false});
  });
 });
+
+/* SETTINGS */
+function saveSettings(){
+ const settings={
+  graphics:document.getElementById("graphics").value,
+  sound:document.getElementById("sound").value,
+  controls:document.getElementById("controlStyle").value,
+  language:document.getElementById("language").value
+ };
+ try{
+  localStorage.setItem("bd_game_settings",JSON.stringify(settings));
+  message("settingsMessage","Settings এই ডিভাইসে সেভ হয়েছে।");
+ }catch(e){message("settingsMessage","এই ডিভাইসে Settings সেভ করা যায়নি।")}
+}
+function loadSettings(){
+ try{
+  const s=JSON.parse(localStorage.getItem("bd_game_settings")||"{}");
+  if(s.graphics)document.getElementById("graphics").value=s.graphics;
+  if(s.sound)document.getElementById("sound").value=s.sound;
+  if(s.controls)document.getElementById("controlStyle").value=s.controls;
+  if(s.language)document.getElementById("language").value=s.language;
+ }catch(e){}
+}
 
 /* SERVER HEALTH */
 async function checkConnection(){
  try{
   const result=await gameApi("/health","GET");
   message("connectionInfo","Server response: "+JSON.stringify(result));
- }catch(e){
-  message("connectionInfo","Connection failed: "+e.message);
- }
+ }catch(e){message("connectionInfo","Connection failed: "+e.message)}
 }
 
 /* RESTORE SESSION */
+loadSettings();
 (async function(){
  try{
   currentUser=await account.get();
   afterLogin();
- }catch(e){
-  go("splash");
- }
+ }catch(e){go("splash")}
 })();
 </script>
 </body>
-   </html>
+</html>
