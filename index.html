@@ -6,660 +6,684 @@
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
-button,input{font:inherit}
-button{border:0;border-radius:10px;padding:13px;background:#e4b64e;color:#111;font-weight:bold;cursor:pointer}
+body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
+button,input,select{font:inherit}
+button{border:0;border-radius:8px;padding:12px;background:#e8bd62;color:#151515;font-weight:bold;cursor:pointer}
 button:disabled{opacity:.5}
-input{width:100%;padding:13px;margin:7px 0;background:#172235;border:1px solid #39465b;border-radius:9px;color:white}
-header{height:58px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 15px}
-.logo{font-size:23px;font-weight:900;color:#e5b64d;letter-spacing:2px}
-.page{display:none;min-height:calc(100vh - 58px);padding:15px 12px 85px}
+input,select{width:100%;padding:13px;margin:7px 0;background:#172438;border:1px solid #45536a;border-radius:8px;color:white}
+header{height:55px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.logo{font-size:22px;font-weight:1000;color:#f3c76c;letter-spacing:2px}
+.page{display:none;min-height:calc(100vh - 55px);padding:12px 12px 85px}
 .page.active{display:block}
-.panel{background:#121e30;border:1px solid #2d3c53;border-radius:14px;padding:16px;margin:12px 0}
-.center{text-align:center}
-.muted{color:#9eabc0;font-size:13px}
+.title{text-align:center;color:#f3c76c;letter-spacing:2px}
+.panel{background:#121e30;border:1px solid #34445a;border-radius:12px;padding:14px;margin:12px 0}
 .full{width:100%;margin:6px 0}
-.darkbtn{background:#25344b;color:white}
+.darkbtn{background:#26374d;color:white}
+.green{background:#16845a;color:white}
 .red{background:#a8323e;color:white}
-.green{background:#187b55;color:white}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.tile{background:#17263b;border:1px solid #35445a;padding:20px 8px;text-align:center;border-radius:12px}
-.nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:#101a2b;border-top:1px solid #344158;display:flex;justify-content:space-around;align-items:center;z-index:20}
-.nav button{background:transparent;color:white;padding:8px;font-size:12px}
-.title{text-align:center;color:#e8ba55;margin:8px 0 18px}
+.muted{color:#9eabc0;font-size:13px}
+.center{text-align:center}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.tile{background:#17263b;border:1px solid #35465b;border-radius:10px;padding:17px 5px;text-align:center}
+.nav{position:fixed;bottom:0;left:0;right:0;height:62px;background:#101a2b;border-top:1px solid #344158;display:none;justify-content:space-around;align-items:center;z-index:20}
+.nav button{background:transparent;color:white;font-size:12px;padding:7px}
 .hide{display:none!important}
-#arena{width:100%;background:#327c55;border-radius:12px}
-.control{width:60px;height:55px;background:#263952;color:white;font-size:22px;touch-action:none}
-#controls{display:flex;justify-content:center;gap:8px;margin:12px}
-.status{padding:10px;border-radius:8px;background:#17263b;margin:8px 0}
+.status{padding:10px;background:#17263b;border-radius:8px;margin:8px 0}
 
-/* BD GAME ENTRY ANIMATION */
-#splash{background:radial-gradient(ellipse at 50% 28%,#263b58 0%,#101a2b 42%,#080d18 78%);overflow:hidden}
-.splash-wrap{padding-top:14vh;animation:splashRise 1s ease both}
-.splash-mark{display:inline-flex;align-items:center;justify-content:center;width:132px;height:132px;border:3px solid #ffd36a;border-radius:50%;font-size:66px;font-weight:1000;letter-spacing:3px;color:#ffd36a;text-shadow:0 0 18px #ffd36a;box-shadow:0 0 18px #bd812b,inset 0 0 18px #bd812b;animation:splashPulse 1.8s ease-in-out infinite}
-.splash-title{color:#ffd36a;letter-spacing:4px;text-shadow:0 0 12px #bd812b;animation:splashFade 1.4s ease both}
-.splash-sub{letter-spacing:2px;animation:splashFade 1.8s ease both}
-@keyframes splashPulse{
-  0%,100%{transform:scale(1);box-shadow:0 0 14px #bd812b,inset 0 0 12px #bd812b}
-  50%{transform:scale(1.06);box-shadow:0 0 30px #ffd36a,inset 0 0 20px #bd812b}
-}
-@keyframes splashRise{
-  from{opacity:0;transform:translateY(24px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes splashFade{
-  from{opacity:0}
-  to{opacity:1}
-}
+/* ENTRY */
+#splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18 85%)}
+.splash-wrap{padding-top:13vh;animation:rise 1s ease both}
+.splash-mark{width:130px;height:130px;margin:auto;border:3px solid #ffd36a;border-radius:50%;display:grid;place-items:center;font-size:62px;font-weight:1000;color:#ffd36a;text-shadow:0 0 18px #ffd36a;box-shadow:0 0 25px #bd812b,inset 0 0 18px #bd812b;animation:pulse 2s infinite}
+@keyframes pulse{50%{transform:scale(1.06);box-shadow:0 0 35px #ffd36a}}
+@keyframes rise{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+
+/* CINEMATIC LOBBY */
+.lobby-scene{position:relative;overflow:hidden;background:radial-gradient(ellipse at 65% 28%,#496e61,#1b3941 38%,#101a2a 75%,#080d18);padding-top:10px}
+.lobby-scene:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 40px,#ffffff08 41px 42px);pointer-events:none}
+.top-chips{position:relative;display:flex;justify-content:space-between;z-index:2}
+.chip{background:#101b2b;border:1px solid #d4aa57;color:#f4ce7b;padding:7px 10px;border-radius:6px;font-size:11px}
+.hero{height:330px;position:relative;margin:8px -12px 12px;overflow:hidden;background:linear-gradient(#a9c4b022,#07131c66)}
+.hills{position:absolute;bottom:0;width:120%;height:130px;background:#17352f;clip-path:polygon(0 65%,12% 30%,22% 60%,38% 12%,53% 57%,68% 22%,82% 65%,100% 18%,100% 100%,0 100%)}
+.hills:after{content:"";position:absolute;inset:50px 0 0;background:#0d211f}
+.hero-copy{position:absolute;z-index:3;top:15px;left:17px;text-shadow:0 2px 8px #000}
+.hero-copy small{color:#f4d17d;letter-spacing:3px}
+.hero-copy h1{font-size:29px;margin:8px 0}
+.hero-copy em{color:#f3c45e;font-style:normal}
+.hero-copy p{font-size:10px;letter-spacing:2px}
+.character{position:absolute;z-index:2;width:190px;height:270px;bottom:3px;left:calc(50% - 95px);animation:idle 3s ease-in-out infinite}
+.aura{position:absolute;width:170px;height:170px;top:45px;left:10px;border-radius:50%;background:#f1c66b33;filter:blur(20px);animation:glow 3s infinite}
+.shadow{position:absolute;bottom:8px;left:20px;width:150px;height:20px;border-radius:50%;background:#0009;filter:blur(7px)}
+.head{position:absolute;top:14px;left:72px;width:42px;height:48px;border-radius:45%;background:linear-gradient(90deg,#986848,#e0aa7b,#895b42);border:3px solid #202b35;z-index:4}
+.head:before{content:"";position:absolute;top:-5px;left:-4px;width:44px;height:19px;border-radius:50%;background:#202b35}
+.bodychar{position:absolute;top:59px;left:50px;width:85px;height:105px;background:linear-gradient(100deg,#172632,#66717a,#182936);clip-path:polygon(25% 0,75% 0,100% 25%,83% 100%,15% 100%,0 25%)}
+.bodychar:after{content:"BD";position:absolute;top:34px;left:29px;color:#f5ce72;font-size:18px;font-weight:900}
+.arm{position:absolute;top:68px;width:25px;height:94px;border-radius:15px;background:linear-gradient(90deg,#26333d,#9b7256);transform-origin:top}
+.arm.left{left:40px;transform:rotate(13deg)}
+.arm.right{left:120px;transform:rotate(-18deg)}
+.leg{position:absolute;top:151px;width:35px;height:100px;border-radius:8px;background:linear-gradient(90deg,#151e29,#46515a)}
+.leg.left{left:56px;transform:rotate(4deg)}
+.leg.right{left:94px;transform:rotate(-5deg)}
+.hero-label{position:absolute;bottom:2px;left:37px;background:#101a2b;color:#f3ce79;border:1px solid #b58a42;padding:5px 8px;font-size:9px;letter-spacing:2px}
+@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes glow{50%{opacity:1;transform:scale(1.12)}}
+.action-panel{position:relative;z-index:3;background:#0d1725ed;border:1px solid #59616a;border-top:2px solid #d8ad57;border-radius:10px;padding:12px}
+.mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mode-card{background:#1c2b3b;color:#dce3e8;border:1px solid #435365;padding:9px 4px;display:flex;flex-direction:column;gap:4px}
+.mode-card b{font-size:20px;color:#f3cb70}
+.mode-card span{font-size:11px}
+.mode-card.selected{background:linear-gradient(135deg,#8e642b,#e0b65d);color:#111;border-color:#ffe19a}
+.mode-card.selected b{color:#111}
+.match-button{margin-top:12px;background:linear-gradient(90deg,#a86d22,#f4cf72,#a86d22);font-size:17px;letter-spacing:2px}
+.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px;position:relative}
+.shortcuts button{background:#142235;border:1px solid #35465a;color:#f1cb74;padding:11px 2px;display:flex;flex-direction:column;gap:5px;align-items:center}
+.shortcuts span{font-size:9px;color:#e5eaf0}
+
+/* GAME SCREENS */
+#arena{width:100%;background:#327c55;border-radius:10px;touch-action:none}
+.controls{display:flex;justify-content:center;gap:7px;margin:12px}
+.control{width:58px;height:52px;background:#263952;color:white;font-size:22px;touch-action:none}
+.map-card{padding:16px;background:#1c3040;border:1px solid #536477;border-radius:10px;margin:8px 0}
+.selected-map{border:2px solid #e8bd62}
 </style>
 </head>
-<body>
 
+<body>
 <header>
-  <div class="logo">BD GAME</div>
-  <div id="playerName" class="muted">Guest Player</div>
-  <button class="darkbtn" onclick="go('settings')">⚙</button>
+ <div class="logo">BD GAME</div>
+ <div id="playerName" class="muted">Guest Player</div>
+ <button class="darkbtn" onclick="go('settings')">⚙</button>
 </header>
 
 <section id="splash" class="page active center">
-  <div class="splash-wrap">
-    <div class="splash-mark">BD</div>
-    <h2 class="splash-title">BD GAME</h2>
-    <p class="muted splash-sub">Welcome to the game</p>
-    <button class="full" onclick="go('login')">PLAY</button>
-    <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
-  </div>
+ <div class="splash-wrap">
+  <div class="splash-mark">BD</div>
+  <h2 style="color:#ffd36a;letter-spacing:4px">BD GAME</h2>
+  <p class="muted">BATTLE ARENA</p>
+  <button class="full" onclick="go('login')">PLAY</button>
+  <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
+ </div>
 </section>
 
 <section id="login" class="page">
-  <h2 class="title">PLAYER LOGIN</h2>
-  <div class="panel">
-    <input id="loginEmail" type="email" placeholder="Gmail">
-    <input id="loginPassword" type="password" placeholder="Password">
-    <button class="full" onclick="loginPlayer()">LOGIN</button>
-    <button class="full darkbtn" onclick="go('register')">CREATE ACCOUNT</button>
-    <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
-    <p id="loginMessage" class="muted"></p>
-  </div>
+ <h2 class="title">PLAYER LOGIN</h2>
+ <div class="panel">
+  <input id="loginEmail" type="email" placeholder="Gmail">
+  <input id="loginPassword" type="password" placeholder="Password">
+  <button class="full" onclick="loginPlayer()">LOGIN</button>
+  <button class="full darkbtn" onclick="go('register')">CREATE ACCOUNT</button>
+  <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
+  <p id="loginMessage" class="muted"></p>
+ </div>
 </section>
 
 <section id="register" class="page">
-  <h2 class="title">CREATE PLAYER ACCOUNT</h2>
-  <div class="panel">
-    <input id="regName" placeholder="Player Name">
-    <input id="regEmail" type="email" placeholder="Gmail">
-    <input id="regPassword" type="password" placeholder="Password (minimum 8 characters)">
-    <button class="full" onclick="registerPlayer()">REGISTER</button>
-    <button class="full darkbtn" onclick="go('login')">BACK TO LOGIN</button>
-    <p id="regMessage" class="muted"></p>
-  </div>
+ <h2 class="title">CREATE PLAYER ACCOUNT</h2>
+ <div class="panel">
+  <input id="regName" placeholder="Player Name">
+  <input id="regEmail" type="email" placeholder="Gmail">
+  <input id="regPassword" type="password" placeholder="Password (minimum 8 characters)">
+  <button class="full" onclick="registerPlayer()">REGISTER</button>
+  <button class="full darkbtn" onclick="go('login')">BACK TO LOGIN</button>
+  <p id="regMessage" class="muted"></p>
+ </div>
 </section>
 
-<section id="lobby" class="page">
-  <h2 class="title">BD GAME LOBBY</h2>
-  <div class="panel center">
-    <h3>SELECT GAME MODE</h3>
-    <div class="grid">
-      <button onclick="setMode('SOLO')" id="soloBtn">SOLO</button>
-      <button class="darkbtn" onclick="setMode('DUO')" id="duoBtn">DUO</button>
-      <button class="darkbtn" onclick="setMode('SQUAD')" id="squadBtn">SQUAD</button>
-      <button class="darkbtn" onclick="go('room')">ROOM</button>
-    </div>
-    <p id="modeLabel" class="muted">Selected: SOLO</p>
-    <button class="full" onclick="startMatch()">START MATCH</button>
-    <button class="full green" onclick="findMatch()">RANDOM MATCHMAKING</button>
+<section id="lobby" class="page lobby-scene">
+ <div class="top-chips">
+  <span class="chip">★ ROOKIE</span>
+  <span class="chip">BD COINS: 0</span>
+ </div>
+ <div class="hero">
+  <div class="hills"></div>
+  <div class="hero-copy">
+   <small>WELCOME TO</small>
+   <h1>BD <em>ARENA</em></h1>
+   <p>LAST PLAYER STANDING</p>
   </div>
-  <div class="grid">
-    <div class="tile">🧍<b>Character</b></div>
-    <div class="tile">👕<b>Outfit & Skin</b></div>
-    <div class="tile">🎒<b>Gear</b></div>
-    <div class="tile">🗺️<b>Island Map</b></div>
-    <div class="tile">🏆<b>Leaderboard</b></div>
-    <div class="tile" onclick="go('profile')">👤<b>Profile</b></div>
+  <div class="character">
+   <div class="aura"></div><div class="shadow"></div>
+   <div class="head"></div><div class="bodychar"></div>
+   <div class="arm left"></div><div class="arm right"></div>
+   <div class="leg left"></div><div class="leg right"></div>
+   <span class="hero-label">BD ELITE SURVIVOR</span>
   </div>
+ </div>
+ <div class="action-panel">
+  <div style="display:flex;justify-content:space-between;color:#f2cd78;font-size:12px;margin-bottom:10px">
+   <b>SELECT MODE</b><span id="modeLabel">SOLO SELECTED</span>
+  </div>
+  <div class="mode-row">
+   <button class="mode-card selected" id="soloBtn" onclick="setMode('SOLO')"><b>1</b><span>SOLO</span></button>
+   <button class="mode-card" id="duoBtn" onclick="setMode('DUO')"><b>2</b><span>DUO</span></button>
+   <button class="mode-card" id="squadBtn" onclick="setMode('SQUAD')"><b>4</b><span>SQUAD</span></button>
+  </div>
+  <button class="full match-button" onclick="startMatch()">START MATCH　▶</button>
+  <button class="full green" onclick="findMatch()">⚡ RANDOM MATCHMAKING</button>
+  <button class="full darkbtn" onclick="go('room')">CREATE / JOIN ROOM</button>
+ </div>
+ <div class="shortcuts">
+  <button onclick="go('profile')">👤<span>PROFILE</span></button>
+  <button onclick="go('character')">🧍<span>CHARACTER</span></button>
+  <button onclick="go('maps')">🗺️<span>MAPS</span></button>
+  <button onclick="go('rank')">🏆<span>RANK</span></button>
+ </div>
+</section>
+
+<section id="character" class="page">
+ <h2 class="title">CHARACTER & OUTFIT</h2>
+ <div class="panel center">
+  <div style="font-size:100px">🧍</div>
+  <h3>BD ELITE SURVIVOR</h3>
+  <p class="muted">Your selected character</p>
+  <button class="full" onclick="alert('আরও Character ও Outfit পরে যুক্ত হবে।')">SELECT CHARACTER</button>
+ </div>
+ <div class="grid">
+  <div class="tile">👕<br>OUTFIT</div>
+  <div class="tile">🎒<br>BACKPACK</div>
+  <div class="tile">🎨<br>SKIN</div>
+  <div class="tile">🪂<br>PARACHUTE</div>
+ </div>
+</section>
+
+<section id="maps" class="page">
+ <h2 class="title">SELECT MAP</h2>
+ <div class="map-card selected-map" onclick="selectMap('BD ISLAND',this)">🏝️ <b>BD ISLAND</b><p class="muted">Main Battle Island</p></div>
+ <div class="map-card" onclick="selectMap('GREEN VALLEY',this)">🌲 <b>GREEN VALLEY</b><p class="muted">Coming Soon</p></div>
+ <div class="map-card" onclick="selectMap('DESERT ZONE',this)">🏜️ <b>DESERT ZONE</b><p class="muted">Coming Soon</p></div>
+ <p id="mapMessage" class="muted">Selected: BD ISLAND</p>
 </section>
 
 <section id="room" class="page">
-  <h2 class="title">ROOM & MATCH</h2>
-  <div class="panel">
-    <button class="full green" onclick="createRoom()">CREATE PRIVATE ROOM</button>
-    <input id="roomCode" placeholder="Enter Room Code">
-    <button class="full" onclick="joinRoom()">JOIN ROOM</button>
-    <button class="full darkbtn" onclick="loadRoomPlayers()">REFRESH PLAYERS</button>
-    <div id="roomInfo" class="status muted">কোনো রুম নির্বাচন করা হয়নি।</div>
-    <div id="roomPlayers" class="muted"></div>
-    <button class="full" onclick="startOnlineMatch()">START ROOM MATCH</button>
-    <button class="full red" onclick="leaveRoom()">LEAVE ROOM</button>
-    <p id="roomMessage" class="muted"></p>
-  </div>
+ <h2 class="title">ROOM & MATCH</h2>
+ <div class="panel">
+  <button class="full green" onclick="createRoom()">CREATE PRIVATE ROOM</button>
+  <input id="roomCode" placeholder="Enter Room Code">
+  <button class="full" onclick="joinRoom()">JOIN ROOM</button>
+  <button class="full darkbtn" onclick="loadRoomPlayers()">REFRESH PLAYERS</button>
+  <div id="roomInfo" class="status muted">No room selected.</div>
+  <div id="roomPlayers" class="muted"></div>
+  <button class="full" onclick="startOnlineMatch()">START ROOM MATCH</button>
+  <button class="full red" onclick="leaveRoom()">LEAVE ROOM</button>
+  <p id="roomMessage" class="muted"></p>
+ </div>
 </section>
 
 <section id="airlobby" class="page center">
-  <h2 class="title">AIRCRAFT FLIGHT</h2>
-  <p id="countdownText">Match starting in 30 seconds</p>
-  <div style="font-size:100px">✈️</div>
-  <div style="font-size:70px">🏝️</div>
-  <button id="jumpBtn" disabled onclick="jumpFromPlane()">JUMP</button>
-  <button class="full darkbtn" onclick="cancelAircraft()">CANCEL</button>
+ <h2 class="title">AIRCRAFT FLIGHT</h2>
+ <p id="countdownText">Match starting in 30 seconds</p>
+ <div style="font-size:100px;animation:idle 2s infinite">✈️</div>
+ <div style="font-size:80px">🏝️</div>
+ <button id="jumpBtn" disabled onclick="jumpFromPlane()">JUMP</button>
+ <button class="full darkbtn" onclick="cancelAircraft()">CANCEL</button>
 </section>
 
 <section id="jump" class="page center">
-  <h2 class="title">PARACHUTE DESCENT</h2>
-  <div style="font-size:100px">🪂</div>
-  <h3>Landing...</h3>
+ <h2 class="title">PARACHUTE DESCENT</h2>
+ <div style="font-size:110px;animation:idle 2s infinite">🪂</div>
+ <h3>LANDING...</h3>
+ <p class="muted">BD ISLAND</p>
 </section>
 
 <section id="match" class="page center">
-  <h2 class="title">ISLAND GAME</h2>
-  <div class="panel">
-    <p>⭐ Score: <b id="score">0</b> | ⏱ <b id="timeLeft">90</b>s</p>
-    <canvas id="arena" width="900" height="500"></canvas>
-    <div id="controls">
-      <button class="control" data-key="ArrowLeft">←</button>
-      <button class="control" data-key="ArrowUp">↑</button>
-      <button class="control" data-key="ArrowDown">↓</button>
-      <button class="control" data-key="ArrowRight">→</button>
-    </div>
-    <button class="full darkbtn" onclick="go('lobby')">EXIT TO LOBBY</button>
+ <h2 class="title">BD ISLAND BATTLE</h2>
+ <div class="panel">
+  <p>⭐ SCORE: <b id="score">0</b>　⏱ <b id="timeLeft">90</b>s</p>
+  <canvas id="arena" width="900" height="500"></canvas>
+  <div class="controls">
+   <button class="control" data-key="ArrowLeft">←</button>
+   <button class="control" data-key="ArrowUp">↑</button>
+   <button class="control" data-key="ArrowDown">↓</button>
+   <button class="control" data-key="ArrowRight">→</button>
   </div>
+  <p class="muted">Move your player and collect the stars.</p>
+  <button class="full darkbtn" onclick="go('lobby')">EXIT TO LOBBY</button>
+ </div>
 </section>
 
 <section id="profile" class="page">
-  <h2 class="title">PLAYER PROFILE</h2>
-  <div class="panel center">
-    <div style="font-size:70px">👤</div>
-    <h3 id="profileName">Guest Player</h3>
-    <p id="profileEmail" class="muted"></p>
-    <p id="profileId" class="muted"></p>
-    <p id="presenceInfo" class="muted">Presence: Connecting...</p>
-  </div>
+ <h2 class="title">PLAYER PROFILE</h2>
+ <div class="panel center">
+  <div style="font-size:70px">👤</div>
+  <h3 id="profileName">Guest Player</h3>
+  <p id="profileEmail" class="muted"></p>
+  <p id="profileId" class="muted"></p>
+  <p id="presenceInfo" class="muted">Presence: Connecting...</p>
+ </div>
+</section>
+
+<section id="rank" class="page">
+ <h2 class="title">RANK & LEADERBOARD</h2>
+ <div class="panel center">
+  <div style="font-size:70px">🏆</div>
+  <h2>ROOKIE</h2>
+  <p class="muted">Your rank system will be connected to the game server later.</p>
+ </div>
 </section>
 
 <section id="settings" class="page">
-  <h2 class="title">SETTINGS</h2>
-  <div class="panel">
-    <button class="full darkbtn" onclick="checkConnection()">CHECK SERVER CONNECTION</button>
-    <p id="connectionInfo" class="muted"></p>
-    <button class="full red" onclick="logoutPlayer()">LOG OUT</button>
-  </div>
+ <h2 class="title">SETTINGS</h2>
+ <div class="panel">
+  <button class="full darkbtn" onclick="checkConnection()">CHECK SERVER CONNECTION</button>
+  <p id="connectionInfo" class="muted"></p>
+  <button class="full red" onclick="logoutPlayer()">LOG OUT</button>
+ </div>
 </section>
 
-<nav class="nav" id="bottomNav" style="display:none">
-  <button onclick="go('lobby')">🏠<br>Home</button>
-  <button onclick="go('room')">🚪<br>Room</button>
-  <button onclick="go('profile')">👤<br>Profile</button>
-  <button onclick="go('settings')">☰<br>Menu</button>
+<nav class="nav" id="bottomNav">
+ <button onclick="go('lobby')">🏠<br>HOME</button>
+ <button onclick="go('room')">🚪<br>ROOM</button>
+ <button onclick="go('profile')">👤<br>PROFILE</button>
+ <button onclick="go('settings')">☰<br>MENU</button>
 </nav>
 
 <script>
-/* APPWRITE CONNECTION */
-const APPWRITE_ENDPOINT = "https://sgp.cloud.appwrite.io/v1";
-const APPWRITE_PROJECT_ID = "6af4c610002ee336af01";
-const GAME_FUNCTION_ID = "bd-game-match-api";
+/* APPWRITE CONFIG */
+const APPWRITE_ENDPOINT="https://sgp.cloud.appwrite.io/v1";
+const APPWRITE_PROJECT_ID="6af4c610002ee336af01";
+const GAME_FUNCTION_ID="bd-game-match-api";
 
-const client = new Appwrite.Client()
-  .setEndpoint(APPWRITE_ENDPOINT)
-  .setProject(APPWRITE_PROJECT_ID);
+const client=new Appwrite.Client()
+ .setEndpoint(APPWRITE_ENDPOINT)
+ .setProject(APPWRITE_PROJECT_ID);
 
-const account = new Appwrite.Account(client);
-const functions = new Appwrite.Functions(client);
+const account=new Appwrite.Account(client);
+const functions=new Appwrite.Functions(client);
 
-let currentUser = null;
-let selectedMode = "SOLO";
-let currentRoom = null;
-let aircraftTimer = null;
-let landingTimer = null;
-let gameLoop = null;
-let gameClock = null;
-let presenceTimer = null;
-let roomRefreshTimer = null;
-let countdown = 30;
-let score = 0;
-let timeLeft = 90;
-let keys = {};
-let player = {x:450,y:250,speed:5};
-let stars = [];
-let apiBusy = false;
+let currentUser=null;
+let selectedMode="SOLO";
+let selectedMap="BD ISLAND";
+let currentRoom=null;
+let aircraftTimer=null;
+let landingTimer=null;
+let gameLoop=null;
+let gameClock=null;
+let presenceTimer=null;
+let roomRefreshTimer=null;
+let countdown=30;
+let score=0;
+let timeLeft=90;
+let keys={};
+let player={x:450,y:250,speed:5};
+let stars=[];
+let apiBusy=false;
 
-const pages = document.querySelectorAll(".page");
+const pages=document.querySelectorAll(".page");
 
 function go(id){
-  stopGame();
-  clearInterval(aircraftTimer);
-  aircraftTimer = null;
-
-  if(landingTimer && id !== "match"){
-    clearTimeout(landingTimer);
-    landingTimer = null;
-  }
-
-  pages.forEach(p=>p.classList.remove("active"));
-  const page = document.getElementById(id);
-  if(page) page.classList.add("active");
-
-  document.getElementById("bottomNav").style.display =
-    ["splash","login","register","airlobby","jump"].includes(id) ? "none" : "flex";
+ stopGame();
+ if(aircraftTimer){clearInterval(aircraftTimer);aircraftTimer=null}
+ if(landingTimer && id!=="match"){clearTimeout(landingTimer);landingTimer=null}
+ pages.forEach(p=>p.classList.remove("active"));
+ const page=document.getElementById(id);
+ if(page)page.classList.add("active");
+ document.getElementById("bottomNav").style.display=
+ ["splash","login","register","airlobby","jump"].includes(id)?"none":"flex";
 }
 
 function message(id,text){
-  const el=document.getElementById(id);
-  if(el) el.textContent=text;
+ const el=document.getElementById(id);
+ if(el)el.textContent=text;
 }
 
-/* AUTHENTICATION */
+/* AUTH */
 async function registerPlayer(){
-  const name=document.getElementById("regName").value.trim();
-  const email=document.getElementById("regEmail").value.trim();
-  const password=document.getElementById("regPassword").value;
-
-  if(!name || !email || password.length<8){
-    message("regMessage","নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।");
-    return;
-  }
-
-  try{
-    await account.create(Appwrite.ID.unique(),email,password,name);
-    message("regMessage","অ্যাকাউন্ট তৈরি হয়েছে। এখন Login করুন।");
-    go("login");
-  }catch(e){
-    message("regMessage",e.message || "Registration failed");
-  }
+ const name=document.getElementById("regName").value.trim();
+ const email=document.getElementById("regEmail").value.trim();
+ const password=document.getElementById("regPassword").value;
+ if(!name||!email||password.length<8){
+  message("regMessage","নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।");
+  return;
+ }
+ try{
+  await account.create(Appwrite.ID.unique(),email,password,name);
+  message("regMessage","Account created. Now login.");
+  go("login");
+ }catch(e){message("regMessage",e.message||"Registration failed")}
 }
 
 async function loginPlayer(){
-  const email=document.getElementById("loginEmail").value.trim();
-  const password=document.getElementById("loginPassword").value;
-
-  try{
-    await account.createEmailPasswordSession(email,password);
-    currentUser=await account.get();
-    afterLogin();
-  }catch(e){
-    message("loginMessage",e.message || "Login failed");
-  }
+ const email=document.getElementById("loginEmail").value.trim();
+ const password=document.getElementById("loginPassword").value;
+ try{
+  await account.createEmailPasswordSession(email,password);
+  currentUser=await account.get();
+  afterLogin();
+ }catch(e){message("loginMessage",e.message||"Login failed")}
 }
 
 async function guestLogin(){
-  try{
-    await account.createAnonymousSession();
-    currentUser=await account.get();
-    afterLogin();
-  }catch(e){
-    alert("Guest login failed: "+(e.message||""));
-  }
+ try{
+  await account.createAnonymousSession();
+  currentUser=await account.get();
+  afterLogin();
+ }catch(e){alert("Guest login failed: "+(e.message||""))}
 }
 
 function afterLogin(){
-  const name=currentUser.name || "Guest Player";
-  document.getElementById("playerName").textContent=name;
-  document.getElementById("profileName").textContent=name;
-  document.getElementById("profileEmail").textContent=currentUser.email || "Guest Account";
-  document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
-  go("lobby");
-  startPresence();
+ const name=currentUser.name||"Guest Player";
+ document.getElementById("playerName").textContent=name;
+ document.getElementById("profileName").textContent=name;
+ document.getElementById("profileEmail").textContent=currentUser.email||"Guest Account";
+ document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
+ go("lobby");
+ startPresence();
 }
 
 async function logoutPlayer(){
-  stopPresence();
-  stopRoomRefresh();
-  try{await account.deleteSession("current");}catch(e){}
-  currentUser=null;
-  currentRoom=null;
-  go("splash");
+ stopPresence();
+ stopRoomRefresh();
+ try{await account.deleteSession("current")}catch(e){}
+ currentUser=null;
+ currentRoom=null;
+ go("splash");
 }
 
-/* SECURE FUNCTION REQUEST */
+/* BACKEND REQUEST WITH USER JWT */
 async function gameApi(path,method="POST",payload={}){
-  if(!currentUser) throw new Error("আগে Player Login করুন।");
-  if(apiBusy) throw new Error("একটি অনুরোধ চলছে, একটু অপেক্ষা করুন।");
-
-  apiBusy=true;
-  try{
-    const jwtResult=await account.createJWT();
-    const execution=await functions.createExecution({
-      functionId:GAME_FUNCTION_ID,
-      async:false,
-      path:path,
-      method:method,
-      headers:{
-        "x-appwrite-user-jwt":jwtResult.jwt,
-        "content-type":"application/json"
-      },
-      body:JSON.stringify(payload)
-    });
-
-    let result={};
-    try{
-      result=JSON.parse(execution.responseBody || "{}");
-    }catch(e){
-      result={message:execution.responseBody || "Invalid server response"};
-    }
-
-    if(execution.responseStatusCode<200 || execution.responseStatusCode>=300){
-      throw new Error(result.message || result.error || "Server request failed: "+execution.responseStatusCode);
-    }
-    if(result.ok===false) throw new Error(result.message || "Request failed");
-    return result;
-  }finally{
-    apiBusy=false;
+ if(!currentUser)throw new Error("আগে Player Login করুন।");
+ if(apiBusy)throw new Error("একটি অনুরোধ চলছে, অপেক্ষা করুন।");
+ apiBusy=true;
+ try{
+  const jwtResult=await account.createJWT();
+  const execution=await functions.createExecution({
+   functionId:GAME_FUNCTION_ID,
+   async:false,
+   path:path,
+   method:method,
+   headers:{
+    "x-appwrite-user-jwt":jwtResult.jwt,
+    "content-type":"application/json"
+   },
+   body:JSON.stringify(payload)
+  });
+  let result={};
+  try{result=JSON.parse(execution.responseBody||"{}")}
+  catch(e){result={message:execution.responseBody||"Invalid server response"}}
+  if(execution.responseStatusCode<200||execution.responseStatusCode>=300){
+   throw new Error(result.message||result.error||"Server error "+execution.responseStatusCode);
   }
+  if(result.ok===false)throw new Error(result.message||"Request failed");
+  return result;
+ }finally{apiBusy=false}
 }
 
+/* MODE AND MAP */
 function setMode(mode){
-  selectedMode=mode;
-  message("modeLabel","Selected: "+mode);
-  ["soloBtn","duoBtn","squadBtn"].forEach(id=>{
-    document.getElementById(id).className="darkbtn";
-  });
-  document.getElementById(mode.toLowerCase()+"Btn").className="";
+ selectedMode=mode;
+ message("modeLabel",mode+" SELECTED");
+ ["soloBtn","duoBtn","squadBtn"].forEach(id=>{
+  document.getElementById(id).className="mode-card";
+ });
+ document.getElementById(mode.toLowerCase()+"Btn").className="mode-card selected";
+}
+
+function selectMap(name,element){
+ selectedMap=name;
+ document.querySelectorAll(".map-card").forEach(el=>el.classList.remove("selected-map"));
+ element.classList.add("selected-map");
+ message("mapMessage","Selected: "+name);
 }
 
 /* ROOM SYSTEM */
 async function createRoom(){
-  try{
-    const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
-    currentRoom=result.room || result;
-    showRoom(result);
-    startRoomRefresh();
-    message("roomMessage","রুম তৈরি হয়েছে।");
-  }catch(e){
-    message("roomMessage","রুম তৈরি হয়নি: "+e.message);
-  }
+ try{
+  const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
+  currentRoom=result.room||result;
+  showRoom(result);
+  startRoomRefresh();
+  message("roomMessage","Room created.");
+ }catch(e){message("roomMessage","Room create failed: "+e.message)}
 }
 
 async function joinRoom(){
-  const code=document.getElementById("roomCode").value.trim();
-  if(!code){
-    message("roomMessage","Room Code লিখুন।");
-    return;
-  }
-
-  try{
-    const result=await gameApi("/rooms/join","POST",{room_code:code});
-    currentRoom=result.room || result;
-    showRoom(result);
-    startRoomRefresh();
-    message("roomMessage","রুমে যোগ দিয়েছেন।");
-  }catch(e){
-    message("roomMessage","রুমে যোগ দেওয়া যায়নি: "+e.message);
-  }
+ const code=document.getElementById("roomCode").value.trim();
+ if(!code){message("roomMessage","Room Code লিখুন।");return}
+ try{
+  const result=await gameApi("/rooms/join","POST",{room_code:code});
+  currentRoom=result.room||result;
+  showRoom(result);
+  startRoomRefresh();
+  message("roomMessage","Joined room.");
+ }catch(e){message("roomMessage","Join failed: "+e.message)}
 }
 
 function showRoom(result){
-  const room=result.room || result;
-  const code=room.room_code || room.code || "তথ্য পাওয়া যায়নি";
-  document.getElementById("roomCode").value=code;
-  message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode || selectedMode));
+ const room=result.room||result;
+ const code=room.room_code||room.code||"Not available";
+ document.getElementById("roomCode").value=code;
+ message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode||selectedMode));
 }
 
 async function loadRoomPlayers(){
-  if(!currentRoom){
-    message("roomMessage","আগে একটি রুমে যোগ দিন।");
-    return;
-  }
-
-  try{
-    const roomId=currentRoom.$id || currentRoom.id || currentRoom.room_id;
-    const result=await gameApi("/rooms/players","GET");
-    const list=result.players || [];
-    document.getElementById("roomPlayers").textContent=
-      list.length ? "Players: "+list.map(p=>p.display_name || p.user_id || "Player").join(", ") : "এখনো খেলোয়াড়ের তথ্য পাওয়া যায়নি।";
-  }catch(e){
-    message("roomMessage","Player list পাওয়া যায়নি: "+e.message);
-  }
+ if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
+ try{
+  const roomId=currentRoom.$id||currentRoom.id||currentRoom.room_id;
+  const result=await gameApi("/rooms/players?room_id="+encodeURIComponent(roomId),"GET");
+  const list=result.players||[];
+  document.getElementById("roomPlayers").textContent=
+   list.length?"Players: "+list.map(p=>p.display_name||"Player").join(", "):"No player information.";
+ }catch(e){message("roomMessage","Players পাওয়া যায়নি: "+e.message)}
 }
 
 async function leaveRoom(){
-  if(!currentRoom) return;
-
-  try{
-    await gameApi("/rooms/leave","POST",{});
-    currentRoom=null;
-    stopRoomRefresh();
-    message("roomInfo","রুম থেকে বের হয়েছেন।");
-    message("roomPlayers","");
-    message("roomMessage","Room left.");
-  }catch(e){
-    message("roomMessage","রুম ছাড়তে সমস্যা: "+e.message);
-  }
+ if(!currentRoom)return;
+ try{
+  await gameApi("/rooms/leave","POST",{});
+  currentRoom=null;
+  stopRoomRefresh();
+  message("roomInfo","No room selected.");
+  message("roomPlayers","");
+  message("roomMessage","Room left.");
+ }catch(e){message("roomMessage","Leave failed: "+e.message)}
 }
 
 async function startOnlineMatch(){
-  if(!currentRoom){
-    message("roomMessage","আগে একটি রুম তৈরি বা Join করুন।");
-    return;
-  }
-
-  try{
-    await gameApi("/rooms/start","POST",{});
-    message("roomMessage","ম্যাচ শুরু করার অনুরোধ পাঠানো হয়েছে।");
-    startMatch();
-  }catch(e){
-    message("roomMessage","ম্যাচ শুরু হয়নি: "+e.message);
-  }
+ if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
+ try{
+  await gameApi("/rooms/start","POST",{});
+  message("roomMessage","Match start request sent.");
+  startMatch();
+ }catch(e){message("roomMessage","Start failed: "+e.message)}
 }
 
 async function findMatch(){
-  try{
-    const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
-    message("roomMessage",result.message || "Matchmaking অনুরোধ পাঠানো হয়েছে।");
-    go("room");
-  }catch(e){
-    go("room");
-    message("roomMessage","Matchmaking চালু হয়নি: "+e.message);
-  }
+ try{
+  const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
+  go("room");
+  message("roomMessage",result.message||"Matchmaking request sent.");
+ }catch(e){
+  go("room");
+  message("roomMessage","Matchmaking failed: "+e.message);
+ }
 }
 
 function startRoomRefresh(){
-  stopRoomRefresh();
-  roomRefreshTimer=setInterval(()=>{
-    if(currentRoom) loadRoomPlayers();
-  },5000);
+ stopRoomRefresh();
+ roomRefreshTimer=setInterval(()=>{if(currentRoom)loadRoomPlayers()},10000);
 }
-
 function stopRoomRefresh(){
-  if(roomRefreshTimer) clearInterval(roomRefreshTimer);
-  roomRefreshTimer=null;
+ if(roomRefreshTimer)clearInterval(roomRefreshTimer);
+ roomRefreshTimer=null;
 }
 
-/* PLAYER PRESENCE */
+/* PRESENCE */
 async function sendPresence(){
-  if(!currentUser) return;
-  try{
-    await gameApi("/presence/online","POST",{});
-    message("presenceInfo","Presence: Online");
-  }catch(e){
-    message("presenceInfo","Presence: Server not connected");
-  }
+ if(!currentUser)return;
+ try{
+  await gameApi("/presence/online","POST",{});
+  message("presenceInfo","Presence: Online");
+ }catch(e){message("presenceInfo","Presence: Server unavailable")}
 }
-
 function startPresence(){
-  stopPresence();
-  sendPresence();
-  presenceTimer=setInterval(sendPresence,30000);
+ stopPresence();
+ sendPresence();
+ presenceTimer=setInterval(sendPresence,30000);
 }
-
 function stopPresence(){
-  if(presenceTimer) clearInterval(presenceTimer);
-  presenceTimer=null;
+ if(presenceTimer)clearInterval(presenceTimer);
+ presenceTimer=null;
 }
 
-/* GAME FLOW */
+/* MATCH FLOW */
 function startMatch(){
-  go("airlobby");
-  countdown=30;
-  document.getElementById("jumpBtn").disabled=true;
-  message("countdownText","Match starting in 30 seconds");
-
-  aircraftTimer=setInterval(()=>{
-    countdown--;
-    message("countdownText",countdown>0?"Match starting in "+countdown+" seconds":"Aircraft is flying!");
-
-    if(countdown<=0){
-      clearInterval(aircraftTimer);
-      aircraftTimer=null;
-      document.getElementById("jumpBtn").disabled=false;
-    }
-  },1000);
+ go("airlobby");
+ countdown=30;
+ document.getElementById("jumpBtn").disabled=true;
+ message("countdownText","Match starting in 30 seconds");
+ aircraftTimer=setInterval(()=>{
+  countdown--;
+  message("countdownText",countdown>0?"Match starting in "+countdown+" seconds":"Aircraft is ready. Jump!");
+  if(countdown<=0){
+   clearInterval(aircraftTimer);
+   aircraftTimer=null;
+   document.getElementById("jumpBtn").disabled=false;
+  }
+ },1000);
 }
 
 function cancelAircraft(){
-  clearInterval(aircraftTimer);
-  aircraftTimer=null;
-  go("lobby");
+ if(aircraftTimer)clearInterval(aircraftTimer);
+ aircraftTimer=null;
+ go("lobby");
 }
 
 function jumpFromPlane(){
-  if(countdown>0) return;
-  clearInterval(aircraftTimer);
-  go("jump");
-
-  landingTimer=setTimeout(()=>{
-    landingTimer=null;
-    go("match");
-    restartMatch();
-  },3500);
+ if(countdown>0)return;
+ if(aircraftTimer)clearInterval(aircraftTimer);
+ aircraftTimer=null;
+ go("jump");
+ landingTimer=setTimeout(()=>{
+  landingTimer=null;
+  go("match");
+  restartMatch();
+ },3500);
 }
 
-/* SIMPLE PLAYABLE PROTOTYPE */
+/* SIMPLE 2D GAME PROTOTYPE */
 const arena=document.getElementById("arena");
 const ctx=arena.getContext("2d");
 
 function createStars(){
-  stars=[];
-  for(let i=0;i<12;i++){
-    stars.push({x:30+Math.random()*840,y:30+Math.random()*440});
-  }
+ stars=[];
+ for(let i=0;i<12;i++){
+  stars.push({x:30+Math.random()*840,y:30+Math.random()*440});
+ }
 }
 
 function restartMatch(){
-  stopGame();
-  player={x:450,y:250,speed:5};
-  score=0;
-  timeLeft=90;
-  createStars();
-  message("score",score);
+ stopGame();
+ player={x:450,y:250,speed:5};
+ score=0;
+ timeLeft=90;
+ createStars();
+ message("score",score);
+ message("timeLeft",timeLeft);
+ drawGame();
+ gameLoop=setInterval(updateGame,30);
+ gameClock=setInterval(()=>{
+  timeLeft--;
   message("timeLeft",timeLeft);
-  drawGame();
-  gameLoop=setInterval(updateGame,30);
-
-  gameClock=setInterval(()=>{
-    timeLeft--;
-    message("timeLeft",timeLeft);
-    if(timeLeft<=0){
-      stopGame();
-      alert("Game Over! Score: "+score);
-    }
-  },1000);
+  if(timeLeft<=0){
+   stopGame();
+   alert("Game Over! Score: "+score);
+  }
+ },1000);
 }
 
 function stopGame(){
-  if(gameLoop) clearInterval(gameLoop);
-  if(gameClock) clearInterval(gameClock);
-  gameLoop=null;
-  gameClock=null;
+ if(gameLoop)clearInterval(gameLoop);
+ if(gameClock)clearInterval(gameClock);
+ gameLoop=null;
+ gameClock=null;
 }
 
 function updateGame(){
-  if(keys.ArrowLeft || keys.a) player.x-=player.speed;
-  if(keys.ArrowRight || keys.d) player.x+=player.speed;
-  if(keys.ArrowUp || keys.w) player.y-=player.speed;
-  if(keys.ArrowDown || keys.s) player.y+=player.speed;
+ if(keys.ArrowLeft||keys.a)player.x-=player.speed;
+ if(keys.ArrowRight||keys.d)player.x+=player.speed;
+ if(keys.ArrowUp||keys.w)player.y-=player.speed;
+ if(keys.ArrowDown||keys.s)player.y+=player.speed;
+ player.x=Math.max(15,Math.min(885,player.x));
+ player.y=Math.max(15,Math.min(485,player.y));
 
-  player.x=Math.max(15,Math.min(885,player.x));
-  player.y=Math.max(15,Math.min(485,player.y));
-
-  stars=stars.filter(s=>{
-    const dx=player.x-s.x,dy=player.y-s.y;
-    if(Math.hypot(dx,dy)<25){
-      score++;
-      message("score",score);
-      return false;
-    }
-    return true;
-  });
-
-  if(stars.length<5) createStars();
-  drawGame();
+ stars=stars.filter(s=>{
+  if(Math.hypot(player.x-s.x,player.y-s.y)<25){
+   score++;
+   message("score",score);
+   return false;
+  }
+  return true;
+ });
+ if(stars.length<5)createStars();
+ drawGame();
 }
 
 function drawGame(){
-  ctx.clearRect(0,0,900,500);
-  ctx.fillStyle="#327c55";
-  ctx.fillRect(0,0,900,500);
-  ctx.fillStyle="#4c9a68";
-
-  for(let i=0;i<18;i++){
-    ctx.beginPath();
-    ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);
-    ctx.fill();
-  }
-
-  ctx.fillStyle="#e5bd45";
-  stars.forEach(s=>{
-    ctx.beginPath();
-    ctx.arc(s.x,s.y,9,0,Math.PI*2);
-    ctx.fill();
-  });
-
-  ctx.fillStyle="white";
+ ctx.clearRect(0,0,900,500);
+ ctx.fillStyle="#327c55";
+ ctx.fillRect(0,0,900,500);
+ ctx.fillStyle="#4c9a68";
+ for(let i=0;i<18;i++){
   ctx.beginPath();
-  ctx.arc(player.x,player.y,20,0,Math.PI*2);
+  ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);
   ctx.fill();
-
-  ctx.fillStyle="#1a2a3d";
+ }
+ ctx.fillStyle="#e5bd45";
+ stars.forEach(s=>{
   ctx.beginPath();
-  ctx.arc(player.x,player.y-5,7,0,Math.PI*2);
+  ctx.arc(s.x,s.y,9,0,Math.PI*2);
   ctx.fill();
+ });
+ ctx.fillStyle="white";
+ ctx.beginPath();
+ ctx.arc(player.x,player.y,20,0,Math.PI*2);
+ ctx.fill();
+ ctx.fillStyle="#1a2a3d";
+ ctx.beginPath();
+ ctx.arc(player.x,player.y-5,7,0,Math.PI*2);
+ ctx.fill();
 }
 
-/* KEYBOARD & TOUCH */
+/* KEYBOARD AND TOUCH */
 document.addEventListener("keydown",e=>{
-  keys[e.key]=true;
-  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault();
+ keys[e.key]=true;
+ if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))e.preventDefault();
 });
-
 document.addEventListener("keyup",e=>keys[e.key]=false);
 window.addEventListener("blur",()=>keys={});
 
 document.querySelectorAll(".control").forEach(btn=>{
-  const key=btn.dataset.key;
-
-  btn.addEventListener("pointerdown",e=>{
-    e.preventDefault();
-    keys[key]=true;
-    try{btn.setPointerCapture(e.pointerId);}catch(_){}
+ const key=btn.dataset.key;
+ btn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  keys[key]=true;
+  try{btn.setPointerCapture(e.pointerId)}catch(_){}
+ });
+ ["pointerup","pointercancel","lostpointercapture"].forEach(event=>{
+  btn.addEventListener(event,e=>{
+   e.preventDefault();
+   keys[key]=false;
   });
-
-  ["pointerup","pointercancel","lostpointercapture"].forEach(event=>{
-    btn.addEventListener(event,e=>{
-      e.preventDefault();
-      keys[key]=false;
-    });
-  });
+ });
 });
 
-/* CONNECTION TEST */
+/* SERVER HEALTH */
 async function checkConnection(){
-  try{
-    const result=await gameApi("/health","GET");
-    message("connectionInfo","Server response: "+JSON.stringify(result));
-  }catch(e){
-    message("connectionInfo","সংযোগ পরীক্ষা ব্যর্থ: "+e.message);
-  }
+ try{
+  const result=await gameApi("/health","GET");
+  message("connectionInfo","Server response: "+JSON.stringify(result));
+ }catch(e){message("connectionInfo","Connection failed: "+e.message)}
 }
 
-/* RESTORE LOGIN SESSION */
+/* RESTORE SESSION */
 (async function(){
-  try{
-    currentUser=await account.get();
-    afterLogin();
-  }catch(e){
-    go("splash");
-  }
+ try{
+  currentUser=await account.get();
+  afterLogin();
+ }catch(e){go("splash")}
 })();
 </script>
 </body>
-    </html>
+                                                     </html>
