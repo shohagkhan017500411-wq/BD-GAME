@@ -380,9 +380,7 @@ async function logoutPlayer(){
  go("splash");
 }
 
-/* APPWRITE FUNCTION REQUEST
-   Reserved x-appwrite headers manually পাঠানো হচ্ছে না।
-*/
+/* APPWRITE FUNCTION REQUEST — ROUTE FIXED */
 async function gameApi(path,method="POST",payload={}){
  if(!currentUser)throw new Error("আগে Player Login করুন।");
  if(apiBusy)throw new Error("একটি অনুরোধ চলছে, একটু অপেক্ষা করুন।");
@@ -391,20 +389,31 @@ async function gameApi(path,method="POST",payload={}){
   const execution=await functions.createExecution({
    functionId:GAME_FUNCTION_ID,
    async:false,
-   path:path,
+
+   // FIX: Appwrite SDK uses xpath for the function route.
+   xpath:path,
+
    method:method,
    headers:{"content-type":"application/json"},
    body:method==="GET"?"":JSON.stringify(payload)
   });
+
   let result={};
-  try{result=JSON.parse(execution.responseBody||"{}")}
-  catch(e){result={message:execution.responseBody||"Invalid server response"}}
+  try{
+   result=JSON.parse(execution.responseBody||"{}");
+  }catch(e){
+   result={message:execution.responseBody||"Invalid server response"};
+  }
+
   if(execution.responseStatusCode<200||execution.responseStatusCode>=300){
    throw new Error(result.message||result.error||"Server error "+execution.responseStatusCode);
   }
+
   if(result.ok===false)throw new Error(result.message||"Request failed");
   return result;
- }finally{apiBusy=false}
+ }finally{
+  apiBusy=false;
+ }
 }
 
 /* MODE AND MAP */
@@ -522,6 +531,7 @@ async function checkMatchmakingStatus(){
   const result=await gameApi("/matchmaking/status","GET");
   const state=String(result.status||result.state||"").toLowerCase();
   const room=result.room||result.match||null;
+
   if(result.matched===true||state==="matched"||state==="complete"||room){
    stopMatchmakingPolling();
    matchmakingBusy=false;
@@ -534,6 +544,7 @@ async function checkMatchmakingStatus(){
    if(currentRoom)loadRoomPlayers();
    return;
   }
+
   message("matchmakingInfo",result.message||"৫০ জনের Match-এর জন্য অপেক্ষা চলছে...");
  }catch(e){
   message("matchmakingInfo","Status check: "+e.message);
@@ -544,10 +555,12 @@ async function cancelMatchmaking(){
  stopMatchmakingPolling();
  const wasSearching=matchmakingBusy;
  matchmakingBusy=false;
+
  if(!wasSearching){
   message("matchmakingInfo","কোনো Match search চলছে না।");
   return;
  }
+
  try{
   await gameApi("/matchmaking/cancel","POST",{});
   message("matchmakingInfo","Matchmaking বাতিল হয়েছে।");
@@ -567,9 +580,11 @@ function startMatch(){
  countdown=30;
  document.getElementById("jumpBtn").disabled=true;
  message("countdownText","Match starting in 30 seconds");
+
  aircraftTimer=setInterval(()=>{
   countdown--;
   message("countdownText",countdown>0?"Match starting in "+countdown+" seconds":"Aircraft is ready. Jump!");
+
   if(countdown<=0){
    clearInterval(aircraftTimer);
    aircraftTimer=null;
@@ -589,6 +604,7 @@ function jumpFromPlane(){
  if(aircraftTimer)clearInterval(aircraftTimer);
  aircraftTimer=null;
  go("jump");
+
  landingTimer=setTimeout(()=>{
   landingTimer=null;
   go("match");
@@ -615,6 +631,7 @@ function restartMatch(){
  message("timeLeft",timeLeft);
  drawGame();
  gameLoop=setInterval(updateGame,30);
+
  gameClock=setInterval(()=>{
   timeLeft--;
   message("timeLeft",timeLeft);
@@ -637,8 +654,10 @@ function updateGame(){
  if(keys.ArrowRight||keys.d)player.x+=player.speed;
  if(keys.ArrowUp||keys.w)player.y-=player.speed;
  if(keys.ArrowDown||keys.s)player.y+=player.speed;
+
  player.x=Math.max(15,Math.min(885,player.x));
  player.y=Math.max(15,Math.min(485,player.y));
+
  stars=stars.filter(s=>{
   if(Math.hypot(player.x-s.x,player.y-s.y)<25){
    score++;
@@ -647,6 +666,7 @@ function updateGame(){
   }
   return true;
  });
+
  if(stars.length<5)createStars();
  drawGame();
 }
@@ -656,21 +676,25 @@ function drawGame(){
  ctx.fillStyle="#327c55";
  ctx.fillRect(0,0,900,500);
  ctx.fillStyle="#4c9a68";
+
  for(let i=0;i<18;i++){
   ctx.beginPath();
   ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);
   ctx.fill();
  }
+
  ctx.fillStyle="#e5bd45";
  stars.forEach(s=>{
   ctx.beginPath();
   ctx.arc(s.x,s.y,9,0,Math.PI*2);
   ctx.fill();
  });
+
  ctx.fillStyle="white";
  ctx.beginPath();
  ctx.arc(player.x,player.y,20,0,Math.PI*2);
  ctx.fill();
+
  ctx.fillStyle="#1a2a3d";
  ctx.beginPath();
  ctx.arc(player.x,player.y-5,7,0,Math.PI*2);
@@ -682,16 +706,19 @@ document.addEventListener("keydown",e=>{
  keys[e.key]=true;
  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))e.preventDefault();
 });
+
 document.addEventListener("keyup",e=>keys[e.key]=false);
 window.addEventListener("blur",()=>keys={});
 
 document.querySelectorAll(".control").forEach(btn=>{
  const key=btn.dataset.key;
+
  btn.addEventListener("pointerdown",e=>{
   e.preventDefault();
   keys[key]=true;
   try{btn.setPointerCapture(e.pointerId)}catch(_){}
  });
+
  ["pointerup","pointercancel","lostpointercapture"].forEach(event=>{
   btn.addEventListener(event,e=>{
    e.preventDefault();
@@ -705,7 +732,9 @@ async function checkConnection(){
  try{
   const result=await gameApi("/health","GET");
   message("connectionInfo","Server response: "+JSON.stringify(result));
- }catch(e){message("connectionInfo","Connection failed: "+e.message)}
+ }catch(e){
+  message("connectionInfo","Connection failed: "+e.message);
+ }
 }
 
 /* RESTORE SESSION */
@@ -713,8 +742,10 @@ async function checkConnection(){
  try{
   currentUser=await account.get();
   afterLogin();
- }catch(e){go("splash")}
+ }catch(e){
+  go("splash");
+ }
 })();
 </script>
 </body>
-                                                       </html>
+   </html>
