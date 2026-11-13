@@ -4,56 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#080d18">
-<meta name="description" content="BD GAME - Mobile Game Prototype">
 <title>BD GAME</title>
 
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
+body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
 button,input{font:inherit}
-button{border:0;border-radius:10px;padding:12px 16px;background:#d7a83e;color:#111;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.45}
+button{border:0;border-radius:10px;padding:13px;background:#e4b64e;color:#111;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}
 input{width:100%;padding:13px;margin:7px 0;background:#172235;border:1px solid #39465b;border-radius:9px;color:white}
-header{height:58px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border-bottom:1px solid #29364b}
+header{height:58px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 15px}
 .logo{font-size:23px;font-weight:900;color:#e5b64d;letter-spacing:2px}
 .page{display:none;min-height:calc(100vh - 58px);padding:15px 12px 85px}
 .page.active{display:block}
 .panel{background:#121e30;border:1px solid #2d3c53;border-radius:14px;padding:16px;margin:12px 0}
-h2,h3{margin-top:8px}
-.muted{color:#9eabc0;font-size:13px}
 .center{text-align:center}
+.muted{color:#9eabc0;font-size:13px}
 .full{width:100%;margin:6px 0}
-.gold{background:#e4b64e}
-.darkbtn{background:#25344b;color:#fff}
-.red{background:#a8323e;color:#fff}
-.green{background:#187b55;color:#fff}
+.darkbtn{background:#25344b;color:white}
+.red{background:#a8323e;color:white}
+.green{background:#187b55;color:white}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.tile{background:#17263b;border:1px solid #35445a;padding:20px 8px;text-align:center;border-radius:12px;min-height:76px}
-.tile b{display:block;margin-top:7px}
+.tile{background:#17263b;border:1px solid #35445a;padding:20px 8px;text-align:center;border-radius:12px}
 .nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:#101a2b;border-top:1px solid #344158;display:flex;justify-content:space-around;align-items:center;z-index:20}
-.nav button{background:transparent;color:#fff;padding:8px;font-size:12px}
-.screen-title{color:#e8ba55;text-align:center;margin:8px 0 18px}
+.nav button{background:transparent;color:white;padding:8px;font-size:12px}
+.title{text-align:center;color:#e8ba55;margin:8px 0 18px}
 .hide{display:none!important}
-#aircraftView,#arena{width:100%;background:#14263b;border-radius:12px;display:block}
-#game3d{position:fixed;inset:0;background:#07101c;z-index:50;display:none}
-#game3d canvas{width:100%;height:100%;display:block}
-#threeHud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none}
-#threeHud button{pointer-events:auto}
-#jumpBtn{font-size:20px;background:#e5b64d;padding:16px 30px}
-#parachute{font-size:75px;text-align:center;animation:fall 3.5s ease-in forwards}
-@keyframes fall{0%{transform:translateY(-20px) scale(.8)}100%{transform:translateY(180px) scale(1.1)}}
-#playerControls{display:flex;justify-content:center;gap:12px;margin:12px}
-.control{width:65px;height:55px;background:#263952;color:white;font-size:22px;touch-action:none}
-.small{font-size:12px}
+#arena{width:100%;background:#327c55;border-radius:12px}
+.control{width:60px;height:55px;background:#263952;color:white;font-size:22px;touch-action:none}
+#controls{display:flex;justify-content:center;gap:8px;margin:12px}
+.status{padding:10px;border-radius:8px;background:#17263b;margin:8px 0}
 </style>
 </head>
 
 <body>
 <header>
-  <div class="logo">BD</div>
+  <div class="logo">BD GAME</div>
   <div id="playerName" class="muted">Guest Player</div>
   <button class="darkbtn" onclick="go('settings')">⚙</button>
 </header>
@@ -69,23 +57,23 @@ h2,h3{margin-top:8px}
 </section>
 
 <section id="login" class="page">
-  <h2 class="screen-title">PLAYER LOGIN</h2>
+  <h2 class="title">PLAYER LOGIN</h2>
   <div class="panel">
     <input id="loginEmail" type="email" placeholder="Gmail">
     <input id="loginPassword" type="password" placeholder="Password">
     <button class="full" onclick="loginPlayer()">LOGIN</button>
     <button class="full darkbtn" onclick="go('register')">CREATE ACCOUNT</button>
-    <button class="full darkbtn" onclick="guestLogin()">PLAY AS GUEST</button>
+    <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
     <p id="loginMessage" class="muted"></p>
   </div>
 </section>
 
 <section id="register" class="page">
-  <h2 class="screen-title">CREATE PLAYER ACCOUNT</h2>
+  <h2 class="title">CREATE PLAYER ACCOUNT</h2>
   <div class="panel">
     <input id="regName" placeholder="Player Name">
     <input id="regEmail" type="email" placeholder="Gmail">
-    <input id="regPassword" type="password" placeholder="Password">
+    <input id="regPassword" type="password" placeholder="Password (minimum 8 characters)">
     <button class="full" onclick="registerPlayer()">REGISTER</button>
     <button class="full darkbtn" onclick="go('login')">BACK TO LOGIN</button>
     <p id="regMessage" class="muted"></p>
@@ -93,219 +81,144 @@ h2,h3{margin-top:8px}
 </section>
 
 <section id="lobby" class="page">
-  <h2 class="screen-title">BD GAME LOBBY</h2>
+  <h2 class="title">BD GAME LOBBY</h2>
   <div class="panel center">
     <h3>SELECT GAME MODE</h3>
     <div class="grid">
-      <button id="soloBtn" onclick="setMode('SOLO')">SOLO</button>
-      <button class="darkbtn" id="duoBtn" onclick="setMode('DUO')">DUO</button>
-      <button class="darkbtn" id="squadBtn" onclick="setMode('SQUAD')">SQUAD</button>
+      <button onclick="setMode('SOLO')" id="soloBtn">SOLO</button>
+      <button class="darkbtn" onclick="setMode('DUO')" id="duoBtn">DUO</button>
+      <button class="darkbtn" onclick="setMode('SQUAD')" id="squadBtn">SQUAD</button>
       <button class="darkbtn" onclick="go('room')">ROOM</button>
     </div>
     <p id="modeLabel" class="muted">Selected: SOLO</p>
     <button class="full" onclick="startMatch()">START MATCH</button>
+    <button class="full green" onclick="findMatch()">RANDOM MATCHMAKING</button>
   </div>
-
   <div class="grid">
-    <div class="tile" onclick="go('character')">🧍<b>Character</b></div>
-    <div class="tile" onclick="go('outfit')">👕<b>Outfit & Skin</b></div>
-    <div class="tile" onclick="go('pet')">🐾<b>Pet</b></div>
-    <div class="tile" onclick="go('gear')">🎒<b>Gear</b></div>
-    <div class="tile" onclick="go('shop')">🛒<b>Game Shop</b></div>
-    <div class="tile" onclick="go('map')">🗺️<b>Map</b></div>
-    <div class="tile" onclick="go('friends')">👥<b>Friends</b></div>
-    <div class="tile" onclick="go('rank')">🏆<b>Rank</b></div>
-    <div class="tile" onclick="go('mission')">🎯<b>Mission</b></div>
+    <div class="tile">🧍<b>Character</b></div>
+    <div class="tile">👕<b>Outfit & Skin</b></div>
+    <div class="tile">🎒<b>Gear</b></div>
+    <div class="tile">🗺️<b>Island Map</b></div>
+    <div class="tile">🏆<b>Leaderboard</b></div>
     <div class="tile" onclick="go('profile')">👤<b>Profile</b></div>
-    <div class="tile" onclick="go('events')">🎉<b>Events</b></div>
-    <div class="tile" onclick="go('settings')">⚙️<b>Settings</b></div>
-    <div class="tile" onclick="go('security')">🔐<b>Security</b></div>
   </div>
-</section>
-
-<section id="events" class="page">
-  <h2 class="screen-title">EVENTS</h2>
-  <div class="panel"><h3>Coming Soon</h3><p class="muted">নতুন ইভেন্ট পরে যোগ করা হবে।</p></div>
-</section>
-
-<section id="character" class="page">
-  <h2 class="screen-title">CHARACTER</h2>
-  <div class="panel center"><div style="font-size:90px">🧍</div><h3>Default Character</h3><p class="muted">More characters coming soon.</p></div>
-</section>
-
-<section id="outfit" class="page">
-  <h2 class="screen-title">OUTFIT & SKIN</h2>
-  <div class="grid">
-    <div class="tile">👕<b>Default Outfit</b></div>
-    <div class="tile">🧥<b>Coming Soon</b></div>
-  </div>
-</section>
-
-<section id="pet" class="page">
-  <h2 class="screen-title">PET</h2>
-  <div class="panel center"><div style="font-size:75px">🐶</div><p>Pet feature coming soon.</p></div>
-</section>
-
-<section id="gear" class="page">
-  <h2 class="screen-title">GEAR</h2>
-  <div class="grid">
-    <div class="tile">🎒<b>Bag</b></div>
-    <div class="tile">🪖<b>Helmet</b></div>
-    <div class="tile">🛡️<b>Protection</b></div>
-    <div class="tile">🧰<b>Equipment</b></div>
-  </div>
-</section>
-
-<section id="shop" class="page">
-  <h2 class="screen-title">GAME SHOP</h2>
-  <div class="panel"><h3>💎 Diamond Shop</h3><p class="muted">ডেমো শপ। আসল পেমেন্ট এখনো যুক্ত নেই।</p></div>
-  <div class="panel"><h3>🪙 Coin Shop</h3><p class="muted">Game items coming soon.</p></div>
-</section>
-
-<section id="map" class="page">
-  <h2 class="screen-title">MAP</h2>
-  <div class="panel center">
-    <div style="font-size:70px">🏝️</div>
-    <h3>Island Map</h3>
-    <p class="muted">Prototype island map</p>
-    <button onclick="start3DGame()">OPEN 3D ISLAND</button>
-  </div>
-</section>
-
-<section id="friends" class="page">
-  <h2 class="screen-title">FRIENDS</h2>
-  <div class="panel"><p>Friends system coming soon.</p></div>
 </section>
 
 <section id="room" class="page">
-  <h2 class="screen-title">ROOM & MATCH</h2>
+  <h2 class="title">ROOM & MATCH</h2>
   <div class="panel">
+    <button class="full green" onclick="createRoom()">CREATE PRIVATE ROOM</button>
     <input id="roomCode" placeholder="Enter Room Code">
-    <button class="full" onclick="alert('Online room system এখনো যুক্ত হয়নি।')">JOIN ROOM</button>
-    <button class="full darkbtn" onclick="alert('Room creation coming soon.')">CREATE ROOM</button>
+    <button class="full" onclick="joinRoom()">JOIN ROOM</button>
+    <button class="full darkbtn" onclick="loadRoomPlayers()">REFRESH PLAYERS</button>
+    <div id="roomInfo" class="status muted">কোনো রুম নির্বাচন করা হয়নি।</div>
+    <div id="roomPlayers" class="muted"></div>
+    <button class="full" onclick="startOnlineMatch()">START ROOM MATCH</button>
+    <button class="full red" onclick="leaveRoom()">LEAVE ROOM</button>
+    <p id="roomMessage" class="muted"></p>
   </div>
 </section>
 
 <section id="airlobby" class="page center">
-  <h2 class="screen-title">AIRCRAFT FLIGHT</h2>
+  <h2 class="title">AIRCRAFT FLIGHT</h2>
   <p id="countdownText">Match starting in 30 seconds</p>
-  <canvas id="aircraftView" width="900" height="420"></canvas>
-  <p class="muted">বিমান আইল্যান্ডের উপর দিয়ে যাচ্ছে...</p>
+  <div style="font-size:100px">✈️</div>
+  <div style="font-size:70px">🏝️</div>
   <button id="jumpBtn" disabled onclick="jumpFromPlane()">JUMP</button>
   <button class="full darkbtn" onclick="cancelAircraft()">CANCEL</button>
 </section>
 
 <section id="jump" class="page center">
-  <h2 class="screen-title">PARACHUTE DESCENT</h2>
-  <div id="parachute">🪂</div>
+  <h2 class="title">PARACHUTE DESCENT</h2>
+  <div style="font-size:100px">🪂</div>
   <h3>Landing...</h3>
-  <p class="muted">Preparing game area</p>
 </section>
 
 <section id="match" class="page center">
-  <h2 class="screen-title">ISLAND GAME</h2>
+  <h2 class="title">ISLAND GAME</h2>
   <div class="panel">
-    <div style="display:flex;justify-content:space-between">
-      <span>⭐ Score: <b id="score">0</b></span>
-      <span>⏱ <b id="timeLeft">90</b>s</span>
-    </div>
+    <p>⭐ Score: <b id="score">0</b> | ⏱ <b id="timeLeft">90</b>s</p>
     <canvas id="arena" width="900" height="500"></canvas>
-    <div id="playerControls">
+    <div id="controls">
       <button class="control" data-key="ArrowLeft">←</button>
       <button class="control" data-key="ArrowUp">↑</button>
       <button class="control" data-key="ArrowDown">↓</button>
       <button class="control" data-key="ArrowRight">→</button>
     </div>
-    <button class="full" onclick="start3DGame()">PLAY 3D PROTOTYPE</button>
     <button class="full darkbtn" onclick="go('lobby')">EXIT TO LOBBY</button>
   </div>
 </section>
 
-<section id="rank" class="page">
-  <h2 class="screen-title">RANK & LEADERBOARD</h2>
-  <div class="panel"><h3>New Player</h3><p class="muted">Leaderboard coming soon.</p></div>
-</section>
-
-<section id="mission" class="page">
-  <h2 class="screen-title">MISSIONS</h2>
-  <div class="panel"><p>Daily missions coming soon.</p></div>
-</section>
-
 <section id="profile" class="page">
-  <h2 class="screen-title">PLAYER PROFILE</h2>
+  <h2 class="title">PLAYER PROFILE</h2>
   <div class="panel center">
     <div style="font-size:70px">👤</div>
     <h3 id="profileName">Guest Player</h3>
-    <p id="profileEmail" class="muted">Guest</p>
+    <p id="profileEmail" class="muted"></p>
     <p id="profileId" class="muted"></p>
+    <p id="presenceInfo" class="muted">Presence: Connecting...</p>
   </div>
 </section>
 
 <section id="settings" class="page">
-  <h2 class="screen-title">SETTINGS</h2>
+  <h2 class="title">SETTINGS</h2>
   <div class="panel">
-    <button class="full darkbtn" onclick="alert('Sound settings coming soon.')">SOUND</button>
-    <button class="full darkbtn" onclick="alert('Graphics settings coming soon.')">GRAPHICS</button>
+    <button class="full darkbtn" onclick="checkConnection()">CHECK SERVER CONNECTION</button>
+    <p id="connectionInfo" class="muted"></p>
     <button class="full red" onclick="logoutPlayer()">LOG OUT</button>
   </div>
 </section>
 
-<section id="security" class="page">
-  <h2 class="screen-title">SECURITY</h2>
-  <div class="panel">
-    <p>Account security is managed by Appwrite authentication.</p>
-    <p class="muted">Never share your password with anyone.</p>
-  </div>
-</section>
-
-<nav class="nav" id="bottomNav">
+<nav class="nav" id="bottomNav" style="display:none">
   <button onclick="go('lobby')">🏠<br>Home</button>
+  <button onclick="go('room')">🚪<br>Room</button>
   <button onclick="go('profile')">👤<br>Profile</button>
-  <button onclick="go('shop')">💎<br>Shop</button>
   <button onclick="go('settings')">☰<br>Menu</button>
 </nav>
 
-<div id="game3d">
-  <div id="threeHud">
-    <div style="background:#101a2bdd;padding:10px;border-radius:8px">BD GAME · 3D PROTOTYPE</div>
-    <button onclick="exit3DGame()">EXIT</button>
-  </div>
-  <div id="threeControls" style="position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:10px">
-    <button class="control" data-key="ArrowLeft">←</button>
-    <button class="control" data-key="ArrowUp">↑</button>
-    <button class="control" data-key="ArrowDown">↓</button>
-    <button class="control" data-key="ArrowRight">→</button>
-  </div>
-</div>
-
 <script>
+/* APPWRITE CONNECTION */
 const APPWRITE_ENDPOINT = "https://sgp.cloud.appwrite.io/v1";
-const APPWRITE_PROJECT_ID = "6af4c61002ee336af01";
+const APPWRITE_PROJECT_ID = "6af4c610002ee336af01";
+const GAME_FUNCTION_ID = "bd-game-match-api";
 
 const client = new Appwrite.Client()
   .setEndpoint(APPWRITE_ENDPOINT)
   .setProject(APPWRITE_PROJECT_ID);
 
 const account = new Appwrite.Account(client);
+const functions = new Appwrite.Functions(client);
 
 let currentUser = null;
 let selectedMode = "SOLO";
+let currentRoom = null;
+let aircraftTimer = null;
+let landingTimer = null;
+let gameLoop = null;
+let gameClock = null;
+let presenceTimer = null;
+let roomRefreshTimer = null;
+let countdown = 30;
+let score = 0;
+let timeLeft = 90;
+let keys = {};
+let player = {x:450,y:250,speed:5};
+let stars = [];
+let apiBusy = false;
 
 const pages = document.querySelectorAll(".page");
 
 function go(id){
   stopGame();
-  stop3DGame();
-  clearAircraftTimers();
+  clearInterval(aircraftTimer);
+  aircraftTimer = null;
 
-  if (landingTimer && id !== "match") {
+  if(landingTimer && id !== "match"){
     clearTimeout(landingTimer);
     landingTimer = null;
   }
 
-  document.getElementById("game3d").style.display = "none";
-  pages.forEach(p => p.classList.remove("active"));
-
+  pages.forEach(p=>p.classList.remove("active"));
   const page = document.getElementById(id);
   if(page) page.classList.add("active");
 
@@ -313,250 +226,300 @@ function go(id){
     ["splash","login","register","airlobby","jump"].includes(id) ? "none" : "flex";
 }
 
-/* AUTH */
-async function registerPlayer(){
-  const name = document.getElementById("regName").value.trim();
-  const email = document.getElementById("regEmail").value.trim();
-  const password = document.getElementById("regPassword").value;
-  const msg = document.getElementById("regMessage");
+function message(id,text){
+  const el=document.getElementById(id);
+  if(el) el.textContent=text;
+}
 
-  if(!name || !email || password.length < 8){
-    msg.textContent = "নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।";
+/* AUTHENTICATION */
+async function registerPlayer(){
+  const name=document.getElementById("regName").value.trim();
+  const email=document.getElementById("regEmail").value.trim();
+  const password=document.getElementById("regPassword").value;
+  if(!name || !email || password.length<8){
+    message("regMessage","নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।");
     return;
   }
-
   try{
-    await account.create(Appwrite.ID.unique(), email, password, name);
-    msg.textContent = "Account তৈরি হয়েছে। এখন Login করুন।";
+    await account.create(Appwrite.ID.unique(),email,password,name);
+    message("regMessage","অ্যাকাউন্ট তৈরি হয়েছে। এখন Login করুন।");
     go("login");
   }catch(e){
-    msg.textContent = e.message || "Registration failed.";
+    message("regMessage",e.message || "Registration failed");
   }
 }
 
 async function loginPlayer(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
-  const msg = document.getElementById("loginMessage");
-
+  const email=document.getElementById("loginEmail").value.trim();
+  const password=document.getElementById("loginPassword").value;
   try{
     await account.createEmailPasswordSession(email,password);
-    currentUser = await account.get();
-    showPlayer();
-    go("lobby");
+    currentUser=await account.get();
+    afterLogin();
   }catch(e){
-    msg.textContent = e.message || "Login failed.";
+    message("loginMessage",e.message || "Login failed");
   }
 }
 
 async function guestLogin(){
   try{
     await account.createAnonymousSession();
-    currentUser = await account.get();
-    showPlayer();
-    go("lobby");
+    currentUser=await account.get();
+    afterLogin();
   }catch(e){
-    alert("Guest login failed: " + (e.message || ""));
+    alert("Guest login failed: "+(e.message||""));
   }
 }
 
-function showPlayer(){
-  const name = currentUser?.name || "Guest Player";
-  document.getElementById("playerName").textContent = name;
-  document.getElementById("profileName").textContent = name;
-  document.getElementById("profileEmail").textContent = currentUser?.email || "Guest Account";
-  document.getElementById("profileId").textContent = currentUser?.$id || "";
+function afterLogin(){
+  const name=currentUser.name || "Guest Player";
+  document.getElementById("playerName").textContent=name;
+  document.getElementById("profileName").textContent=name;
+  document.getElementById("profileEmail").textContent=currentUser.email || "Guest Account";
+  document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
+  go("lobby");
+  startPresence();
 }
 
 async function logoutPlayer(){
-  try{ await account.deleteSession("current"); }catch(e){}
-  currentUser = null;
+  stopPresence();
+  stopRoomRefresh();
+  try{await account.deleteSession("current");}catch(e){}
+  currentUser=null;
+  currentRoom=null;
   go("splash");
 }
 
-/* MODE */
-function setMode(mode){
-  selectedMode = mode;
-  document.getElementById("modeLabel").textContent = "Selected: " + mode;
+/* SECURE FUNCTION REQUEST */
+async function gameApi(path,method="POST",payload={}){
+  if(!currentUser) throw new Error("আগে Player Login করুন।");
+  if(apiBusy) throw new Error("একটি অনুরোধ চলছে, একটু অপেক্ষা করুন।");
 
-  ["soloBtn","duoBtn","squadBtn"].forEach(id=>{
-    document.getElementById(id).className = "darkbtn";
-  });
+  apiBusy=true;
+  try{
+    const jwtResult=await account.createJWT();
+    const execution=await functions.createExecution({
+      functionId:GAME_FUNCTION_ID,
+      async:false,
+      path:path,
+      method:method,
+      headers:{
+        "x-appwrite-user-jwt":jwtResult.jwt,
+        "content-type":"application/json"
+      },
+      body:JSON.stringify(payload)
+    });
 
-  document.getElementById(mode.toLowerCase()+"Btn").className = "";
+    let result={};
+    try{
+      result=JSON.parse(execution.responseBody || "{}");
+    }catch(e){
+      result={message:execution.responseBody || "Invalid server response"};
+    }
+
+    if(execution.responseStatusCode<200 || execution.responseStatusCode>=300){
+      throw new Error(result.message || result.error || "Server request failed: "+execution.responseStatusCode);
+    }
+    if(result.ok===false) throw new Error(result.message || "Request failed");
+    return result;
+  }finally{
+    apiBusy=false;
+  }
 }
 
-/* AIRCRAFT */
-let aircraftTimer = null;
-let flightTimer = null;
-let landingTimer = null;
-let countdown = 30;
-let planeX = -180;
-let planeFlying = false;
+function setMode(mode){
+  selectedMode=mode;
+  message("modeLabel","Selected: "+mode);
+  ["soloBtn","duoBtn","squadBtn"].forEach(id=>{
+    document.getElementById(id).className="darkbtn";
+  });
+  document.getElementById(mode.toLowerCase()+"Btn").className="";
+}
 
+/* ROOM SYSTEM - REQUIRES DEPLOYED FUNCTION ROUTES */
+async function createRoom(){
+  try{
+    const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
+    currentRoom=result.room || result;
+    showRoom(result);
+    startRoomRefresh();
+    message("roomMessage","রুম তৈরি হয়েছে।");
+  }catch(e){
+    message("roomMessage","রুম তৈরি হয়নি: "+e.message);
+  }
+}
+
+async function joinRoom(){
+  const code=document.getElementById("roomCode").value.trim();
+  if(!code){
+    message("roomMessage","Room Code লিখুন।");
+    return;
+  }
+  try{
+    const result=await gameApi("/rooms/join","POST",{room_code:code});
+    currentRoom=result.room || result;
+    showRoom(result);
+    startRoomRefresh();
+    message("roomMessage","রুমে যোগ দিয়েছেন।");
+  }catch(e){
+    message("roomMessage","রুমে যোগ দেওয়া যায়নি: "+e.message);
+  }
+}
+
+function showRoom(result){
+  const room=result.room || result;
+  const code=room.room_code || room.code || "তথ্য পাওয়া যায়নি";
+  document.getElementById("roomCode").value=code;
+  message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode || selectedMode));
+}
+
+async function loadRoomPlayers(){
+  if(!currentRoom){
+    message("roomMessage","আগে একটি রুমে যোগ দিন।");
+    return;
+  }
+  try{
+    const roomId=currentRoom.$id || currentRoom.id || currentRoom.room_id;
+    const result=await gameApi("/rooms/players","GET");
+    const list=result.players || [];
+    document.getElementById("roomPlayers").textContent=
+      list.length ? "Players: "+list.map(p=>p.display_name || p.user_id || "Player").join(", ") : "এখনো খেলোয়াড়ের তথ্য পাওয়া যায়নি।";
+  }catch(e){
+    message("roomMessage","Player list পাওয়া যায়নি: "+e.message);
+  }
+}
+
+async function leaveRoom(){
+  if(!currentRoom) return;
+  try{
+    await gameApi("/rooms/leave","POST",{});
+    currentRoom=null;
+    stopRoomRefresh();
+    message("roomInfo","রুম থেকে বের হয়েছেন।");
+    message("roomPlayers","");
+    message("roomMessage","Room left.");
+  }catch(e){
+    message("roomMessage","রুম ছাড়তে সমস্যা: "+e.message);
+  }
+}
+
+async function startOnlineMatch(){
+  if(!currentRoom){
+    message("roomMessage","আগে একটি রুম তৈরি বা Join করুন।");
+    return;
+  }
+  try{
+    await gameApi("/rooms/start","POST",{});
+    message("roomMessage","ম্যাচ শুরু করার অনুরোধ পাঠানো হয়েছে।");
+    startMatch();
+  }catch(e){
+    message("roomMessage","ম্যাচ শুরু হয়নি: "+e.message);
+  }
+}
+
+async function findMatch(){
+  try{
+    const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
+    message("roomMessage",result.message || "Matchmaking অনুরোধ পাঠানো হয়েছে।");
+    go("room");
+  }catch(e){
+    go("room");
+    message("roomMessage","Matchmaking চালু হয়নি: "+e.message);
+  }
+}
+
+function startRoomRefresh(){
+  stopRoomRefresh();
+  roomRefreshTimer=setInterval(()=>{
+    if(currentRoom) loadRoomPlayers();
+  },5000);
+}
+function stopRoomRefresh(){
+  if(roomRefreshTimer) clearInterval(roomRefreshTimer);
+  roomRefreshTimer=null;
+}
+
+/* PLAYER PRESENCE */
+async function sendPresence(){
+  if(!currentUser) return;
+  try{
+    await gameApi("/presence/online","POST",{});
+    message("presenceInfo","Presence: Online");
+  }catch(e){
+    message("presenceInfo","Presence: Server not connected");
+  }
+}
+function startPresence(){
+  stopPresence();
+  sendPresence();
+  presenceTimer=setInterval(sendPresence,30000);
+}
+function stopPresence(){
+  if(presenceTimer) clearInterval(presenceTimer);
+  presenceTimer=null;
+}
+
+/* GAME FLOW */
 function startMatch(){
   go("airlobby");
-  clearAircraftTimers();
-
-  countdown = 30;
-  planeX = -180;
-  planeFlying = false;
-
-  document.getElementById("jumpBtn").disabled = true;
-  drawAircraft();
-
-  aircraftTimer = setInterval(()=>{
+  countdown=30;
+  document.getElementById("jumpBtn").disabled=true;
+  message("countdownText","Match starting in 30 seconds");
+  aircraftTimer=setInterval(()=>{
     countdown--;
-
-    document.getElementById("countdownText").textContent =
-      countdown > 0 ? "Match starting in " + countdown + " seconds" : "Aircraft is flying!";
-
-    if(countdown <= 0){
+    message("countdownText",countdown>0?"Match starting in "+countdown+" seconds":"Aircraft is flying!");
+    if(countdown<=0){
       clearInterval(aircraftTimer);
-      aircraftTimer = null;
-      planeFlying = true;
-
-      document.getElementById("jumpBtn").disabled = false;
-
-      flightTimer = setInterval(()=>{
-        planeX += 7;
-        drawAircraft();
-        if(planeX > 1000) planeX = -180;
-      },45);
+      aircraftTimer=null;
+      document.getElementById("jumpBtn").disabled=false;
     }
   },1000);
 }
 
-function drawAircraft(){
-  const c = document.getElementById("aircraftView");
-  const ctx = c.getContext("2d");
-
-  ctx.clearRect(0,0,c.width,c.height);
-
-  const sky = ctx.createLinearGradient(0,0,0,420);
-  sky.addColorStop(0,"#67a9d5");
-  sky.addColorStop(1,"#c7e4e8");
-  ctx.fillStyle = sky;
-  ctx.fillRect(0,0,900,420);
-
-  ctx.fillStyle="#2d8c69";
-  ctx.beginPath();
-  ctx.ellipse(420,355,360,100,0,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#e0c77e";
-  ctx.beginPath();
-  ctx.ellipse(420,355,180,42,0,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#2876a4";
-  ctx.beginPath();
-  ctx.ellipse(420,360,100,24,0,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.save();
-  ctx.translate(planeX,125);
-  ctx.fillStyle="#f3f3f3";
-  ctx.beginPath();
-  ctx.moveTo(0,0);ctx.lineTo(125,0);ctx.lineTo(150,13);
-  ctx.lineTo(125,23);ctx.lineTo(0,23);ctx.closePath();ctx.fill();
-
-  ctx.fillStyle="#d6a63d";
-  ctx.beginPath();
-  ctx.moveTo(55,0);ctx.lineTo(95,-42);ctx.lineTo(112,-42);
-  ctx.lineTo(95,0);ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(55,23);ctx.lineTo(95,60);ctx.lineTo(112,60);
-  ctx.lineTo(95,23);ctx.fill();
-
-  ctx.fillStyle="#9d3030";
-  ctx.fillRect(5,7,20,8);
-  ctx.restore();
-
-  ctx.fillStyle="#fff";
-  ctx.font="bold 20px Arial";
-  ctx.fillText("BD GAME ISLAND",20,35);
-}
-
-function clearAircraftTimers(){
-  if(aircraftTimer) clearInterval(aircraftTimer);
-  if(flightTimer) clearInterval(flightTimer);
-  aircraftTimer = null;
-  flightTimer = null;
-}
-
 function cancelAircraft(){
-  clearAircraftTimers();
-
-  if (landingTimer) {
-    clearTimeout(landingTimer);
-    landingTimer = null;
-  }
-
+  clearInterval(aircraftTimer);
+  aircraftTimer=null;
   go("lobby");
 }
 
 function jumpFromPlane(){
-  if(!planeFlying) return;
-
-  clearAircraftTimers();
+  if(countdown>0) return;
+  clearInterval(aircraftTimer);
   go("jump");
-
-  landingTimer = setTimeout(()=>{
-    landingTimer = null;
+  landingTimer=setTimeout(()=>{
+    landingTimer=null;
     go("match");
     restartMatch();
   },3500);
 }
 
-/* 2D GAME */
-const arena = document.getElementById("arena");
-const ctx = arena.getContext("2d");
-
-let player = {x:450,y:250,size:20,speed:5};
-let stars = [];
-let score = 0;
-let timeLeft = 90;
-let gameLoop = null;
-let gameClock = null;
-let keys = {};
+/* SIMPLE PLAYABLE PROTOTYPE */
+const arena=document.getElementById("arena");
+const ctx=arena.getContext("2d");
 
 function createStars(){
-  stars = [];
-
+  stars=[];
   for(let i=0;i<12;i++){
-    stars.push({
-      x:30+Math.random()*840,
-      y:30+Math.random()*440,
-      size:9
-    });
+    stars.push({x:30+Math.random()*840,y:30+Math.random()*440});
   }
 }
 
 function restartMatch(){
   stopGame();
-
-  player = {x:450,y:250,size:20,speed:5};
-  score = 0;
-  timeLeft = 90;
-
+  player={x:450,y:250,speed:5};
+  score=0;
+  timeLeft=90;
   createStars();
-
-  document.getElementById("score").textContent = score;
-  document.getElementById("timeLeft").textContent = timeLeft;
-
+  message("score",score);
+  message("timeLeft",timeLeft);
   drawGame();
-
-  gameLoop = setInterval(updateGame,30);
-
-  gameClock = setInterval(()=>{
+  gameLoop=setInterval(updateGame,30);
+  gameClock=setInterval(()=>{
     timeLeft--;
-    document.getElementById("timeLeft").textContent = timeLeft;
-
-    if(timeLeft <= 0){
+    message("timeLeft",timeLeft);
+    if(timeLeft<=0){
       stopGame();
-      alert("Game Over! Your score: " + score);
+      alert("Game Over! Score: "+score);
     }
   },1000);
 }
@@ -564,338 +527,101 @@ function restartMatch(){
 function stopGame(){
   if(gameLoop) clearInterval(gameLoop);
   if(gameClock) clearInterval(gameClock);
-
-  gameLoop = null;
-  gameClock = null;
+  gameLoop=null;
+  gameClock=null;
 }
 
 function updateGame(){
-  if(keys.ArrowLeft || keys.a) player.x -= player.speed;
-  if(keys.ArrowRight || keys.d) player.x += player.speed;
-  if(keys.ArrowUp || keys.w) player.y -= player.speed;
-  if(keys.ArrowDown || keys.s) player.y += player.speed;
+  if(keys.ArrowLeft || keys.a) player.x-=player.speed;
+  if(keys.ArrowRight || keys.d) player.x+=player.speed;
+  if(keys.ArrowUp || keys.w) player.y-=player.speed;
+  if(keys.ArrowDown || keys.s) player.y+=player.speed;
 
-  player.x = Math.max(15,Math.min(885,player.x));
-  player.y = Math.max(15,Math.min(485,player.y));
+  player.x=Math.max(15,Math.min(885,player.x));
+  player.y=Math.max(15,Math.min(485,player.y));
 
-  stars = stars.filter(s=>{
-    const dx = player.x-s.x, dy = player.y-s.y;
-
-    if(Math.sqrt(dx*dx+dy*dy) < 25){
+  stars=stars.filter(s=>{
+    const dx=player.x-s.x,dy=player.y-s.y;
+    if(Math.hypot(dx,dy)<25){
       score++;
-      document.getElementById("score").textContent = score;
+      message("score",score);
       return false;
     }
-
     return true;
   });
 
-  if(stars.length < 5){
-    for(let i=0;i<5;i++){
-      stars.push({
-        x:30+Math.random()*840,
-        y:30+Math.random()*440,
-        size:9
-      });
-    }
-  }
-
+  if(stars.length<5) createStars();
   drawGame();
 }
 
 function drawGame(){
   ctx.clearRect(0,0,900,500);
-
   ctx.fillStyle="#327c55";
   ctx.fillRect(0,0,900,500);
-
   ctx.fillStyle="#4c9a68";
-
   for(let i=0;i<18;i++){
     ctx.beginPath();
     ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);
     ctx.fill();
   }
-
   ctx.fillStyle="#e5bd45";
-
   stars.forEach(s=>{
     ctx.beginPath();
-    ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+    ctx.arc(s.x,s.y,9,0,Math.PI*2);
     ctx.fill();
   });
-
-  ctx.fillStyle="#f0f0f0";
+  ctx.fillStyle="white";
   ctx.beginPath();
-  ctx.arc(player.x,player.y,player.size,0,Math.PI*2);
+  ctx.arc(player.x,player.y,20,0,Math.PI*2);
   ctx.fill();
-
   ctx.fillStyle="#1a2a3d";
   ctx.beginPath();
   ctx.arc(player.x,player.y-5,7,0,Math.PI*2);
   ctx.fill();
 }
 
-/* KEYBOARD */
+/* KEYBOARD & TOUCH */
 document.addEventListener("keydown",e=>{
-  keys[e.key] = true;
-
-  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
-    e.preventDefault();
-  }
+  keys[e.key]=true;
+  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault();
 });
+document.addEventListener("keyup",e=>keys[e.key]=false);
+window.addEventListener("blur",()=>keys={});
 
-document.addEventListener("keyup",e=>{
-  keys[e.key]=false;
-});
-
-window.addEventListener("blur",()=>{
-  keys={};
-  threeKeys={};
-});
-
-document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){
-    keys={};
-    threeKeys={};
-  }
-});
-
-/* MOBILE BUTTONS */
 document.querySelectorAll(".control").forEach(btn=>{
-  const key = btn.dataset.key;
-
-  const down = e=>{
+  const key=btn.dataset.key;
+  btn.addEventListener("pointerdown",e=>{
     e.preventDefault();
     keys[key]=true;
-    threeKeys[key]=true;
-
-    try {
-      btn.setPointerCapture(e.pointerId);
-    } catch (_) {}
-  };
-
-  const up = e=>{
-    if(e && e.preventDefault) e.preventDefault();
-    keys[key]=false;
-    threeKeys[key]=false;
-  };
-
-  btn.addEventListener("pointerdown",down);
-  btn.addEventListener("pointerup",up);
-  btn.addEventListener("pointercancel",up);
-  btn.addEventListener("lostpointercapture",up);
-});
-
-/* 3D ISLAND */
-let scene3d, camera3d, renderer3d, avatar3d;
-let animation3d = null;
-let threeReady = false;
-let threeKeys = {};
-let collectibleObjects = [];
-
-function init3D(){
-  const holder = document.getElementById("game3d");
-
-  if(threeReady){
-    holder.appendChild(renderer3d.domElement);
-    return;
-  }
-
-  scene3d = new THREE.Scene();
-  scene3d.background = new THREE.Color(0x87c7e8);
-  scene3d.fog = new THREE.Fog(0x87c7e8,35,100);
-
-  camera3d = new THREE.PerspectiveCamera(
-    65,window.innerWidth/window.innerHeight,0.1,200
-  );
-
-  renderer3d = new THREE.WebGLRenderer({antialias:true});
-  renderer3d.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  renderer3d.setSize(window.innerWidth,window.innerHeight);
-  holder.appendChild(renderer3d.domElement);
-
-  scene3d.add(new THREE.HemisphereLight(0xffffff,0x477044,1.4));
-
-  const sun = new THREE.DirectionalLight(0xffffff,1.2);
-  sun.position.set(20,35,15);
-  scene3d.add(sun);
-
-  const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(120,120),
-    new THREE.MeshLambertMaterial({color:0x3e9857})
-  );
-
-  ground.rotation.x=-Math.PI/2;
-  scene3d.add(ground);
-
-  const water = new THREE.Mesh(
-    new THREE.PlaneGeometry(200,200),
-    new THREE.MeshLambertMaterial({color:0x237da5})
-  );
-
-  water.rotation.x=-Math.PI/2;
-  water.position.y=-1;
-  scene3d.add(water);
-
-  /* Trees */
-  for(let i=0;i<55;i++){
-    const x=Math.random()*90-45;
-    const z=Math.random()*90-45;
-
-    const trunk=new THREE.Mesh(
-      new THREE.CylinderGeometry(.3,.4,2,7),
-      new THREE.MeshLambertMaterial({color:0x75502e})
-    );
-
-    trunk.position.set(x,1,z);
-    scene3d.add(trunk);
-
-    const leaves=new THREE.Mesh(
-      new THREE.ConeGeometry(1.8,4,8),
-      new THREE.MeshLambertMaterial({color:0x176b3d})
-    );
-
-    leaves.position.set(x,3.5,z);
-    scene3d.add(leaves);
-  }
-
-  /* Houses */
-  for(let i=0;i<7;i++){
-    const house=new THREE.Mesh(
-      new THREE.BoxGeometry(5,3.5,5),
-      new THREE.MeshLambertMaterial({color:i%2?0xd6bd8d:0xc5d0d8})
-    );
-
-    house.position.set(Math.random()*60-30,1.75,Math.random()*60-30);
-    scene3d.add(house);
-  }
-
-  /* Avatar */
-  avatar3d=new THREE.Group();
-
-  const body=new THREE.Mesh(
-    new THREE.BoxGeometry(1,1.5,.7),
-    new THREE.MeshLambertMaterial({color:0xe1b34d})
-  );
-
-  body.position.y=1.1;
-  avatar3d.add(body);
-
-  const head=new THREE.Mesh(
-    new THREE.SphereGeometry(.42,12,12),
-    new THREE.MeshLambertMaterial({color:0xe9bd91})
-  );
-
-  head.position.y=2.15;
-  avatar3d.add(head);
-
-  avatar3d.position.set(0,0,0);
-  scene3d.add(avatar3d);
-
-  /* Collectible stars */
-  collectibleObjects=[];
-
-  for(let i=0;i<15;i++){
-    const star=new THREE.Mesh(
-      new THREE.TorusGeometry(.55,.16,8,16),
-      new THREE.MeshStandardMaterial({color:0xffd43b,emissive:0x654000})
-    );
-
-    star.position.set(Math.random()*55-27,1.4,Math.random()*55-27);
-    scene3d.add(star);
-    collectibleObjects.push(star);
-  }
-
-  camera3d.position.set(0,7,10);
-  camera3d.lookAt(avatar3d.position);
-
-  threeReady=true;
-  window.addEventListener("resize",resize3D);
-}
-
-function resize3D(){
-  if(!renderer3d || !camera3d) return;
-
-  camera3d.aspect=window.innerWidth/window.innerHeight;
-  camera3d.updateProjectionMatrix();
-  renderer3d.setSize(window.innerWidth,window.innerHeight);
-}
-
-function start3DGame(){
-  stopGame();
-
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById("bottomNav").style.display="none";
-  document.getElementById("game3d").style.display="block";
-
-  init3D();
-  stop3DGame();
-
-  animation3d=requestAnimationFrame(loop3D);
-}
-
-function loop3D(){
-  if(!renderer3d || !avatar3d) return;
-
-  const speed=.18;
-
-  if(threeKeys.ArrowLeft || threeKeys.a) avatar3d.position.x-=speed;
-  if(threeKeys.ArrowRight || threeKeys.d) avatar3d.position.x+=speed;
-  if(threeKeys.ArrowUp || threeKeys.w) avatar3d.position.z-=speed;
-  if(threeKeys.ArrowDown || threeKeys.s) avatar3d.position.z+=speed;
-
-  avatar3d.position.x=Math.max(-55,Math.min(55,avatar3d.position.x));
-  avatar3d.position.z=Math.max(-55,Math.min(55,avatar3d.position.z));
-
-  camera3d.position.x=avatar3d.position.x;
-  camera3d.position.z=avatar3d.position.z+9;
-  camera3d.position.y=7;
-  camera3d.lookAt(avatar3d.position.x,1,avatar3d.position.z);
-
-  collectibleObjects.forEach(star=>{
-    star.rotation.y+=.03;
-    star.rotation.x+=.01;
-
-    if(star.visible && star.position.distanceTo(avatar3d.position)<1.5){
-      star.visible=false;
-    }
+    try{btn.setPointerCapture(e.pointerId);}catch(_){}
   });
-
-  renderer3d.render(scene3d,camera3d);
-  animation3d=requestAnimationFrame(loop3D);
-}
-
-function stop3DGame(){
-  if(animation3d) cancelAnimationFrame(animation3d);
-  animation3d=null;
-}
-
-function exit3DGame(){
-  stop3DGame();
-  document.getElementById("game3d").style.display="none";
-  go("match");
-  restartMatch();
-}
-
-document.addEventListener("keydown",e=>{
-  threeKeys[e.key]=true;
+  ["pointerup","pointercancel","lostpointercapture"].forEach(event=>{
+    btn.addEventListener(event,e=>{
+      e.preventDefault();
+      keys[key]=false;
+    });
+  });
 });
 
-document.addEventListener("keyup",e=>{
-  threeKeys[e.key]=false;
-});
+/* CONNECTION TEST */
+async function checkConnection(){
+  try{
+    const result=await gameApi("/health","GET");
+    message("connectionInfo","Server response: "+JSON.stringify(result));
+  }catch(e){
+    message("connectionInfo","সংযোগ পরীক্ষা ব্যর্থ: "+e.message);
+  }
+}
 
-/* INITIAL SESSION */
+/* RESTORE LOGIN SESSION */
 (async function(){
   try{
     currentUser=await account.get();
-    showPlayer();
-    go("lobby");
+    afterLogin();
   }catch(e){
     go("splash");
   }
 })();
 </script>
 </body>
-                              </html>
+                                  </html>
