@@ -6,14 +6,13 @@
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
-
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
-button,input,select{font:inherit}
+body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
+button,input{font:inherit}
 button{border:0;border-radius:8px;padding:12px;background:#e8bd62;color:#151515;font-weight:bold;cursor:pointer}
 button:disabled{opacity:.5}
-input,select{width:100%;padding:13px;margin:7px 0;background:#172438;border:1px solid #45536a;border-radius:8px;color:white}
+input{width:100%;padding:13px;margin:7px 0;background:#172438;border:1px solid #45536a;border-radius:8px;color:white}
 header{height:55px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
 .logo{font-size:22px;font-weight:1000;color:#f3c76c;letter-spacing:2px}
 .page{display:none;min-height:calc(100vh - 55px);padding:12px 12px 85px}
@@ -30,17 +29,13 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .tile{background:#17263b;border:1px solid #35465b;border-radius:10px;padding:17px 5px;text-align:center}
 .nav{position:fixed;bottom:0;left:0;right:0;height:62px;background:#101a2b;border-top:1px solid #344158;display:none;justify-content:space-around;align-items:center;z-index:20}
 .nav button{background:transparent;color:white;font-size:12px;padding:7px}
+.status{padding:10px;background:#17263b;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
 .hide{display:none!important}
-.status{padding:10px;background:#17263b;border-radius:8px;margin:8px 0}
-
-/* ENTRY */
-#splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18 85%)}
+#splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)}
 .splash-wrap{padding-top:13vh;animation:rise 1s ease both}
 .splash-mark{width:130px;height:130px;margin:auto;border:3px solid #ffd36a;border-radius:50%;display:grid;place-items:center;font-size:62px;font-weight:1000;color:#ffd36a;text-shadow:0 0 18px #ffd36a;box-shadow:0 0 25px #bd812b,inset 0 0 18px #bd812b;animation:pulse 2s infinite}
 @keyframes pulse{50%{transform:scale(1.06);box-shadow:0 0 35px #ffd36a}}
 @keyframes rise{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
-
-/* CINEMATIC LOBBY */
 .lobby-scene{position:relative;overflow:hidden;background:radial-gradient(ellipse at 65% 28%,#496e61,#1b3941 38%,#101a2a 75%,#080d18);padding-top:10px}
 .lobby-scene:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 40px,#ffffff08 41px 42px);pointer-events:none}
 .top-chips{position:relative;display:flex;justify-content:space-between;z-index:2}
@@ -54,7 +49,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .hero-copy em{color:#f3c45e;font-style:normal}
 .hero-copy p{font-size:10px;letter-spacing:2px}
 .character{position:absolute;z-index:2;width:190px;height:270px;bottom:3px;left:calc(50% - 95px);animation:idle 3s ease-in-out infinite}
-.aura{position:absolute;width:170px;height:170px;top:45px;left:10px;border-radius:50%;background:#f1c66b33;filter:blur(20px);animation:glow 3s infinite}
+.aura{position:absolute;width:170px;height:170px;top:45px;left:10px;border-radius:50%;background:#f1c66b33;filter:blur(20px)}
 .shadow{position:absolute;bottom:8px;left:20px;width:150px;height:20px;border-radius:50%;background:#0009;filter:blur(7px)}
 .head{position:absolute;top:14px;left:72px;width:42px;height:48px;border-radius:45%;background:linear-gradient(90deg,#986848,#e0aa7b,#895b42);border:3px solid #202b35;z-index:4}
 .head:before{content:"";position:absolute;top:-5px;left:-4px;width:44px;height:19px;border-radius:50%;background:#202b35}
@@ -68,7 +63,6 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .leg.right{left:94px;transform:rotate(-5deg)}
 .hero-label{position:absolute;bottom:2px;left:37px;background:#101a2b;color:#f3ce79;border:1px solid #b58a42;padding:5px 8px;font-size:9px;letter-spacing:2px}
 @keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes glow{50%{opacity:1;transform:scale(1.12)}}
 .action-panel{position:relative;z-index:3;background:#0d1725ed;border:1px solid #59616a;border-top:2px solid #d8ad57;border-radius:10px;padding:12px}
 .mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mode-card{background:#1c2b3b;color:#dce3e8;border:1px solid #435365;padding:9px 4px;display:flex;flex-direction:column;gap:4px}
@@ -80,17 +74,15 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px;position:relative}
 .shortcuts button{background:#142235;border:1px solid #35465a;color:#f1cb74;padding:11px 2px;display:flex;flex-direction:column;gap:5px;align-items:center}
 .shortcuts span{font-size:9px;color:#e5eaf0}
-
-/* GAME SCREENS */
+.map-card{padding:16px;background:#1c3040;border:1px solid #536477;border-radius:10px;margin:8px 0}
+.selected-map{border:2px solid #e8bd62}
 #arena{width:100%;background:#327c55;border-radius:10px;touch-action:none}
 .controls{display:flex;justify-content:center;gap:7px;margin:12px}
 .control{width:58px;height:52px;background:#263952;color:white;font-size:22px;touch-action:none}
-.map-card{padding:16px;background:#1c3040;border:1px solid #536477;border-radius:10px;margin:8px 0}
-.selected-map{border:2px solid #e8bd62}
 </style>
 </head>
-
 <body>
+
 <header>
  <div class="logo">BD GAME</div>
  <div id="playerName" class="muted">Guest Player</div>
@@ -160,7 +152,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
    <button class="mode-card" id="duoBtn" onclick="setMode('DUO')"><b>2</b><span>DUO</span></button>
    <button class="mode-card" id="squadBtn" onclick="setMode('SQUAD')"><b>4</b><span>SQUAD</span></button>
   </div>
-  <button class="full match-button" onclick="startMatch()">START MATCH　▶</button>
+  <button class="full match-button" onclick="startMatch()">START MATCH ▶</button>
   <button class="full green" onclick="findMatch()">⚡ RANDOM MATCHMAKING</button>
   <button class="full darkbtn" onclick="go('room')">CREATE / JOIN ROOM</button>
  </div>
@@ -197,17 +189,24 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 </section>
 
 <section id="room" class="page">
- <h2 class="title">ROOM & MATCH</h2>
+ <h2 class="title">CUSTOM ROOM</h2>
  <div class="panel">
-  <button class="full green" onclick="createRoom()">CREATE PRIVATE ROOM</button>
+  <p class="muted">একটি Room তৈরি করে বন্ধুদের Room Code দিয়ে Join করাও। সর্বোচ্চ ৫০ জনের জন্য Backend সেট করা আছে।</p>
+  <button class="full green" onclick="createRoom()">＋ CREATE PRIVATE ROOM</button>
   <input id="roomCode" placeholder="Enter Room Code">
   <button class="full" onclick="joinRoom()">JOIN ROOM</button>
-  <button class="full darkbtn" onclick="loadRoomPlayers()">REFRESH PLAYERS</button>
   <div id="roomInfo" class="status muted">No room selected.</div>
+  <button class="full darkbtn" onclick="loadRoomPlayers()">REFRESH PLAYERS</button>
   <div id="roomPlayers" class="muted"></div>
   <button class="full" onclick="startOnlineMatch()">START ROOM MATCH</button>
   <button class="full red" onclick="leaveRoom()">LEAVE ROOM</button>
   <p id="roomMessage" class="muted"></p>
+ </div>
+ <div class="panel">
+  <h3 class="title">RANDOM MATCHMAKING</h3>
+  <p id="matchmakingInfo" class="status muted">Not searching.</p>
+  <button class="full green" onclick="findMatch()">FIND MATCH</button>
+  <button class="full red" onclick="cancelMatchmaking()">CANCEL SEARCH</button>
  </div>
 </section>
 
@@ -238,7 +237,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
    <button class="control" data-key="ArrowDown">↓</button>
    <button class="control" data-key="ArrowRight">→</button>
   </div>
-  <p class="muted">Move your player and collect the stars.</p>
+  <p class="muted">Prototype practice: Move your player and collect the stars.</p>
   <button class="full darkbtn" onclick="go('lobby')">EXIT TO LOBBY</button>
  </div>
 </section>
@@ -250,7 +249,6 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
   <h3 id="profileName">Guest Player</h3>
   <p id="profileEmail" class="muted"></p>
   <p id="profileId" class="muted"></p>
-  <p id="presenceInfo" class="muted">Presence: Connecting...</p>
  </div>
 </section>
 
@@ -259,7 +257,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <div class="panel center">
   <div style="font-size:70px">🏆</div>
   <h2>ROOKIE</h2>
-  <p class="muted">Your rank system will be connected to the game server later.</p>
+  <p class="muted">Leaderboard connection will be added later.</p>
  </div>
 </section>
 
@@ -300,8 +298,9 @@ let aircraftTimer=null;
 let landingTimer=null;
 let gameLoop=null;
 let gameClock=null;
-let presenceTimer=null;
 let roomRefreshTimer=null;
+let matchmakingTimer=null;
+let matchmakingBusy=false;
 let countdown=30;
 let score=0;
 let timeLeft=90;
@@ -315,7 +314,7 @@ const pages=document.querySelectorAll(".page");
 function go(id){
  stopGame();
  if(aircraftTimer){clearInterval(aircraftTimer);aircraftTimer=null}
- if(landingTimer && id!=="match"){clearTimeout(landingTimer);landingTimer=null}
+ if(landingTimer&&id!=="match"){clearTimeout(landingTimer);landingTimer=null}
  pages.forEach(p=>p.classList.remove("active"));
  const page=document.getElementById(id);
  if(page)page.classList.add("active");
@@ -328,7 +327,7 @@ function message(id,text){
  if(el)el.textContent=text;
 }
 
-/* AUTH */
+/* PLAYER AUTH */
 async function registerPlayer(){
  const name=document.getElementById("regName").value.trim();
  const email=document.getElementById("regEmail").value.trim();
@@ -339,7 +338,7 @@ async function registerPlayer(){
  }
  try{
   await account.create(Appwrite.ID.unique(),email,password,name);
-  message("regMessage","Account created. Now login.");
+  message("regMessage","Account created. এখন Login করুন।");
   go("login");
  }catch(e){message("regMessage",e.message||"Registration failed")}
 }
@@ -347,6 +346,7 @@ async function registerPlayer(){
 async function loginPlayer(){
  const email=document.getElementById("loginEmail").value.trim();
  const password=document.getElementById("loginPassword").value;
+ if(!email||!password){message("loginMessage","Gmail ও Password দিন।");return}
  try{
   await account.createEmailPasswordSession(email,password);
   currentUser=await account.get();
@@ -369,35 +369,32 @@ function afterLogin(){
  document.getElementById("profileEmail").textContent=currentUser.email||"Guest Account";
  document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
  go("lobby");
- startPresence();
 }
 
 async function logoutPlayer(){
- stopPresence();
  stopRoomRefresh();
+ stopMatchmakingPolling();
  try{await account.deleteSession("current")}catch(e){}
  currentUser=null;
  currentRoom=null;
  go("splash");
 }
 
-/* BACKEND REQUEST WITH USER JWT */
+/* APPWRITE FUNCTION REQUEST
+   Reserved x-appwrite headers manually পাঠানো হচ্ছে না।
+*/
 async function gameApi(path,method="POST",payload={}){
  if(!currentUser)throw new Error("আগে Player Login করুন।");
- if(apiBusy)throw new Error("একটি অনুরোধ চলছে, অপেক্ষা করুন।");
+ if(apiBusy)throw new Error("একটি অনুরোধ চলছে, একটু অপেক্ষা করুন।");
  apiBusy=true;
  try{
-  const jwtResult=await account.createJWT();
   const execution=await functions.createExecution({
    functionId:GAME_FUNCTION_ID,
    async:false,
    path:path,
    method:method,
-   headers:{
-    "x-appwrite-user-jwt":jwtResult.jwt,
-    "content-type":"application/json"
-   },
-   body:JSON.stringify(payload)
+   headers:{"content-type":"application/json"},
+   body:method==="GET"?"":JSON.stringify(payload)
   });
   let result={};
   try{result=JSON.parse(execution.responseBody||"{}")}
@@ -427,14 +424,14 @@ function selectMap(name,element){
  message("mapMessage","Selected: "+name);
 }
 
-/* ROOM SYSTEM */
+/* CUSTOM ROOM */
 async function createRoom(){
  try{
   const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
   currentRoom=result.room||result;
   showRoom(result);
   startRoomRefresh();
-  message("roomMessage","Room created.");
+  message("roomMessage","Room তৈরি হয়েছে। বন্ধুদের Room Code দাও।");
  }catch(e){message("roomMessage","Room create failed: "+e.message)}
 }
 
@@ -446,7 +443,7 @@ async function joinRoom(){
   currentRoom=result.room||result;
   showRoom(result);
   startRoomRefresh();
-  message("roomMessage","Joined room.");
+  message("roomMessage","Room-এ Join হয়েছে।");
  }catch(e){message("roomMessage","Join failed: "+e.message)}
 }
 
@@ -454,80 +451,117 @@ function showRoom(result){
  const room=result.room||result;
  const code=room.room_code||room.code||"Not available";
  document.getElementById("roomCode").value=code;
- message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode||selectedMode));
+ message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode||selectedMode)+" | Maximum: 50 Players");
 }
 
 async function loadRoomPlayers(){
  if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
  try{
   const roomId=currentRoom.$id||currentRoom.id||currentRoom.room_id;
+  if(!roomId)throw new Error("Room ID পাওয়া যায়নি।");
   const result=await gameApi("/rooms/players?room_id="+encodeURIComponent(roomId),"GET");
   const list=result.players||[];
   document.getElementById("roomPlayers").textContent=
-   list.length?"Players: "+list.map(p=>p.display_name||"Player").join(", "):"No player information.";
+   list.length?"Players ("+list.length+"/50): "+list.map(p=>p.display_name||p.name||"Player").join(", "):"এখনো Player list পাওয়া যায়নি।";
  }catch(e){message("roomMessage","Players পাওয়া যায়নি: "+e.message)}
 }
 
-async function leaveRoom(){
- if(!currentRoom)return;
- try{
-  await gameApi("/rooms/leave","POST",{});
-  currentRoom=null;
-  stopRoomRefresh();
-  message("roomInfo","No room selected.");
-  message("roomPlayers","");
-  message("roomMessage","Room left.");
- }catch(e){message("roomMessage","Leave failed: "+e.message)}
+function leaveRoom(){
+ currentRoom=null;
+ stopRoomRefresh();
+ message("roomInfo","No room selected.");
+ message("roomPlayers","");
+ message("roomMessage","এই ডিভাইসের Room view বন্ধ করা হয়েছে।");
 }
 
 async function startOnlineMatch(){
  if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
  try{
   await gameApi("/rooms/start","POST",{});
-  message("roomMessage","Match start request sent.");
+  message("roomMessage","Server-এ Room start request পাঠানো হয়েছে।");
   startMatch();
  }catch(e){message("roomMessage","Start failed: "+e.message)}
 }
 
-async function findMatch(){
- try{
-  const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
-  go("room");
-  message("roomMessage",result.message||"Matchmaking request sent.");
- }catch(e){
-  go("room");
-  message("roomMessage","Matchmaking failed: "+e.message);
- }
-}
-
 function startRoomRefresh(){
  stopRoomRefresh();
- roomRefreshTimer=setInterval(()=>{if(currentRoom)loadRoomPlayers()},10000);
+ roomRefreshTimer=setInterval(()=>{
+  if(currentRoom&&!apiBusy)loadRoomPlayers();
+ },10000);
 }
 function stopRoomRefresh(){
  if(roomRefreshTimer)clearInterval(roomRefreshTimer);
  roomRefreshTimer=null;
 }
 
-/* PRESENCE */
-async function sendPresence(){
- if(!currentUser)return;
+/* MATCHMAKING */
+async function findMatch(){
+ if(matchmakingBusy)return;
+ matchmakingBusy=true;
+ go("room");
+ message("matchmakingInfo","Matchmaking request পাঠানো হচ্ছে...");
  try{
-  await gameApi("/presence/online","POST",{});
-  message("presenceInfo","Presence: Online");
- }catch(e){message("presenceInfo","Presence: Server unavailable")}
-}
-function startPresence(){
- stopPresence();
- sendPresence();
- presenceTimer=setInterval(sendPresence,30000);
-}
-function stopPresence(){
- if(presenceTimer)clearInterval(presenceTimer);
- presenceTimer=null;
+  const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
+  message("matchmakingInfo",result.message||"Searching for players... সর্বোচ্চ ৫০ জনের Match খোঁজা হচ্ছে।");
+  startMatchmakingPolling();
+ }catch(e){
+  matchmakingBusy=false;
+  message("matchmakingInfo","Matchmaking failed: "+e.message);
+ }
 }
 
-/* MATCH FLOW */
+function startMatchmakingPolling(){
+ stopMatchmakingPolling();
+ matchmakingTimer=setInterval(checkMatchmakingStatus,3000);
+ checkMatchmakingStatus();
+}
+
+async function checkMatchmakingStatus(){
+ if(!matchmakingBusy||apiBusy)return;
+ try{
+  const result=await gameApi("/matchmaking/status","GET");
+  const state=String(result.status||result.state||"").toLowerCase();
+  const room=result.room||result.match||null;
+  if(result.matched===true||state==="matched"||state==="complete"||room){
+   stopMatchmakingPolling();
+   matchmakingBusy=false;
+   if(room){
+    currentRoom=room;
+    showRoom({room:room});
+    startRoomRefresh();
+   }
+   message("matchmakingInfo","Match পাওয়া গেছে! Room প্রস্তুত।");
+   if(currentRoom)loadRoomPlayers();
+   return;
+  }
+  message("matchmakingInfo",result.message||"৫০ জনের Match-এর জন্য অপেক্ষা চলছে...");
+ }catch(e){
+  message("matchmakingInfo","Status check: "+e.message);
+ }
+}
+
+async function cancelMatchmaking(){
+ stopMatchmakingPolling();
+ const wasSearching=matchmakingBusy;
+ matchmakingBusy=false;
+ if(!wasSearching){
+  message("matchmakingInfo","কোনো Match search চলছে না।");
+  return;
+ }
+ try{
+  await gameApi("/matchmaking/cancel","POST",{});
+  message("matchmakingInfo","Matchmaking বাতিল হয়েছে।");
+ }catch(e){
+  message("matchmakingInfo","Search বন্ধ করা হয়েছে। Server cancel response: "+e.message);
+ }
+}
+
+function stopMatchmakingPolling(){
+ if(matchmakingTimer)clearInterval(matchmakingTimer);
+ matchmakingTimer=null;
+}
+
+/* AIRCRAFT / GAME DEMO */
 function startMatch(){
  go("airlobby");
  countdown=30;
@@ -562,15 +596,13 @@ function jumpFromPlane(){
  },3500);
 }
 
-/* SIMPLE 2D GAME PROTOTYPE */
+/* LOCAL PRACTICE PROTOTYPE */
 const arena=document.getElementById("arena");
 const ctx=arena.getContext("2d");
 
 function createStars(){
  stars=[];
- for(let i=0;i<12;i++){
-  stars.push({x:30+Math.random()*840,y:30+Math.random()*440});
- }
+ for(let i=0;i<12;i++)stars.push({x:30+Math.random()*840,y:30+Math.random()*440});
 }
 
 function restartMatch(){
@@ -588,7 +620,7 @@ function restartMatch(){
   message("timeLeft",timeLeft);
   if(timeLeft<=0){
    stopGame();
-   alert("Game Over! Score: "+score);
+   alert("Practice Over! Score: "+score);
   }
  },1000);
 }
@@ -607,7 +639,6 @@ function updateGame(){
  if(keys.ArrowDown||keys.s)player.y+=player.speed;
  player.x=Math.max(15,Math.min(885,player.x));
  player.y=Math.max(15,Math.min(485,player.y));
-
  stars=stars.filter(s=>{
   if(Math.hypot(player.x-s.x,player.y-s.y)<25){
    score++;
@@ -686,4 +717,4 @@ async function checkConnection(){
 })();
 </script>
 </body>
-                                                     </html>
+                                                       </html>
