@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
-
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
@@ -36,10 +34,29 @@ header{height:58px;background:#101a2b;display:flex;align-items:center;justify-co
 .control{width:60px;height:55px;background:#263952;color:white;font-size:22px;touch-action:none}
 #controls{display:flex;justify-content:center;gap:8px;margin:12px}
 .status{padding:10px;border-radius:8px;background:#17263b;margin:8px 0}
+
+/* BD GAME ENTRY ANIMATION */
+#splash{background:radial-gradient(ellipse at 50% 28%,#263b58 0%,#101a2b 42%,#080d18 78%);overflow:hidden}
+.splash-wrap{padding-top:14vh;animation:splashRise 1s ease both}
+.splash-mark{display:inline-flex;align-items:center;justify-content:center;width:132px;height:132px;border:3px solid #ffd36a;border-radius:50%;font-size:66px;font-weight:1000;letter-spacing:3px;color:#ffd36a;text-shadow:0 0 18px #ffd36a;box-shadow:0 0 18px #bd812b,inset 0 0 18px #bd812b;animation:splashPulse 1.8s ease-in-out infinite}
+.splash-title{color:#ffd36a;letter-spacing:4px;text-shadow:0 0 12px #bd812b;animation:splashFade 1.4s ease both}
+.splash-sub{letter-spacing:2px;animation:splashFade 1.8s ease both}
+@keyframes splashPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 14px #bd812b,inset 0 0 12px #bd812b}
+  50%{transform:scale(1.06);box-shadow:0 0 30px #ffd36a,inset 0 0 20px #bd812b}
+}
+@keyframes splashRise{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes splashFade{
+  from{opacity:0}
+  to{opacity:1}
+}
 </style>
 </head>
-
 <body>
+
 <header>
   <div class="logo">BD GAME</div>
   <div id="playerName" class="muted">Guest Player</div>
@@ -47,10 +64,10 @@ header{height:58px;background:#101a2b;display:flex;align-items:center;justify-co
 </header>
 
 <section id="splash" class="page active center">
-  <div style="padding-top:16vh">
-    <div class="logo" style="font-size:65px">BD</div>
-    <h2>BD GAME</h2>
-    <p class="muted">Welcome to the game</p>
+  <div class="splash-wrap">
+    <div class="splash-mark">BD</div>
+    <h2 class="splash-title">BD GAME</h2>
+    <p class="muted splash-sub">Welcome to the game</p>
     <button class="full" onclick="go('login')">PLAY</button>
     <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
   </div>
@@ -236,10 +253,12 @@ async function registerPlayer(){
   const name=document.getElementById("regName").value.trim();
   const email=document.getElementById("regEmail").value.trim();
   const password=document.getElementById("regPassword").value;
+
   if(!name || !email || password.length<8){
     message("regMessage","নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।");
     return;
   }
+
   try{
     await account.create(Appwrite.ID.unique(),email,password,name);
     message("regMessage","অ্যাকাউন্ট তৈরি হয়েছে। এখন Login করুন।");
@@ -252,6 +271,7 @@ async function registerPlayer(){
 async function loginPlayer(){
   const email=document.getElementById("loginEmail").value.trim();
   const password=document.getElementById("loginPassword").value;
+
   try{
     await account.createEmailPasswordSession(email,password);
     currentUser=await account.get();
@@ -336,7 +356,7 @@ function setMode(mode){
   document.getElementById(mode.toLowerCase()+"Btn").className="";
 }
 
-/* ROOM SYSTEM - REQUIRES DEPLOYED FUNCTION ROUTES */
+/* ROOM SYSTEM */
 async function createRoom(){
   try{
     const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
@@ -355,6 +375,7 @@ async function joinRoom(){
     message("roomMessage","Room Code লিখুন।");
     return;
   }
+
   try{
     const result=await gameApi("/rooms/join","POST",{room_code:code});
     currentRoom=result.room || result;
@@ -378,6 +399,7 @@ async function loadRoomPlayers(){
     message("roomMessage","আগে একটি রুমে যোগ দিন।");
     return;
   }
+
   try{
     const roomId=currentRoom.$id || currentRoom.id || currentRoom.room_id;
     const result=await gameApi("/rooms/players","GET");
@@ -391,6 +413,7 @@ async function loadRoomPlayers(){
 
 async function leaveRoom(){
   if(!currentRoom) return;
+
   try{
     await gameApi("/rooms/leave","POST",{});
     currentRoom=null;
@@ -408,6 +431,7 @@ async function startOnlineMatch(){
     message("roomMessage","আগে একটি রুম তৈরি বা Join করুন।");
     return;
   }
+
   try{
     await gameApi("/rooms/start","POST",{});
     message("roomMessage","ম্যাচ শুরু করার অনুরোধ পাঠানো হয়েছে।");
@@ -434,6 +458,7 @@ function startRoomRefresh(){
     if(currentRoom) loadRoomPlayers();
   },5000);
 }
+
 function stopRoomRefresh(){
   if(roomRefreshTimer) clearInterval(roomRefreshTimer);
   roomRefreshTimer=null;
@@ -449,11 +474,13 @@ async function sendPresence(){
     message("presenceInfo","Presence: Server not connected");
   }
 }
+
 function startPresence(){
   stopPresence();
   sendPresence();
   presenceTimer=setInterval(sendPresence,30000);
 }
+
 function stopPresence(){
   if(presenceTimer) clearInterval(presenceTimer);
   presenceTimer=null;
@@ -465,9 +492,11 @@ function startMatch(){
   countdown=30;
   document.getElementById("jumpBtn").disabled=true;
   message("countdownText","Match starting in 30 seconds");
+
   aircraftTimer=setInterval(()=>{
     countdown--;
     message("countdownText",countdown>0?"Match starting in "+countdown+" seconds":"Aircraft is flying!");
+
     if(countdown<=0){
       clearInterval(aircraftTimer);
       aircraftTimer=null;
@@ -486,6 +515,7 @@ function jumpFromPlane(){
   if(countdown>0) return;
   clearInterval(aircraftTimer);
   go("jump");
+
   landingTimer=setTimeout(()=>{
     landingTimer=null;
     go("match");
@@ -514,6 +544,7 @@ function restartMatch(){
   message("timeLeft",timeLeft);
   drawGame();
   gameLoop=setInterval(updateGame,30);
+
   gameClock=setInterval(()=>{
     timeLeft--;
     message("timeLeft",timeLeft);
@@ -559,21 +590,25 @@ function drawGame(){
   ctx.fillStyle="#327c55";
   ctx.fillRect(0,0,900,500);
   ctx.fillStyle="#4c9a68";
+
   for(let i=0;i<18;i++){
     ctx.beginPath();
     ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);
     ctx.fill();
   }
+
   ctx.fillStyle="#e5bd45";
   stars.forEach(s=>{
     ctx.beginPath();
     ctx.arc(s.x,s.y,9,0,Math.PI*2);
     ctx.fill();
   });
+
   ctx.fillStyle="white";
   ctx.beginPath();
   ctx.arc(player.x,player.y,20,0,Math.PI*2);
   ctx.fill();
+
   ctx.fillStyle="#1a2a3d";
   ctx.beginPath();
   ctx.arc(player.x,player.y-5,7,0,Math.PI*2);
@@ -585,16 +620,19 @@ document.addEventListener("keydown",e=>{
   keys[e.key]=true;
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault();
 });
+
 document.addEventListener("keyup",e=>keys[e.key]=false);
 window.addEventListener("blur",()=>keys={});
 
 document.querySelectorAll(".control").forEach(btn=>{
   const key=btn.dataset.key;
+
   btn.addEventListener("pointerdown",e=>{
     e.preventDefault();
     keys[key]=true;
     try{btn.setPointerCapture(e.pointerId);}catch(_){}
   });
+
   ["pointerup","pointercancel","lostpointercapture"].forEach(event=>{
     btn.addEventListener(event,e=>{
       e.preventDefault();
@@ -624,4 +662,4 @@ async function checkConnection(){
 })();
 </script>
 </body>
-                                  </html>
+    </html>
