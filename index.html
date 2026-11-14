@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -52,6 +53,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 </style>
 </head>
 <body>
+
 <header>
  <div class="logo">BD GAME</div>
  <div id="playerName" class="muted">Guest Player</div>
@@ -158,7 +160,9 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <div class="map-card" onclick="selectMap('GREEN VALLEY',this)">🌲 <b>GREEN VALLEY</b><p class="muted">Coming Soon</p></div>
  <div class="map-card" onclick="selectMap('DESERT ZONE',this)">🏜️ <b>DESERT ZONE</b><p class="muted">Coming Soon</p></div>
  <p id="mapMessage" class="muted">Selected: BD ISLAND</p>
-   </section><section id="profile" class="page">
+</section>
+
+<section id="profile" class="page">
  <h2 class="title">PLAYER PROFILE</h2>
  <div class="panel center">
   <div style="font-size:65px">👤</div>
@@ -227,10 +231,10 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
   <p>Score: <b id="practiceScore">0</b></p>
   <canvas id="arena" width="320" height="400"></canvas>
   <div class="controls">
-   <button class="control" onpointerdown="movePlayer('left')" onpointerup="stopPlayer()">◀</button>
-   <button class="control" onpointerdown="movePlayer('up')" onpointerup="stopPlayer()">▲</button>
-   <button class="control" onpointerdown="movePlayer('down')" onpointerup="stopPlayer()">▼</button>
-   <button class="control" onpointerdown="movePlayer('right')" onpointerup="stopPlayer()">▶</button>
+   <button class="control" onpointerdown="movePlayer('left')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">◀</button>
+   <button class="control" onpointerdown="movePlayer('up')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">▲</button>
+   <button class="control" onpointerdown="movePlayer('down')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">▼</button>
+   <button class="control" onpointerdown="movePlayer('right')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">▶</button>
   </div>
   <button class="full" onclick="startPractice()">START PRACTICE</button>
   <button class="full darkbtn" onclick="stopPractice()">STOP</button>
@@ -255,7 +259,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 </nav>
 
 <script>
-const {Client,Account,ID,TablesDB,Query,Permission,Role}=Appwrite;
+const {Client,Account,ID,TablesDB,Query}=Appwrite;
 
 const client=new Client()
  .setEndpoint("https://sgp.cloud.appwrite.io/v1")
@@ -317,12 +321,21 @@ function chooseCharacter(name,emoji){
  document.getElementById("lobbyCharacter").textContent=emoji;
 }
 
+/* সংশোধিত Guest Login */
 async function guestLogin(){
  try{
-  currentUser=await account.createAnonymousSession();
+  // আগে থেকে Session থাকলে সেটি ব্যবহার করবে।
+  try{
+   currentUser=await account.get();
+  }catch(sessionError){
+   // Session না থাকলেই নতুন Guest Session তৈরি হবে।
+   currentUser=await account.createAnonymousSession();
+  }
+
   await afterLogin();
+
  }catch(e){
-  message("loginMessage","Guest login হয়নি: "+e.message);
+  message("loginMessage","Guest Login হয়নি: "+e.message);
  }
 }
 
@@ -335,6 +348,7 @@ async function registerPlayer(){
   message("regMessage","নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের Password দিন।");
   return;
  }
+
  try{
   await account.create(ID.unique(),email,password,name);
   message("regMessage","Account তৈরি হয়েছে। এখন Login করুন।");
@@ -347,6 +361,7 @@ async function registerPlayer(){
 async function loginPlayer(){
  const email=document.getElementById("loginEmail").value.trim();
  const password=document.getElementById("loginPassword").value;
+
  try{
   await account.createEmailPasswordSession(email,password);
   currentUser=await account.get();
@@ -358,9 +373,11 @@ async function loginPlayer(){
 
 async function afterLogin(){
  if(!currentUser)currentUser=await account.get();
+
  document.getElementById("playerName").textContent=currentUser.name||"Player";
  document.getElementById("profileName").textContent=currentUser.name||"Player";
  document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
+
  go("lobby");
  await loadProfile();
 }
@@ -368,12 +385,14 @@ async function afterLogin(){
 async function loadProfile(){
  try{
   if(!currentUser)currentUser=await account.get();
+
   const result=await tablesDB.listRows({
    databaseId:DATABASE_ID,
    tableId:PLAYERS_TABLE_ID,
    queries:[Query.equal("auth_user_id",currentUser.$id)],
    total:false
   });
+
   if(result.rows.length){
    currentProfile=result.rows[0];
    updateProfileUI();
@@ -387,6 +406,7 @@ async function loadProfile(){
 
 function updateProfileUI(){
  if(!currentProfile)return;
+
  document.getElementById("profileName").textContent=currentProfile.display_name||currentUser.name;
  document.getElementById("profileLevel").textContent=currentProfile.level||1;
  document.getElementById("profileXp").textContent=currentProfile.xp||0;
@@ -396,7 +416,10 @@ function updateProfileUI(){
 }
 
 async function logoutPlayer(){
- try{await account.deleteSession("current");}catch(e){}
+ try{
+  await account.deleteSession("current");
+ }catch(e){}
+
  currentUser=null;
  currentProfile=null;
  currentRoom=null;
@@ -406,7 +429,9 @@ async function logoutPlayer(){
 async function gameApi(path,method="GET",body=null){
  const token=await account.getSession("current").catch(()=>null);
  const headers={"Content-Type":"application/json"};
+
  if(token)headers["X-Appwrite-JWT"]=token.$id;
+
  const response=await fetch(API_URL,{
   method:"POST",
   headers,
@@ -417,9 +442,12 @@ async function gameApi(path,method="GET",body=null){
    user_id:currentUser?.$id||null
   })
  });
+
  const data=await response.json().catch(()=>({}));
+
  if(!response.ok)throw new Error(data.message||data.error||"API Error "+response.status);
  if(data.success===false)throw new Error(data.message||"Request failed");
+
  return data;
 }
 
@@ -427,6 +455,7 @@ async function createRoom(){
  try{
   const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
   currentRoom=result.room||result.data?.room||result;
+
   message("roomMessage",result.message||"Room তৈরি হয়েছে।");
   document.getElementById("roomDetails").textContent=JSON.stringify(currentRoom);
  }catch(e){
@@ -436,13 +465,16 @@ async function createRoom(){
 
 async function joinRoom(){
  const code=document.getElementById("roomCode").value.trim();
+
  if(!code){
   message("roomMessage","Room Code লিখুন।");
   return;
  }
+
  try{
   const result=await gameApi("/rooms/join","POST",{room_code:code});
   currentRoom=result.room||result.data?.room||result;
+
   message("roomMessage",result.message||"Room-এ Join হয়েছে।");
   document.getElementById("roomDetails").textContent=JSON.stringify(currentRoom);
  }catch(e){
@@ -455,8 +487,12 @@ async function leaveRoom(){
   message("roomMessage","আপনি কোনো Room-এ নেই।");
   return;
  }
+
  try{
-  await gameApi("/rooms/leave","POST",{room_id:currentRoom.$id||currentRoom.id||currentRoom.room_id});
+  await gameApi("/rooms/leave","POST",{
+   room_id:currentRoom.$id||currentRoom.id||currentRoom.room_id
+  });
+
   currentRoom=null;
   message("roomMessage","Room থেকে বের হয়েছেন।");
   document.getElementById("roomDetails").textContent="No room joined.";
@@ -484,7 +520,8 @@ async function inviteFriend(){
    room_id:roomId,
    invitee_user_id:friendId
   });
-  message("inviteMessage",result.message||"Invite request পাঠানো হয়েছে.");
+
+  message("inviteMessage",result.message||"Invite request পাঠানো হয়েছে।");
  }catch(e){
   message("inviteMessage","Invite পাঠানো যায়নি: "+e.message);
  }
@@ -493,7 +530,11 @@ async function inviteFriend(){
 async function findMatch(){
  try{
   message("roomMessage","Match খোঁজা হচ্ছে...");
-  const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
+
+  const result=await gameApi("/matchmaking/join","POST",{
+   mode:selectedMode
+  });
+
   message("roomMessage",result.message||"Matchmaking request পাঠানো হয়েছে।");
  }catch(e){
   message("roomMessage","Matchmaking হয়নি: "+e.message);
@@ -512,11 +553,14 @@ function startMatch(){
 
 function startPractice(){
  stopPractice();
+
  practiceScore=0;
  playerPosition={x:150,y:190};
  starPosition={x:Math.random()*260+20,y:Math.random()*340+20};
+
  message("practiceScore",practiceScore);
  drawArena();
+
  practiceTimer=setInterval(()=>{
   if(moveDirection){
    if(moveDirection==="left")playerPosition.x-=4;
@@ -524,15 +568,19 @@ function startPractice(){
    if(moveDirection==="up")playerPosition.y-=4;
    if(moveDirection==="down")playerPosition.y+=4;
   }
+
   playerPosition.x=Math.max(12,Math.min(308,playerPosition.x));
   playerPosition.y=Math.max(12,Math.min(388,playerPosition.y));
+
   const dx=playerPosition.x-starPosition.x;
   const dy=playerPosition.y-starPosition.y;
+
   if(Math.sqrt(dx*dx+dy*dy)<22){
    practiceScore++;
    message("practiceScore",practiceScore);
    starPosition={x:Math.random()*260+20,y:Math.random()*340+20};
   }
+
   drawArena();
  },40);
 }
@@ -540,19 +588,28 @@ function startPractice(){
 function drawArena(){
  const canvas=document.getElementById("arena");
  if(!canvas)return;
+
  const ctx=canvas.getContext("2d");
+
  ctx.clearRect(0,0,320,400);
  ctx.fillStyle="#327c55";
  ctx.fillRect(0,0,320,400);
+
  ctx.fillStyle="#e8bd62";
  ctx.font="24px Arial";
  ctx.fillText("★",starPosition.x-10,starPosition.y+8);
+
  ctx.font="28px Arial";
  ctx.fillText("🧍",playerPosition.x-13,playerPosition.y+10);
 }
 
-function movePlayer(direction){moveDirection=direction;}
-function stopPlayer(){moveDirection=null;}
+function movePlayer(direction){
+ moveDirection=direction;
+}
+
+function stopPlayer(){
+ moveDirection=null;
+}
 
 function stopPractice(){
  if(practiceTimer)clearInterval(practiceTimer);
@@ -560,12 +617,13 @@ function stopPractice(){
  moveDirection=null;
 }
 
-</script>
- </section>async function startGame(){
+/* পেজ চালু হলে আগের Session পরীক্ষা */
+async function startGame(){
  try{
   currentUser=await account.get();
   await afterLogin();
  }catch(e){
+  currentUser=null;
   go("splash");
  }
 }
@@ -573,3 +631,6 @@ function stopPractice(){
 document.addEventListener("DOMContentLoaded",()=>{
  startGame();
 });
+</script>
+</body>
+</html>
