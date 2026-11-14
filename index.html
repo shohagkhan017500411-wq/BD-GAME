@@ -8,7 +8,84 @@
 <title>BD GAME</title>
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
 
-<style>/* BD GAME - NEW LOBBY DESIGN FIX */
+/* BD GAME COMPLETE LOBBY MENU */
+#lobby .lobby-stage {
+  min-height: 470px;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    #092c58,
+    #176b91 42%,
+    #579d83 72%,
+    #173b32
+  );
+}
+
+#lobby .lobby-rail {
+  position: absolute;
+  z-index: 15;
+  top: 62px;
+  left: 7px;
+  bottom: 8px;
+  width: 78px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+#lobby .lobby-rail button {
+  min-height: 38px;
+  padding: 4px 2px;
+  border-radius: 7px;
+  background: linear-gradient(135deg,#174d79,#101e32);
+  border: 1px solid #e8bd62;
+  color: #ffe19a;
+  font-size: 8px;
+  font-weight: bold;
+  line-height: 1.15;
+}
+
+#lobby .lobby-rail button span {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+#lobby .hero-character-wrap {
+  z-index: 5;
+  left: 58%;
+  bottom: 0;
+}
+
+#lobby .lobby-scene-title {
+  left: 88px;
+}
+
+#lobby .shortcuts {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 7px;
+  margin-top: 12px;
+}
+
+#lobby .shortcuts button {
+  min-width: 0;
+  min-height: 55px;
+  padding: 7px 2px;
+  background: linear-gradient(135deg,#173e65,#101e32);
+  color: #ffe19a;
+  border: 1px solid #e8bd62;
+  font-size: 10px;
+}
+
+#lobby .lobby-playbar {
+  position: relative;
+  z-index: 20;
+}<style>/* BD GAME - NEW LOBBY DESIGN FIX */
 #lobby.page.active {
   display: block !important;
   background: #080d18;
