@@ -321,21 +321,41 @@ function chooseCharacter(name,emoji){
  document.getElementById("lobbyCharacter").textContent=emoji;
 }
 
-/* সংশোধিত Guest Login */
+/* সংশোধিত Guest Login: আগে Session পরীক্ষা, পরে প্রয়োজন হলে Guest Session */
+let guestLoginRunning=false;
+
 async function guestLogin(){
+ if(guestLoginRunning)return;
+ guestLoginRunning=true;
+
  try{
-  // আগে থেকে Session থাকলে সেটি ব্যবহার করবে।
+  // আগে থেকেই কোনো Session চালু থাকলে সেটি ব্যবহার করবে।
   try{
    currentUser=await account.get();
-  }catch(sessionError){
-   // Session না থাকলেই নতুন Guest Session তৈরি হবে।
-   currentUser=await account.createAnonymousSession();
+  }catch(getError){
+
+   // Session না থাকলেই নতুন Anonymous Session তৈরি করবে।
+   try{
+    currentUser=await account.createAnonymousSession();
+   }catch(createError){
+
+    // একই সময়ে অন্য অনুরোধ Session তৈরি করলে সেটি পুনরায় পরীক্ষা করবে।
+    const errorText=String(createError.message||"").toLowerCase();
+
+    if(errorText.includes("session")&&errorText.includes("active")){
+     currentUser=await account.get();
+    }else{
+     throw createError;
+    }
+   }
   }
 
   await afterLogin();
 
  }catch(e){
   message("loginMessage","Guest Login হয়নি: "+e.message);
+ }finally{
+  guestLoginRunning=false;
  }
 }
 
@@ -427,10 +447,13 @@ async function logoutPlayer(){
 }
 
 async function gameApi(path,method="GET",body=null){
- const token=await account.getSession("current").catch(()=>null);
+ const session=await account.getSession("current").catch(()=>null);
  const headers={"Content-Type":"application/json"};
 
- if(token)headers["X-Appwrite-JWT"]=token.$id;
+ if(session){
+  const jwtResult=await account.createJWT();
+  headers["X-Appwrite-JWT"]=jwtResult.jwt;
+ }
 
  const response=await fetch(API_URL,{
   method:"POST",
