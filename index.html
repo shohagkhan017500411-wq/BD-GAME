@@ -50,6 +50,11 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 #arena{width:100%;background:#327c55;border-radius:10px;touch-action:none}
 .controls{display:flex;justify-content:center;gap:7px;margin:12px}
 .control{width:58px;height:52px;background:#263952;color:white;font-size:22px;touch-action:none}
+.rank-row{display:flex;align-items:center;gap:10px;background:#17263b;border:1px solid #35465b;border-radius:9px;padding:12px;margin:7px 0}
+.rank-number{width:35px;height:35px;display:grid;place-items:center;background:#26374d;border-radius:8px;color:#f3c76c;font-weight:bold}
+.rank-name{flex:1;overflow-wrap:anywhere}
+.rank-points{color:#f3c76c;font-weight:bold;white-space:nowrap}
+.my-rank{border:1px solid #e8bd62;background:#26364a}
 </style>
 </head>
 <body>
@@ -172,6 +177,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
   <p>XP: <b id="profileXp">0</b></p>
   <p>COINS: <b id="profileCoins">0</b></p>
   <p>DIAMONDS: <b id="profileDiamonds">0</b></p>
+  <p>RANK POINTS: <b id="profileRankPoints">0</b></p>
  </div>
  <button class="full darkbtn" onclick="loadProfile()">REFRESH PROFILE</button>
  <button class="full red" onclick="logoutPlayer()">LOGOUT</button>
@@ -208,9 +214,18 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 <section id="rank" class="page">
  <h2 class="title">RANK & LEADERBOARD</h2>
  <div class="panel center">
-  <div style="font-size:65px">🏆</div>
-  <h3>ROOKIE RANK</h3>
-  <p class="muted">Leaderboard data এখনো সংযুক্ত করা হয়নি।</p>
+  <div style="font-size:55px">🏆</div>
+  <h3>YOUR RANK</h3>
+  <p id="myRankText">Rank: Loading...</p>
+  <p id="myPointsText" class="muted">Rank Points: 0</p>
+  <button class="full" onclick="loadLeaderboard()">↻ REFRESH LEADERBOARD</button>
+  <p id="rankMessage" class="muted">Leaderboard লোড হচ্ছে...</p>
+ </div>
+ <div class="panel">
+  <h3 class="title">TOP 50 PLAYERS</h3>
+  <div id="leaderboardList">
+   <p class="muted center">Leaderboard লোড হচ্ছে...</p>
+  </div>
  </div>
 </section>
 
@@ -270,6 +285,7 @@ const tablesDB=new TablesDB(client);
 
 const DATABASE_ID="6af4e97b0018132a174c";
 const PLAYERS_TABLE_ID="players";
+const LEADERBOARD_TABLE_ID="leaderboard";
 const API_URL="https://sgp.cloud.appwrite.io/v1/functions/bd-game-match-api/executions";
 
 let currentUser=null;
@@ -283,6 +299,8 @@ let playerPosition={x:150,y:190};
 let starPosition={x:80,y:100};
 let practiceScore=0;
 let moveDirection=null;
+let guestLoginRunning=false;
+let leaderboardLoading=false;
 
 function message(id,text){
  const el=document.getElementById(id);
@@ -293,8 +311,12 @@ function go(page){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  const target=document.getElementById(page);
  if(target)target.classList.add("active");
+
  document.getElementById("bottomNav").style.display=
   ["lobby","profile","character","maps","team","room","rank","result","practice","settings"].includes(page)?"flex":"none";
+
+ if(page==="rank")loadLeaderboard();
+ if(page==="profile"&&currentUser)loadProfile();
 }
 
 function setMode(mode){
@@ -321,27 +343,19 @@ function chooseCharacter(name,emoji){
  document.getElementById("lobbyCharacter").textContent=emoji;
 }
 
-/* সংশোধিত Guest Login: আগে Session পরীক্ষা, পরে প্রয়োজন হলে Guest Session */
-let guestLoginRunning=false;
-
+/* Guest Login: আগে Session পরীক্ষা, পরে প্রয়োজন হলে Guest Session */
 async function guestLogin(){
  if(guestLoginRunning)return;
  guestLoginRunning=true;
 
  try{
-  // আগে থেকেই কোনো Session চালু থাকলে সেটি ব্যবহার করবে।
   try{
    currentUser=await account.get();
   }catch(getError){
-
-   // Session না থাকলেই নতুন Anonymous Session তৈরি করবে।
    try{
     currentUser=await account.createAnonymousSession();
    }catch(createError){
-
-    // একই সময়ে অন্য অনুরোধ Session তৈরি করলে সেটি পুনরায় পরীক্ষা করবে।
     const errorText=String(createError.message||"").toLowerCase();
-
     if(errorText.includes("session")&&errorText.includes("active")){
      currentUser=await account.get();
     }else{
@@ -349,9 +363,7 @@ async function guestLogin(){
     }
    }
   }
-
   await afterLogin();
-
  }catch(e){
   message("loginMessage","Guest Login হয়নি: "+e.message);
  }finally{
@@ -432,6 +444,7 @@ function updateProfileUI(){
  document.getElementById("profileXp").textContent=currentProfile.xp||0;
  document.getElementById("profileCoins").textContent=currentProfile.coins||0;
  document.getElementById("profileDiamonds").textContent=currentProfile.diamonds||0;
+ document.getElementById("profileRankPoints").textContent=currentProfile.rank_points||0;
  document.getElementById("lobbyCoins").textContent="BD COINS: "+(currentProfile.coins||0);
 }
 
@@ -446,6 +459,10 @@ async function logoutPlayer(){
  go("splash");
 }
 
+/*
+ * Appwrite Function API.
+ * Function না থাকলে Room/Matchmaking API কাজ করবে না।
+ */
 async function gameApi(path,method="GET",body=null){
  const session=await account.getSession("current").catch(()=>null);
  const headers={"Content-Type":"application/json"};
@@ -478,7 +495,6 @@ async function createRoom(){
  try{
   const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
   currentRoom=result.room||result.data?.room||result;
-
   message("roomMessage",result.message||"Room তৈরি হয়েছে।");
   document.getElementById("roomDetails").textContent=JSON.stringify(currentRoom);
  }catch(e){
@@ -497,7 +513,6 @@ async function joinRoom(){
  try{
   const result=await gameApi("/rooms/join","POST",{room_code:code});
   currentRoom=result.room||result.data?.room||result;
-
   message("roomMessage",result.message||"Room-এ Join হয়েছে।");
   document.getElementById("roomDetails").textContent=JSON.stringify(currentRoom);
  }catch(e){
@@ -543,7 +558,6 @@ async function inviteFriend(){
    room_id:roomId,
    invitee_user_id:friendId
   });
-
   message("inviteMessage",result.message||"Invite request পাঠানো হয়েছে।");
  }catch(e){
   message("inviteMessage","Invite পাঠানো যায়নি: "+e.message);
@@ -553,14 +567,106 @@ async function inviteFriend(){
 async function findMatch(){
  try{
   message("roomMessage","Match খোঁজা হচ্ছে...");
-
   const result=await gameApi("/matchmaking/join","POST",{
    mode:selectedMode
   });
-
   message("roomMessage",result.message||"Matchmaking request পাঠানো হয়েছে।");
  }catch(e){
   message("roomMessage","Matchmaking হয়নি: "+e.message);
+ }
+}
+
+/* Leaderboard: Appwrite leaderboard টেবিল থেকে Top 50 */
+async function loadLeaderboard(){
+ if(leaderboardLoading)return;
+ leaderboardLoading=true;
+
+ const list=document.getElementById("leaderboardList");
+ message("rankMessage","Leaderboard লোড হচ্ছে...");
+ list.innerHTML='<p class="muted center">লোড হচ্ছে...</p>';
+
+ try{
+  if(!currentUser){
+   currentUser=await account.get();
+  }
+
+  const result=await tablesDB.listRows({
+   databaseId:DATABASE_ID,
+   tableId:LEADERBOARD_TABLE_ID,
+   queries:[
+    Query.orderDesc("rank_points"),
+    Query.limit(50)
+   ],
+   total:true
+  });
+
+  const rows=result.rows||[];
+
+  if(!rows.length){
+   list.innerHTML='<p class="muted center">এখনো Leaderboard-এ কোনো Player নেই।</p>';
+   message("rankMessage","Leaderboard-এ এখনো কোনো রেকর্ড পাওয়া যায়নি।");
+   message("myRankText","Rank: Not ranked");
+   message("myPointsText","Rank Points: 0");
+   return;
+  }
+
+  const myIndex=rows.findIndex(row=>
+   row.user_id===currentUser.$id
+  );
+
+  if(myIndex>=0){
+   message("myRankText","Your Rank: #"+(myIndex+1));
+   message("myPointsText","Rank Points: "+(rows[myIndex].rank_points||0));
+  }else{
+   message("myRankText","Your Rank: Top 50-এর বাইরে");
+   message("myPointsText","Rank Points: এখনো তালিকায় নেই");
+  }
+
+  list.innerHTML="";
+
+  rows.forEach((row,index)=>{
+   const userId=String(row.user_id||"");
+   const playerName=row.display_name||row.player_name||("Player "+userId.slice(0,7));
+   const points=Number(row.rank_points||0);
+   const wins=Number(row.wins||0);
+   const isMe=userId===currentUser.$id;
+
+   const item=document.createElement("div");
+   item.className="rank-row"+(isMe?" my-rank":"");
+
+   const number=document.createElement("div");
+   number.className="rank-number";
+   number.textContent="#"+(index+1);
+
+   const name=document.createElement("div");
+   name.className="rank-name";
+
+   const nameText=document.createElement("b");
+   nameText.textContent=playerName+(isMe?" (YOU)":"");
+
+   const detail=document.createElement("div");
+   detail.className="muted";
+   detail.textContent="Wins: "+wins;
+
+   name.appendChild(nameText);
+   name.appendChild(detail);
+
+   const score=document.createElement("div");
+   score.className="rank-points";
+   score.textContent=points+" pts";
+
+   item.appendChild(number);
+   item.appendChild(name);
+   item.appendChild(score);
+   list.appendChild(item);
+  });
+
+  message("rankMessage","Top "+rows.length+" Player দেখানো হচ্ছে।");
+ }catch(e){
+  list.innerHTML='<p class="muted center">Leaderboard লোড হয়নি।</p>';
+  message("rankMessage","সমস্যা: "+e.message);
+ }finally{
+  leaderboardLoading=false;
  }
 }
 
@@ -613,15 +719,12 @@ function drawArena(){
  if(!canvas)return;
 
  const ctx=canvas.getContext("2d");
-
  ctx.clearRect(0,0,320,400);
  ctx.fillStyle="#327c55";
  ctx.fillRect(0,0,320,400);
-
  ctx.fillStyle="#e8bd62";
  ctx.font="24px Arial";
  ctx.fillText("★",starPosition.x-10,starPosition.y+8);
-
  ctx.font="28px Arial";
  ctx.fillText("🧍",playerPosition.x-13,playerPosition.y+10);
 }
@@ -640,7 +743,6 @@ function stopPractice(){
  moveDirection=null;
 }
 
-/* পেজ চালু হলে আগের Session পরীক্ষা */
 async function startGame(){
  try{
   currentUser=await account.get();
