@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
@@ -31,14 +32,61 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .nav button{background:transparent;color:white;font-size:12px;padding:7px}
 .status{padding:10px;background:#17263b;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
 .hide{display:none!important}
-#splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)}
-.splash-wrap{padding-top:13vh}
-.splash-mark{width:130px;height:130px;margin:auto;border:3px solid #ffd36a;border-radius:50%;display:grid;place-items:center;font-size:62px;font-weight:1000;color:#ffd36a;box-shadow:0 0 25px #bd812b}
+
+/* LOGO AND ENTRY */
+body:has(#splash.active) header,
+body:has(#entry.active) header{display:none}
+
+#splash.active,#entry.active{
+ display:flex;
+ min-height:100vh;
+ padding:0;
+ align-items:center;
+ justify-content:center;
+ overflow:hidden
+}
+
+#splash{
+ background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)
+}
+
+.splash-wrap{padding:20px}
+.splash-mark{
+ width:145px;height:145px;margin:auto;
+ border:4px solid #ffd36a;border-radius:50%;
+ display:grid;place-items:center;
+ font-size:65px;font-weight:1000;color:#ffd36a;
+ box-shadow:0 0 35px #bd812b
+}
+.splash-title{
+ color:#ffd36a;letter-spacing:5px;font-size:35px
+}
+
+#entry{
+ position:relative;
+ background:
+ radial-gradient(ellipse at 50% 75%,#247b70,#173c50 45%,#080d18);
+ text-align:center;
+ overflow:hidden
+}
+.entry-content{width:100%;padding:20px}
+.entry-title{
+ color:#ffd36a;font-size:38px;letter-spacing:5px;
+ text-shadow:0 0 20px #e8bd62
+}
+.entry-island{font-size:75px;margin-top:30px}
+.entry-character{
+ font-size:125px;margin-top:20px;
+ animation:idle 3s infinite
+}
+.entry-subtitle{letter-spacing:3px}
+@keyframes idle{50%{transform:translateY(-9px)}}
+
+/* LOBBY */
 .hero{height:300px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 65% 28%,#496e61,#1b3941 38%,#101a2a 75%,#080d18);margin:10px -12px}
 .hero-copy{position:absolute;top:15px;left:17px}
 .hero-copy h1{font-size:29px}
 .character{font-size:125px;position:absolute;bottom:5px;left:calc(50% - 60px);animation:idle 3s infinite}
-@keyframes idle{50%{transform:translateY(-8px)}}
 .action-panel{background:#0d1725;border:1px solid #59616a;border-radius:10px;padding:12px}
 .mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mode-card{background:#1c2b3b;color:white;border:1px solid #435365}
@@ -57,6 +105,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .my-rank{border:1px solid #e8bd62;background:#26364a}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -65,16 +114,27 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <button class="darkbtn" onclick="go('settings')">⚙</button>
 </header>
 
+<!-- LOGO SCREEN -->
 <section id="splash" class="page active center">
  <div class="splash-wrap">
   <div class="splash-mark">BD</div>
-  <h2 style="color:#ffd36a;letter-spacing:4px">BD GAME</h2>
+  <h2 class="splash-title">BD GAME</h2>
   <p class="muted">BATTLE ARENA</p>
-  <button class="full" onclick="go('login')">PLAY</button>
-  <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
  </div>
 </section>
 
+<!-- AUTOMATIC ENTRY SCREEN -->
+<section id="entry" class="page center">
+ <div class="entry-content">
+  <h1 class="entry-title">BD GAME</h1>
+  <p class="entry-subtitle">BATTLE ROYALE</p>
+  <div class="entry-island">🏝️ 🌴</div>
+  <div class="entry-character">🦸</div>
+  <h2 style="color:#ffd36a">WELCOME TO BD ISLAND</h2>
+ </div>
+</section>
+
+<!-- LOGIN -->
 <section id="login" class="page">
  <h2 class="title">PLAYER LOGIN</h2>
  <div class="panel">
@@ -87,6 +147,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- REGISTER -->
 <section id="register" class="page">
  <h2 class="title">CREATE PLAYER ACCOUNT</h2>
  <div class="panel">
@@ -99,6 +160,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- LOBBY -->
 <section id="lobby" class="page">
  <div class="panel">
   <b>★ ROOKIE</b>
@@ -137,6 +199,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- CHARACTER -->
 <section id="character" class="page">
  <h2 class="title">CHARACTER & OUTFIT</h2>
  <div class="panel center">
@@ -159,6 +222,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <p class="muted">Outfit, Backpack, Skin ও Parachute এখনো নমুনা অপশন।</p>
 </section>
 
+<!-- MAPS -->
 <section id="maps" class="page">
  <h2 class="title">SELECT MAP</h2>
  <div class="map-card selected-map" onclick="selectMap('BD ISLAND',this)">🏝️ <b>BD ISLAND</b><p class="muted">Main Adventure Island</p></div>
@@ -167,6 +231,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <p id="mapMessage" class="muted">Selected: BD ISLAND</p>
 </section>
 
+<!-- PROFILE -->
 <section id="profile" class="page">
  <h2 class="title">PLAYER PROFILE</h2>
  <div class="panel center">
@@ -183,6 +248,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <button class="full red" onclick="logoutPlayer()">LOGOUT</button>
 </section>
 
+<!-- TEAM -->
 <section id="team" class="page">
  <h2 class="title">TEAM & FRIENDS</h2>
  <div class="panel">
@@ -196,6 +262,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- ROOM -->
 <section id="room" class="page">
  <h2 class="title">ROOM SYSTEM</h2>
  <div class="panel">
@@ -211,6 +278,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- RANK -->
 <section id="rank" class="page">
  <h2 class="title">RANK & LEADERBOARD</h2>
  <div class="panel center">
@@ -229,6 +297,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- RESULT -->
 <section id="result" class="page">
  <h2 class="title">MATCH RESULT</h2>
  <div class="panel center">
@@ -239,6 +308,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- PRACTICE -->
 <section id="practice" class="page">
  <h2 class="title">BD ISLAND PRACTICE</h2>
  <div class="panel center">
@@ -256,6 +326,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- SETTINGS -->
 <section id="settings" class="page">
  <h2 class="title">SETTINGS</h2>
  <div class="panel">
@@ -266,6 +337,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
 </section>
 
+<!-- BOTTOM NAV -->
 <nav id="bottomNav" class="nav">
  <button onclick="go('lobby')">🏠<br>HOME</button>
  <button onclick="go('character')">🧍<br>PLAYER</button>
@@ -301,6 +373,7 @@ let practiceScore=0;
 let moveDirection=null;
 let guestLoginRunning=false;
 let leaderboardLoading=false;
+let entryTimer=null;
 
 function message(id,text){
  const el=document.getElementById(id);
@@ -343,7 +416,7 @@ function chooseCharacter(name,emoji){
  document.getElementById("lobbyCharacter").textContent=emoji;
 }
 
-/* Guest Login: আগে Session পরীক্ষা, পরে প্রয়োজন হলে Guest Session */
+/* GUEST LOGIN */
 async function guestLogin(){
  if(guestLoginRunning)return;
  guestLoginRunning=true;
@@ -371,6 +444,7 @@ async function guestLogin(){
  }
 }
 
+/* REGISTER */
 async function registerPlayer(){
  const name=document.getElementById("regName").value.trim();
  const email=document.getElementById("regEmail").value.trim();
@@ -390,6 +464,7 @@ async function registerPlayer(){
  }
 }
 
+/* LOGIN */
 async function loginPlayer(){
  const email=document.getElementById("loginEmail").value.trim();
  const password=document.getElementById("loginPassword").value;
@@ -403,6 +478,7 @@ async function loginPlayer(){
  }
 }
 
+/* AFTER LOGIN */
 async function afterLogin(){
  if(!currentUser)currentUser=await account.get();
 
@@ -414,6 +490,7 @@ async function afterLogin(){
  await loadProfile();
 }
 
+/* PROFILE */
 async function loadProfile(){
  try{
   if(!currentUser)currentUser=await account.get();
@@ -448,7 +525,10 @@ function updateProfileUI(){
  document.getElementById("lobbyCoins").textContent="BD COINS: "+(currentProfile.coins||0);
 }
 
+/* LOGOUT */
 async function logoutPlayer(){
+ if(entryTimer)clearTimeout(entryTimer);
+
  try{
   await account.deleteSession("current");
  }catch(e){}
@@ -456,13 +536,11 @@ async function logoutPlayer(){
  currentUser=null;
  currentProfile=null;
  currentRoom=null;
- go("splash");
+
+ startGame();
 }
 
-/*
- * Appwrite Function API.
- * Function না থাকলে Room/Matchmaking API কাজ করবে না।
- */
+/* GAME API */
 async function gameApi(path,method="GET",body=null){
  const session=await account.getSession("current").catch(()=>null);
  const headers={"Content-Type":"application/json"};
@@ -491,6 +569,7 @@ async function gameApi(path,method="GET",body=null){
  return data;
 }
 
+/* ROOM */
 async function createRoom(){
  try{
   const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
@@ -539,6 +618,7 @@ async function leaveRoom(){
  }
 }
 
+/* FRIEND INVITE */
 async function inviteFriend(){
  const friendId=document.getElementById("invitePlayerId").value.trim();
  const roomId=currentRoom?.$id||currentRoom?.id||currentRoom?.room_id;
@@ -564,6 +644,7 @@ async function inviteFriend(){
  }
 }
 
+/* MATCHMAKING */
 async function findMatch(){
  try{
   message("roomMessage","Match খোঁজা হচ্ছে...");
@@ -576,7 +657,7 @@ async function findMatch(){
  }
 }
 
-/* Leaderboard: Appwrite leaderboard টেবিল থেকে Top 50 */
+/* LEADERBOARD */
 async function loadLeaderboard(){
  if(leaderboardLoading)return;
  leaderboardLoading=true;
@@ -670,6 +751,7 @@ async function loadLeaderboard(){
  }
 }
 
+/* PRACTICE */
 function startMatch(){
  if(selectedMap==="BD ISLAND"){
   go("practice");
@@ -743,14 +825,35 @@ function stopPractice(){
  moveDirection=null;
 }
 
+/* AUTOMATIC LOGO -> ENTRY -> LOGIN / LOBBY */
 async function startGame(){
+ if(entryTimer)clearTimeout(entryTimer);
+
  try{
   currentUser=await account.get();
-  await afterLogin();
  }catch(e){
   currentUser=null;
-  go("splash");
  }
+
+ go("splash");
+
+ entryTimer=setTimeout(()=>{
+  go("entry");
+
+  entryTimer=setTimeout(async()=>{
+   if(currentUser){
+    try{
+     await afterLogin();
+    }catch(e){
+     currentUser=null;
+     go("login");
+    }
+   }else{
+    go("login");
+   }
+  },3500);
+
+ },1800);
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
