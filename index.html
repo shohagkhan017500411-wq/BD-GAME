@@ -36,58 +36,85 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 /* LOGO AND ENTRY */
 body:has(#splash.active) header,
 body:has(#entry.active) header{display:none}
-
 #splash.active,#entry.active{
- display:flex;
- min-height:100vh;
- padding:0;
- align-items:center;
- justify-content:center;
- overflow:hidden
+ display:flex;min-height:100vh;padding:0;
+ align-items:center;justify-content:center;overflow:hidden
 }
-
-#splash{
- background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)
-}
-
+#splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)}
 .splash-wrap{padding:20px}
 .splash-mark{
- width:145px;height:145px;margin:auto;
- border:4px solid #ffd36a;border-radius:50%;
- display:grid;place-items:center;
- font-size:65px;font-weight:1000;color:#ffd36a;
- box-shadow:0 0 35px #bd812b
+ width:145px;height:145px;margin:auto;border:4px solid #ffd36a;
+ border-radius:50%;display:grid;place-items:center;
+ font-size:65px;font-weight:1000;color:#ffd36a;box-shadow:0 0 35px #bd812b
 }
-.splash-title{
- color:#ffd36a;letter-spacing:5px;font-size:35px
-}
-
+.splash-title{color:#ffd36a;letter-spacing:5px;font-size:35px}
 #entry{
  position:relative;
- background:
- radial-gradient(ellipse at 50% 75%,#247b70,#173c50 45%,#080d18);
- text-align:center;
- overflow:hidden
+ background:radial-gradient(ellipse at 50% 75%,#247b70,#173c50 45%,#080d18);
+ text-align:center;overflow:hidden
 }
 .entry-content{width:100%;padding:20px}
-.entry-title{
- color:#ffd36a;font-size:38px;letter-spacing:5px;
- text-shadow:0 0 20px #e8bd62
-}
+.entry-title{color:#ffd36a;font-size:38px;letter-spacing:5px;text-shadow:0 0 20px #e8bd62}
 .entry-island{font-size:75px;margin-top:30px}
-.entry-character{
- font-size:125px;margin-top:20px;
- animation:idle 3s infinite
-}
+.entry-character{font-size:125px;margin-top:20px;animation:idle 3s infinite}
 .entry-subtitle{letter-spacing:3px}
 @keyframes idle{50%{transform:translateY(-9px)}}
 
-/* LOBBY */
-.hero{height:300px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 65% 28%,#496e61,#1b3941 38%,#101a2a 75%,#080d18);margin:10px -12px}
-.hero-copy{position:absolute;top:15px;left:17px}
-.hero-copy h1{font-size:29px}
-.character{font-size:125px;position:absolute;bottom:5px;left:calc(50% - 60px);animation:idle 3s infinite}
-.action-panel{background:#0d1725;border:1px solid #59616a;border-radius:10px;padding:12px}
+/* NEW BD GAME LOBBY DESIGN */
+.lobby-stage{
+ position:relative;height:390px;margin:10px -12px 12px;overflow:hidden;
+ background:
+ radial-gradient(ellipse at 50% 65%,rgba(255,210,112,.30),transparent 38%),
+ linear-gradient(180deg,#123c67 0%,#1b6480 38%,#65a58d 68%,#244d45 100%);
+ border-top:2px solid #e8bd62;border-bottom:2px solid #e8bd62;
+}
+.lobby-stage:before{
+ content:"";position:absolute;left:-8%;right:-8%;bottom:0;height:45%;
+ background:linear-gradient(150deg,#245d53,#173b3c 70%);
+ clip-path:polygon(0 45%,18% 8%,35% 38%,53% 0,72% 40%,88% 12%,100% 45%,100% 100%,0 100%);
+}
+.lobby-stage:after{
+ content:"";position:absolute;left:0;right:0;bottom:0;height:24%;
+ background:linear-gradient(180deg,rgba(27,94,65,.15),#102d2b);
+}
+.lobby-hud{
+ position:absolute;z-index:5;top:10px;left:10px;right:10px;
+ display:flex;justify-content:space-between;align-items:center;gap:6px;
+}
+.hud-chip{
+ background:rgba(5,16,31,.82);border:1px solid #e8bd62;border-radius:7px;
+ padding:7px 9px;color:#ffe19a;font-size:11px;font-weight:900;
+ box-shadow:0 3px 12px #06101d66;
+}
+.lobby-rail{
+ position:absolute;z-index:6;left:8px;top:64px;bottom:12px;width:72px;
+ display:flex;flex-direction:column;justify-content:center;gap:7px;
+}
+.lobby-rail button{
+ min-height:52px;padding:5px 2px;background:linear-gradient(135deg,#153b66,#10233b);
+ border:1px solid #e8bd62;color:#ffe19a;font-size:9px;line-height:1.25;
+ box-shadow:0 3px 10px #06101d88;
+}
+.lobby-rail button span{display:block;font-size:20px;margin-bottom:3px}
+.lobby-scene-title{
+ position:absolute;z-index:3;top:72px;left:90px;right:8px;text-align:center;
+ text-shadow:0 3px 5px #071321;
+}
+.lobby-scene-title strong{font-size:24px;letter-spacing:3px;color:#ffe09a}
+.lobby-scene-title small{display:block;color:#fff;letter-spacing:2px;margin-top:4px}
+.hero-character-wrap{
+ position:absolute;z-index:4;bottom:3px;left:50%;transform:translateX(-35%);
+ width:175px;height:245px;display:flex;align-items:flex-end;justify-content:center;
+ filter:drop-shadow(0 10px 9px #07132199);
+}
+.hero-character-svg{width:100%;height:100%;overflow:visible}
+.lobby-playbar{
+ position:relative;z-index:8;display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.lobby-playbar .mode-row{grid-column:1/-1}
+.lobby-playbar .start-match{font-size:16px;letter-spacing:1px;min-height:50px}
+.lobby-playbar .quick-match{min-height:50px}
+.lobby-notice{min-height:18px;text-align:center;color:#f5d58c;font-size:12px;margin:5px 0}
 .mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mode-card{background:#1c2b3b;color:white;border:1px solid #435365}
 .mode-card.selected{background:#e0b65d;color:#111}
@@ -103,6 +130,13 @@ body:has(#entry.active) header{display:none}
 .rank-name{flex:1;overflow-wrap:anywhere}
 .rank-points{color:#f3c76c;font-weight:bold;white-space:nowrap}
 .my-rank{border:1px solid #e8bd62;background:#26364a}
+@media(min-width:600px){
+ .lobby-stage{height:470px}
+ .lobby-rail{width:90px}
+ .lobby-rail button{font-size:11px;min-height:60px}
+ .lobby-scene-title{left:115px}
+ .hero-character-wrap{height:310px;width:220px}
+}
 </style>
 </head>
 
@@ -160,31 +194,75 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- LOBBY -->
+<!-- NEW MAIN LOBBY -->
 <section id="lobby" class="page">
- <div class="panel">
-  <b>★ ROOKIE</b>
-  <span id="lobbyCoins" style="float:right">BD COINS: 0</span>
- </div>
- <div class="hero">
-  <div class="hero-copy">
-   <small>WELCOME TO</small>
-   <h1>BD ARENA</h1>
-   <p>ISLAND ADVENTURE</p>
+ <div class="lobby-stage">
+  <div class="lobby-hud">
+   <div class="hud-chip">BD GAME</div>
+   <div class="hud-chip">🪙 <span id="lobbyCoins">0</span></div>
+   <div class="hud-chip">💎 0</div>
   </div>
-  <div class="character" id="lobbyCharacter">🧍</div>
+
+  <nav class="lobby-rail" aria-label="Game menu">
+   <button onclick="showLobbyNotice('Shop')"><span>🛒</span>SHOP</button>
+   <button onclick="showLobbyNotice('Luck Royale')"><span>🎡</span>LUCK<br>ROYALE</button>
+   <button onclick="go('character')"><span>🧍</span>CHARACTER</button>
+   <button onclick="showLobbyNotice('Weapons')"><span>⚔️</span>WEAPONS</button>
+   <button onclick="go('maps')"><span>🗺️</span>MAPS</button>
+  </nav>
+
+  <div class="lobby-scene-title">
+   <strong>BD ISLAND</strong>
+   <small>ENTER THE BATTLE ARENA</small>
+  </div>
+
+  <div class="hero-character-wrap" id="lobbyCharacter">
+   <svg class="hero-character-svg" viewBox="0 0 180 250" role="img" aria-label="BD GAME original hero character">
+    <defs>
+     <linearGradient id="jacket" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#f5d477"/>
+      <stop offset=".5" stop-color="#2874a6"/>
+      <stop offset="1" stop-color="#102b4c"/>
+     </linearGradient>
+     <linearGradient id="pants" x1="0" x2="1">
+      <stop stop-color="#253d57"/>
+      <stop offset="1" stop-color="#0b1729"/>
+     </linearGradient>
+     <linearGradient id="skin" x1="0" x2="1">
+      <stop stop-color="#f5c89a"/>
+      <stop offset="1" stop-color="#a96849"/>
+     </linearGradient>
+    </defs>
+    <ellipse cx="92" cy="239" rx="55" ry="8" fill="#071b20" opacity=".55"/>
+    <path d="M57 145 L47 222 Q65 234 82 222 L91 164 L101 222 Q119 232 136 220 L124 139Z" fill="url(#pants)" stroke="#d8b75f" stroke-width="3"/>
+    <path d="M48 215 L43 239 Q62 247 83 239 L84 225Z M102 224 L103 240 Q123 248 145 237 L136 215Z" fill="#101b2a" stroke="#e4bd67" stroke-width="3"/>
+    <path d="M49 83 Q88 61 129 84 L143 157 Q112 176 43 157Z" fill="url(#jacket)" stroke="#f1ca70" stroke-width="3"/>
+    <path d="M70 84 L88 105 L108 84 L101 158 L77 158Z" fill="#17334d" opacity=".9"/>
+    <path d="M50 91 L25 145 Q24 160 40 163 L64 121Z M126 91 L151 143 Q153 159 137 164 L113 121Z" fill="#24577b" stroke="#e5bd68" stroke-width="3"/>
+    <path d="M66 65 Q88 49 111 66 L120 91 Q91 107 59 90Z" fill="url(#skin)" stroke="#5d392d" stroke-width="2"/>
+    <path d="M57 62 Q59 22 91 19 Q126 23 123 65 L111 54 L67 55Z" fill="#17263b" stroke="#e8bd62" stroke-width="4"/>
+    <path d="M64 54 Q89 42 116 54 L112 77 Q89 91 67 76Z" fill="url(#skin)"/>
+    <path d="M72 65 L83 65 M99 65 L110 65" stroke="#17202d" stroke-width="4" stroke-linecap="round"/>
+    <path d="M83 80 Q92 85 101 80" fill="none" stroke="#6c382b" stroke-width="2"/>
+    <path d="M45 94 L29 116 L49 128 L61 105 M130 94 L151 116 L132 129 L117 105" fill="#e3bf69" opacity=".9"/>
+    <path d="M42 148 L62 155 M117 155 L139 148" stroke="#f7dc91" stroke-width="4"/>
+   </svg>
+  </div>
  </div>
- <div class="action-panel">
-  <b>SELECT MODE</b>
+
+ <div class="lobby-playbar action-panel">
+  <b style="grid-column:1/-1">SELECT GAME MODE</b>
   <div class="mode-row">
    <button class="mode-card selected" id="soloBtn" onclick="setMode('SOLO')">1<br>SOLO</button>
    <button class="mode-card" id="duoBtn" onclick="setMode('DUO')">2<br>DUO</button>
    <button class="mode-card" id="squadBtn" onclick="setMode('SQUAD')">4<br>SQUAD</button>
   </div>
-  <button class="full" onclick="startMatch()">START MATCH ▶</button>
-  <button class="full green" onclick="findMatch()">⚡ RANDOM MATCHMAKING</button>
-  <button class="full darkbtn" onclick="go('room')">CREATE / JOIN ROOM</button>
+  <button class="start-match" onclick="startMatch()">▶ PLAY</button>
+  <button class="green quick-match" onclick="findMatch()">⚡ RANDOM MATCH</button>
+  <button class="full darkbtn" style="grid-column:1/-1" onclick="go('room')">CREATE / JOIN ROOM</button>
  </div>
+ <p id="lobbyNotice" class="lobby-notice"></p>
+
  <div class="shortcuts">
   <button onclick="go('profile')">👤<br>PROFILE</button>
   <button onclick="go('character')">🧍<br>CHARACTER</button>
@@ -380,6 +458,11 @@ function message(id,text){
  if(el)el.textContent=text;
 }
 
+function showLobbyNotice(feature){
+ const el=document.getElementById("lobbyNotice");
+ if(el)el.textContent=feature+" — COMING SOON";
+}
+
 function go(page){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  const target=document.getElementById(page);
@@ -413,7 +496,8 @@ function chooseCharacter(name,emoji){
  selectedCharacter=name;
  document.getElementById("characterName").textContent=name;
  document.getElementById("characterPreview").textContent=emoji;
- document.getElementById("lobbyCharacter").textContent=emoji;
+ document.getElementById("lobbyCharacter").innerHTML=
+  '<div style="font-size:110px;line-height:1">'+emoji+'</div>';
 }
 
 /* GUEST LOGIN */
@@ -522,7 +606,7 @@ function updateProfileUI(){
  document.getElementById("profileCoins").textContent=currentProfile.coins||0;
  document.getElementById("profileDiamonds").textContent=currentProfile.diamonds||0;
  document.getElementById("profileRankPoints").textContent=currentProfile.rank_points||0;
- document.getElementById("lobbyCoins").textContent="BD COINS: "+(currentProfile.coins||0);
+ document.getElementById("lobbyCoins").textContent=(currentProfile.coins||0);
 }
 
 /* LOGOUT */
@@ -691,9 +775,7 @@ async function loadLeaderboard(){
    return;
   }
 
-  const myIndex=rows.findIndex(row=>
-   row.user_id===currentUser.$id
-  );
+  const myIndex=rows.findIndex(row=>row.user_id===currentUser.$id);
 
   if(myIndex>=0){
    message("myRankText","Your Rank: #"+(myIndex+1));
