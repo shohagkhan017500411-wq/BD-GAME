@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -96,13 +95,13 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 <section id="lobby" class="page">
  <div class="panel">
   <b>★ ROOKIE</b>
-  <span style="float:right">BD COINS: 0</span>
+  <span id="lobbyCoins" style="float:right">BD COINS: 0</span>
  </div>
  <div class="hero">
   <div class="hero-copy">
    <small>WELCOME TO</small>
    <h1>BD ARENA</h1>
-   <p>LAST PLAYER STANDING</p>
+   <p>ISLAND ADVENTURE</p>
   </div>
   <div class="character" id="lobbyCharacter">🧍</div>
  </div>
@@ -140,8 +139,8 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  </div>
  <div class="grid">
   <button onclick="chooseCharacter('BD Elite Survivor','🧍')">BD ELITE</button>
-  <button onclick="chooseCharacter('Shadow Hunter','🥷')">SHADOW</button>
-  <button onclick="chooseCharacter('Desert Warrior','🧔')">DESERT</button>
+  <button onclick="chooseCharacter('Shadow Explorer','🥷')">SHADOW</button>
+  <button onclick="chooseCharacter('Desert Explorer','🧔')">DESERT</button>
   <button onclick="chooseCharacter('Jungle Ranger','🧑‍🚀')">RANGER</button>
  </div>
  <div class="grid">
@@ -155,7 +154,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 
 <section id="maps" class="page">
  <h2 class="title">SELECT MAP</h2>
- <div class="map-card selected-map" onclick="selectMap('BD ISLAND',this)">🏝️ <b>BD ISLAND</b><p class="muted">Main Battle Island</p></div>
+ <div class="map-card selected-map" onclick="selectMap('BD ISLAND',this)">🏝️ <b>BD ISLAND</b><p class="muted">Main Adventure Island</p></div>
  <div class="map-card" onclick="selectMap('GREEN VALLEY',this)">🌲 <b>GREEN VALLEY</b><p class="muted">Coming Soon</p></div>
  <div class="map-card" onclick="selectMap('DESERT ZONE',this)">🏜️ <b>DESERT ZONE</b><p class="muted">Coming Soon</p></div>
  <p id="mapMessage" class="muted">Selected: BD ISLAND</p>
@@ -228,7 +227,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
    <button class="control" data-key="ArrowDown">↓</button>
    <button class="control" data-key="ArrowRight">→</button>
   </div>
-  <p class="muted">Practice prototype: Move and collect stars.</p>
+  <p class="muted">Practice: Move and collect stars.</p>
   <button class="full darkbtn" onclick="finishPractice()">FINISH PRACTICE</button>
  </div>
 </section>
@@ -237,10 +236,10 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
  <h2 class="title">MATCH RESULT</h2>
  <div class="panel center">
   <div style="font-size:80px">🏆</div>
-  <h1 id="resultTitle">MATCH COMPLETE</h1>
+  <h1 id="resultTitle">PRACTICE COMPLETE</h1>
   <p id="resultRank">Practice Result</p>
   <p>Score: <b id="resultScore">0</b></p>
-  <p class="muted">এটি Practice-এর ফলাফল; অনলাইন Battle Royale-এর Winner নয়।</p>
+  <p class="muted">এটি Practice-এর ফলাফল।</p>
   <button class="full" onclick="go('lobby')">BACK TO LOBBY</button>
  </div>
 </section>
@@ -248,10 +247,17 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 <section id="profile" class="page">
  <h2 class="title">PLAYER PROFILE</h2>
  <div class="panel center">
-  <div style="font-size:70px">👤</div>
+  <div id="profileAvatar" style="font-size:70px">👤</div>
   <h3 id="profileName">Guest Player</h3>
   <p id="profileEmail" class="muted"></p>
   <p id="profileId" class="muted"></p>
+  <div class="grid">
+   <div class="tile">LEVEL<br><b id="profileLevel">1</b></div>
+   <div class="tile">XP<br><b id="profileXP">0</b></div>
+   <div class="tile">COINS<br><b id="profileCoins">0</b></div>
+   <div class="tile">DIAMONDS<br><b id="profileDiamonds">0</b></div>
+  </div>
+  <p id="profileSaveMessage" class="muted">Cloud profile loading...</p>
  </div>
 </section>
 
@@ -326,6 +332,18 @@ let stars=[];
 let apiBusy=false;
 let selectedCharacter="BD ELITE SURVIVOR";
 
+let playerProfile={
+ level:1,
+ xp:0,
+ coins:0,
+ diamonds:0,
+ avatar_id:"🧍"
+};
+
+const PROFILE_DATABASE_ID="6af4e97b0018132a174c";
+const PROFILE_TABLE_ID="players";
+const tablesDB=new Appwrite.TablesDB(client);
+
 const pages=document.querySelectorAll(".page");
 
 function go(id){
@@ -338,6 +356,7 @@ function go(id){
  document.getElementById("bottomNav").style.display=
  ["splash","login","register","airlobby","jump"].includes(id)?"none":"flex";
 }
+
 function message(id,text){
  const el=document.getElementById(id);
  if(el)el.textContent=text;
@@ -348,55 +367,215 @@ async function registerPlayer(){
  const name=document.getElementById("regName").value.trim();
  const email=document.getElementById("regEmail").value.trim();
  const password=document.getElementById("regPassword").value;
+
  if(!name||!email||password.length<8){
   message("regMessage","নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।");
   return;
  }
+
  try{
   await account.create(Appwrite.ID.unique(),email,password,name);
   message("regMessage","Account created. এখন Login করুন।");
   go("login");
- }catch(e){message("regMessage",e.message||"Registration failed")}
+ }catch(e){
+  message("regMessage",e.message||"Registration failed");
+ }
 }
+
 async function loginPlayer(){
  const email=document.getElementById("loginEmail").value.trim();
  const password=document.getElementById("loginPassword").value;
- if(!email||!password){message("loginMessage","Gmail ও Password দিন।");return}
+
+ if(!email||!password){
+  message("loginMessage","Gmail ও Password দিন।");
+  return;
+ }
+
  try{
   await account.createEmailPasswordSession(email,password);
   currentUser=await account.get();
-  afterLogin();
- }catch(e){message("loginMessage",e.message||"Login failed")}
+  await afterLogin();
+ }catch(e){
+  message("loginMessage",e.message||"Login failed");
+ }
 }
+
 async function guestLogin(){
  try{
   await account.createAnonymousSession();
   currentUser=await account.get();
-  afterLogin();
- }catch(e){alert("Guest login failed: "+(e.message||""))}
+  await afterLogin();
+ }catch(e){
+  alert("Guest login failed: "+(e.message||""));
+ }
 }
-function afterLogin(){
+
+async function afterLogin(){
  const name=currentUser.name||"Guest Player";
+
  document.getElementById("playerName").textContent=name;
  document.getElementById("profileName").textContent=name;
  document.getElementById("profileEmail").textContent=currentUser.email||"Guest Account";
  document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
+
  go("lobby");
+ await loadPlayerProfile();
 }
+
 async function logoutPlayer(){
  stopRoomRefresh();
  stopMatchmakingPolling();
- try{await account.deleteSession("current")}catch(e){}
+
+ try{
+  await account.deleteSession("current");
+ }catch(e){}
+
  currentUser=null;
  currentRoom=null;
  go("splash");
+}
+
+/* PLAYER PROFILE CLOUD SAVE */
+function renderPlayerProfile(){
+ const p=playerProfile;
+
+ const put=(id,value)=>{
+  const el=document.getElementById(id);
+  if(el)el.textContent=value;
+ };
+
+ put("profileLevel",p.level);
+ put("profileXP",p.xp);
+ put("profileCoins",p.coins);
+ put("profileDiamonds",p.diamonds);
+ put("profileAvatar",p.avatar_id||"👤");
+ put("lobbyCoins","BD COINS: "+p.coins);
+ put("profileName",currentUser?.name||"Guest Player");
+}
+
+async function loadPlayerProfile(){
+ if(!currentUser)return;
+
+ message("profileSaveMessage","Cloud profile loading...");
+
+ try{
+  const result=await tablesDB.listRows({
+   databaseId:PROFILE_DATABASE_ID,
+   tableId:PROFILE_TABLE_ID,
+   queries:[
+    Appwrite.Query.equal("auth_user_id",currentUser.$id),
+    Appwrite.Query.limit(1)
+   ]
+  });
+
+  if(result.rows&&result.rows.length){
+   const row=result.rows[0];
+
+   playerProfile={
+    level:Number(row.level)||1,
+    xp:Number(row.xp)||0,
+    coins:Number(row.coins)||0,
+    diamonds:Number(row.diamonds)||0,
+    avatar_id:row.avatar_id||"🧍"
+   };
+  }else{
+   playerProfile={
+    level:1,
+    xp:0,
+    coins:0,
+    diamonds:0,
+    avatar_id:"🧍"
+   };
+
+   await savePlayerProfile();
+  }
+
+  renderPlayerProfile();
+  message("profileSaveMessage","Cloud profile loaded successfully.");
+
+ }catch(e){
+  renderPlayerProfile();
+  message("profileSaveMessage","Cloud profile load failed: "+(e.message||e));
+ }
+}
+
+async function savePlayerProfile(){
+ if(!currentUser)return;
+
+ renderPlayerProfile();
+
+ try{
+  const found=await tablesDB.listRows({
+   databaseId:PROFILE_DATABASE_ID,
+   tableId:PROFILE_TABLE_ID,
+   queries:[
+    Appwrite.Query.equal("auth_user_id",currentUser.$id),
+    Appwrite.Query.limit(1)
+   ]
+  });
+
+  const rowData={
+   auth_user_id:currentUser.$id,
+   display_name:currentUser.name||"Guest Player",
+   avatar_id:playerProfile.avatar_id||"🧍",
+   level:Math.max(1,Number(playerProfile.level)||1),
+   xp:Math.max(0,Number(playerProfile.xp)||0),
+   coins:Math.max(0,Number(playerProfile.coins)||0),
+   diamonds:Math.max(0,Number(playerProfile.diamonds)||0),
+   status:"active"
+  };
+
+  if(found.rows&&found.rows.length){
+   await tablesDB.updateRow({
+    databaseId:PROFILE_DATABASE_ID,
+    tableId:PROFILE_TABLE_ID,
+    rowId:found.rows[0].$id,
+    data:rowData
+   });
+  }else{
+   await tablesDB.createRow({
+    databaseId:PROFILE_DATABASE_ID,
+    tableId:PROFILE_TABLE_ID,
+    rowId:Appwrite.ID.unique(),
+    data:rowData,
+    permissions:[
+     Appwrite.Permission.read(Appwrite.Role.user(currentUser.$id)),
+     Appwrite.Permission.update(Appwrite.Role.user(currentUser.$id))
+    ]
+   });
+  }
+
+  renderPlayerProfile();
+  message("profileSaveMessage","Cloud profile saved.");
+  return true;
+
+ }catch(e){
+  message("profileSaveMessage","Cloud save failed: "+(e.message||e));
+  return false;
+ }
+}
+
+async function addPracticeRewards(points){
+ const gained=Math.max(0,Number(points)||0);
+
+ playerProfile.xp+=gained;
+ playerProfile.coins+=gained*2;
+
+ while(playerProfile.xp>=100){
+  playerProfile.xp-=100;
+  playerProfile.level++;
+ }
+
+ await savePlayerProfile();
 }
 
 /* APPWRITE API */
 async function gameApi(path,method="POST",payload={}){
  if(!currentUser)throw new Error("আগে Player Login করুন।");
  if(apiBusy)throw new Error("একটি অনুরোধ চলছে, একটু অপেক্ষা করুন।");
+
  apiBusy=true;
+
  try{
   const execution=await functions.createExecution({
    functionId:GAME_FUNCTION_ID,
@@ -406,33 +585,58 @@ async function gameApi(path,method="POST",payload={}){
    headers:{"content-type":"application/json"},
    body:method==="GET"?"":JSON.stringify(payload)
   });
+
   let result={};
-  try{result=JSON.parse(execution.responseBody||"{}")}
-  catch(e){result={message:execution.responseBody||"Invalid server response"}}
+
+  try{
+   result=JSON.parse(execution.responseBody||"{}");
+  }catch(e){
+   result={message:execution.responseBody||"Invalid server response"};
+  }
+
   if(execution.responseStatusCode<200||execution.responseStatusCode>=300)
    throw new Error(result.message||result.error||"Server error "+execution.responseStatusCode);
+
   if(result.ok===false)throw new Error(result.message||"Request failed");
+
   return result;
- }finally{apiBusy=false}
+
+ }finally{
+  apiBusy=false;
+ }
 }
 
 /* MODE / MAP / CHARACTER */
 function setMode(mode){
  selectedMode=mode;
- ["soloBtn","duoBtn","squadBtn"].forEach(id=>document.getElementById(id).className="mode-card");
+
+ ["soloBtn","duoBtn","squadBtn"].forEach(id=>{
+  document.getElementById(id).className="mode-card";
+ });
+
  document.getElementById(mode.toLowerCase()+"Btn").className="mode-card selected";
 }
+
 function selectMap(name,element){
  selectedMap=name;
- document.querySelectorAll(".map-card").forEach(el=>el.classList.remove("selected-map"));
+
+ document.querySelectorAll(".map-card").forEach(el=>{
+  el.classList.remove("selected-map");
+ });
+
  element.classList.add("selected-map");
  message("mapMessage","Selected: "+name);
 }
-function chooseCharacter(name,emoji){
+
+async function chooseCharacter(name,emoji){
  selectedCharacter=name;
+ playerProfile.avatar_id=emoji;
+
  document.getElementById("characterName").textContent=name;
  document.getElementById("characterPreview").textContent=emoji;
  document.getElementById("lobbyCharacter").textContent=emoji;
+
+ await savePlayerProfile();
 }
 
 /* CUSTOM ROOM */
@@ -443,36 +647,60 @@ async function createRoom(){
   showRoom(result);
   startRoomRefresh();
   message("roomMessage","Room তৈরি হয়েছে। বন্ধুদের Room Code দাও।");
- }catch(e){message("roomMessage","Room create failed: "+e.message)}
+ }catch(e){
+  message("roomMessage","Room create failed: "+e.message);
+ }
 }
+
 async function joinRoom(){
  const code=document.getElementById("roomCode").value.trim();
- if(!code){message("roomMessage","Room Code লিখুন।");return}
+
+ if(!code){
+  message("roomMessage","Room Code লিখুন।");
+  return;
+ }
+
  try{
   const result=await gameApi("/rooms/join","POST",{room_code:code});
   currentRoom=result.room||result;
   showRoom(result);
   startRoomRefresh();
   message("roomMessage","Room-এ Join হয়েছে।");
- }catch(e){message("roomMessage","Join failed: "+e.message)}
+ }catch(e){
+  message("roomMessage","Join failed: "+e.message);
+ }
 }
+
 function showRoom(result){
  const room=result.room||result;
  const code=room.room_code||room.code||"Not available";
+
  document.getElementById("roomCode").value=code;
  message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode||selectedMode)+" | Maximum: 50 Players");
 }
+
 async function loadRoomPlayers(){
- if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
+ if(!currentRoom){
+  message("roomMessage","আগে Room তৈরি বা Join করুন।");
+  return;
+ }
+
  try{
   const roomId=currentRoom.$id||currentRoom.id||currentRoom.room_id;
+
   if(!roomId)throw new Error("Room ID পাওয়া যায়নি।");
+
   const result=await gameApi("/rooms/players?room_id="+encodeURIComponent(roomId),"GET");
   const list=result.players||[];
+
   document.getElementById("roomPlayers").textContent=
    list.length?"Players ("+list.length+"/50): "+list.map(p=>p.display_name||p.name||"Player").join(", "):"এখনো Player list পাওয়া যায়নি।";
- }catch(e){message("roomMessage","Players পাওয়া যায়নি: "+e.message)}
+
+ }catch(e){
+  message("roomMessage","Players পাওয়া যায়নি: "+e.message);
+ }
 }
+
 function leaveRoom(){
  currentRoom=null;
  stopRoomRefresh();
@@ -480,18 +708,29 @@ function leaveRoom(){
  message("roomPlayers","");
  message("roomMessage","Room view বন্ধ করা হয়েছে। Server leave API এখনো যুক্ত নয়।");
 }
+
 async function startOnlineMatch(){
- if(!currentRoom){message("roomMessage","আগে Room তৈরি বা Join করুন।");return}
+ if(!currentRoom){
+  message("roomMessage","আগে Room তৈরি বা Join করুন।");
+  return;
+ }
+
  try{
   await gameApi("/rooms/start","POST",{});
   message("roomMessage","Server-এ Room start request পাঠানো হয়েছে।");
   startMatch();
- }catch(e){message("roomMessage","Start failed: "+e.message)}
+ }catch(e){
+  message("roomMessage","Start failed: "+e.message);
+ }
 }
+
 function startRoomRefresh(){
  stopRoomRefresh();
- roomRefreshTimer=setInterval(()=>{if(currentRoom&&!apiBusy)loadRoomPlayers()},10000);
+ roomRefreshTimer=setInterval(()=>{
+  if(currentRoom&&!apiBusy)loadRoomPlayers();
+ },10000);
 }
+
 function stopRoomRefresh(){
  if(roomRefreshTimer)clearInterval(roomRefreshTimer);
  roomRefreshTimer=null;
@@ -500,10 +739,20 @@ function stopRoomRefresh(){
 /* FRIEND INVITE */
 async function inviteFriend(){
  const friendId=document.getElementById("invitePlayerId").value.trim();
- if(!friendId){message("inviteMessage","Friend Player ID লিখুন।");return}
+
+ if(!friendId){
+  message("inviteMessage","Friend Player ID লিখুন।");
+  return;
+ }
+
  try{
-  const result=await gameApi("/invites/send","POST",{receiver_user_id:friendId,mode:selectedMode});
-  message("inviteMessage",result.message||"Invite request পাঠানো হয়েছে।");
+  const result=await gameApi("/invites/send","POST",{
+   receiver_user_id:friendId,
+   mode:selectedMode
+  });
+
+  message("inviteMessage",result.message||"Invite request পাঠানো হয়েছে.");
+
  }catch(e){
   message("inviteMessage","Invite API সংযোগ হয়নি: "+e.message);
  }
@@ -512,50 +761,78 @@ async function inviteFriend(){
 /* MATCHMAKING */
 async function findMatch(){
  if(matchmakingBusy)return;
+
  matchmakingBusy=true;
  go("room");
  message("matchmakingInfo","Matchmaking request পাঠানো হচ্ছে...");
+
  try{
   const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
   message("matchmakingInfo",result.message||"Searching for players...");
   startMatchmakingPolling();
+
  }catch(e){
   matchmakingBusy=false;
   message("matchmakingInfo","Matchmaking failed: "+e.message);
  }
 }
+
 function startMatchmakingPolling(){
  stopMatchmakingPolling();
  matchmakingTimer=setInterval(checkMatchmakingStatus,3000);
  checkMatchmakingStatus();
 }
+
 async function checkMatchmakingStatus(){
  if(!matchmakingBusy||apiBusy)return;
+
  try{
   const result=await gameApi("/matchmaking/status","GET");
   const state=String(result.status||result.state||"").toLowerCase();
   const room=result.room||result.match||null;
+
   if(result.matched===true||state==="matched"||state==="complete"||room){
    stopMatchmakingPolling();
    matchmakingBusy=false;
-   if(room){currentRoom=room;showRoom({room});startRoomRefresh()}
+
+   if(room){
+    currentRoom=room;
+    showRoom({room});
+    startRoomRefresh();
+   }
+
    message("matchmakingInfo","Match পাওয়া গেছে! Room প্রস্তুত।");
+
    if(currentRoom)loadRoomPlayers();
    return;
   }
+
   message("matchmakingInfo",result.message||"Match-এর জন্য অপেক্ষা চলছে...");
- }catch(e){message("matchmakingInfo","Status check: "+e.message)}
+
+ }catch(e){
+  message("matchmakingInfo","Status check: "+e.message);
+ }
 }
+
 async function cancelMatchmaking(){
  stopMatchmakingPolling();
+
  const wasSearching=matchmakingBusy;
  matchmakingBusy=false;
- if(!wasSearching){message("matchmakingInfo","কোনো Match search চলছে না।");return}
+
+ if(!wasSearching){
+  message("matchmakingInfo","কোনো Match search চলছে না।");
+  return;
+ }
+
  try{
   await gameApi("/matchmaking/cancel","POST",{});
-  message("matchmakingInfo","Matchmaking বাতিল হয়েছে।");
- }catch(e){message("matchmakingInfo","Search বন্ধ করা হয়েছে। Server response: "+e.message)}
+  message("matchmakingInfo","Matchmaking বাতিল হয়েছে.");
+ }catch(e){
+  message("matchmakingInfo","Search বন্ধ করা হয়েছে। Server response: "+e.message);
+ }
 }
+
 function stopMatchmakingPolling(){
  if(matchmakingTimer)clearInterval(matchmakingTimer);
  matchmakingTimer=null;
@@ -565,11 +842,15 @@ function stopMatchmakingPolling(){
 function startMatch(){
  go("airlobby");
  countdown=30;
+
  document.getElementById("jumpBtn").disabled=true;
  message("countdownText","Match starting in 30 seconds");
+
  aircraftTimer=setInterval(()=>{
   countdown--;
+
   message("countdownText",countdown>0?"Match starting in "+countdown+" seconds":"Aircraft is ready. Jump!");
+
   if(countdown<=0){
    clearInterval(aircraftTimer);
    aircraftTimer=null;
@@ -577,16 +858,21 @@ function startMatch(){
   }
  },1000);
 }
+
 function cancelAircraft(){
  if(aircraftTimer)clearInterval(aircraftTimer);
  aircraftTimer=null;
  go("lobby");
 }
+
 function jumpFromPlane(){
  if(countdown>0)return;
+
  if(aircraftTimer)clearInterval(aircraftTimer);
  aircraftTimer=null;
+
  go("jump");
+
  landingTimer=setTimeout(()=>{
   landingTimer=null;
   go("match");
@@ -597,80 +883,144 @@ function jumpFromPlane(){
 /* LOCAL PRACTICE PROTOTYPE */
 const arena=document.getElementById("arena");
 const ctx=arena.getContext("2d");
+
 function createStars(){
  stars=[];
- for(let i=0;i<12;i++)stars.push({x:30+Math.random()*840,y:30+Math.random()*440});
+
+ for(let i=0;i<12;i++){
+  stars.push({
+   x:30+Math.random()*840,
+   y:30+Math.random()*440
+  });
+ }
 }
+
 function restartMatch(){
  stopGame();
+
  player={x:450,y:250,speed:5};
  score=0;
  timeLeft=90;
+
  createStars();
+
  message("score",score);
  message("timeLeft",timeLeft);
+
  drawGame();
+
  gameLoop=setInterval(updateGame,30);
+
  gameClock=setInterval(()=>{
   timeLeft--;
   message("timeLeft",timeLeft);
+
   if(timeLeft<=0)finishPractice();
  },1000);
 }
+
 function stopGame(){
  if(gameLoop)clearInterval(gameLoop);
  if(gameClock)clearInterval(gameClock);
+
  gameLoop=null;
  gameClock=null;
 }
-function finishPractice(){
+
+async function finishPractice(){
  stopGame();
+
+ await addPracticeRewards(score);
+
  message("resultScore",score);
  message("resultRank",score>=10?"Practice Rank: Skilled":"Practice Rank: Rookie");
+
  go("result");
 }
+
 function updateGame(){
  if(keys.ArrowLeft||keys.a)player.x-=player.speed;
  if(keys.ArrowRight||keys.d)player.x+=player.speed;
  if(keys.ArrowUp||keys.w)player.y-=player.speed;
  if(keys.ArrowDown||keys.s)player.y+=player.speed;
+
  player.x=Math.max(15,Math.min(885,player.x));
  player.y=Math.max(15,Math.min(485,player.y));
+
  stars=stars.filter(s=>{
-  if(Math.hypot(player.x-s.x,player.y-s.y)<25){score++;message("score",score);return false}
+  if(Math.hypot(player.x-s.x,player.y-s.y)<25){
+   score++;
+   message("score",score);
+   return false;
+  }
   return true;
  });
+
  if(stars.length<5)createStars();
+
  drawGame();
 }
+
 function drawGame(){
  ctx.clearRect(0,0,900,500);
- ctx.fillStyle="#327c55";ctx.fillRect(0,0,900,500);
+ ctx.fillStyle="#327c55";
+ ctx.fillRect(0,0,900,500);
+
  ctx.fillStyle="#4c9a68";
+
  for(let i=0;i<18;i++){
-  ctx.beginPath();ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();
+  ctx.arc((i*137)%900,(i*83)%500,35,0,Math.PI*2);
+  ctx.fill();
  }
+
  ctx.fillStyle="#e5bd45";
- stars.forEach(s=>{ctx.beginPath();ctx.arc(s.x,s.y,9,0,Math.PI*2);ctx.fill()});
- ctx.fillStyle="white";ctx.beginPath();ctx.arc(player.x,player.y,20,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#1a2a3d";ctx.beginPath();ctx.arc(player.x,player.y-5,7,0,Math.PI*2);ctx.fill();
+
+ stars.forEach(s=>{
+  ctx.beginPath();
+  ctx.arc(s.x,s.y,9,0,Math.PI*2);
+  ctx.fill();
+ });
+
+ ctx.fillStyle="white";
+ ctx.beginPath();
+ ctx.arc(player.x,player.y,20,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.fillStyle="#1a2a3d";
+ ctx.beginPath();
+ ctx.arc(player.x,player.y-5,7,0,Math.PI*2);
+ ctx.fill();
 }
 
 /* KEYBOARD / TOUCH */
 document.addEventListener("keydown",e=>{
  keys[e.key]=true;
- if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))e.preventDefault();
+
+ if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))
+  e.preventDefault();
 });
+
 document.addEventListener("keyup",e=>keys[e.key]=false);
 window.addEventListener("blur",()=>keys={});
+
 document.querySelectorAll(".control").forEach(btn=>{
  const key=btn.dataset.key;
+
  btn.addEventListener("pointerdown",e=>{
-  e.preventDefault();keys[key]=true;
-  try{btn.setPointerCapture(e.pointerId)}catch(_){}
+  e.preventDefault();
+  keys[key]=true;
+
+  try{
+   btn.setPointerCapture(e.pointerId);
+  }catch(_){}
  });
+
  ["pointerup","pointercancel","lostpointercapture"].forEach(event=>{
-  btn.addEventListener(event,e=>{e.preventDefault();keys[key]=false});
+  btn.addEventListener(event,e=>{
+   e.preventDefault();
+   keys[key]=false;
+  });
  });
 });
 
@@ -682,18 +1032,24 @@ function saveSettings(){
   controls:document.getElementById("controlStyle").value,
   language:document.getElementById("language").value
  };
+
  try{
   localStorage.setItem("bd_game_settings",JSON.stringify(settings));
   message("settingsMessage","Settings এই ডিভাইসে সেভ হয়েছে।");
- }catch(e){message("settingsMessage","এই ডিভাইসে Settings সেভ করা যায়নি।")}
+ }catch(e){
+  message("settingsMessage","এই ডিভাইসে Settings সেভ করা যায়নি।");
+ }
 }
+
 function loadSettings(){
  try{
   const s=JSON.parse(localStorage.getItem("bd_game_settings")||"{}");
+
   if(s.graphics)document.getElementById("graphics").value=s.graphics;
   if(s.sound)document.getElementById("sound").value=s.sound;
   if(s.controls)document.getElementById("controlStyle").value=s.controls;
   if(s.language)document.getElementById("language").value=s.language;
+
  }catch(e){}
 }
 
@@ -702,17 +1058,22 @@ async function checkConnection(){
  try{
   const result=await gameApi("/health","GET");
   message("connectionInfo","Server response: "+JSON.stringify(result));
- }catch(e){message("connectionInfo","Connection failed: "+e.message)}
+ }catch(e){
+  message("connectionInfo","Connection failed: "+e.message);
+ }
 }
 
 /* RESTORE SESSION */
 loadSettings();
+
 (async function(){
  try{
   currentUser=await account.get();
-  afterLogin();
- }catch(e){go("splash")}
+  await afterLogin();
+ }catch(e){
+  go("splash");
+ }
 })();
 </script>
 </body>
-</html>
+ </html>
