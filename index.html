@@ -170,8 +170,7 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
   <div id="roomInfo" class="status muted">No room selected.</div>
   <button class="full darkbtn" onclick="loadRoomPlayers()">REFRESH PLAYERS</button>
   <div id="roomPlayers" class="muted"></div>
-  <button class="full" onclick="startOnlineMatch()">START ROOM MATCH</button>
-  <button class="full red" onclick="leaveRoom()">LEAVE ROOM</button>
+  <button class="full" onclick="startOnlineMatch()">START ROOM MATCH</button><button class="full red" onclick="leaveRoom()">LEAVE ROOM</button>
   <p id="roomMessage" class="muted"></p>
  </div>
  <div class="panel">
@@ -435,8 +434,7 @@ async function logoutPlayer(){
  go("splash");
 }
 
-/* PLAYER PROFILE CLOUD SAVE */
-function renderPlayerProfile(){
+/* PLAYER PROFILE CLOUD SAVE */function renderPlayerProfile(){
  const p=playerProfile;
 
  const put=(id,value)=>{
@@ -674,9 +672,11 @@ async function joinRoom(){
 function showRoom(result){
  const room=result.room||result;
  const code=room.room_code||room.code||"Not available";
+ const mode=String(room.mode||selectedMode).toUpperCase();
+ const capacity=mode==="SOLO"?1:mode==="DUO"?2:4;
 
  document.getElementById("roomCode").value=code;
- message("roomInfo","Room Code: "+code+" | Mode: "+(room.mode||selectedMode)+" | Maximum: 50 Players");
+ message("roomInfo","Room Code: "+code+" | Mode: "+mode+" | Maximum: "+capacity+" Players");
 }
 
 async function loadRoomPlayers(){
@@ -687,26 +687,43 @@ async function loadRoomPlayers(){
 
  try{
   const roomId=currentRoom.$id||currentRoom.id||currentRoom.room_id;
-
   if(!roomId)throw new Error("Room ID পাওয়া যায়নি।");
 
   const result=await gameApi("/rooms/players?room_id="+encodeURIComponent(roomId),"GET");
   const list=result.players||[];
+  const mode=String(currentRoom.mode||selectedMode).toUpperCase();
+  const capacity=mode==="SOLO"?1:mode==="DUO"?2:4;
 
   document.getElementById("roomPlayers").textContent=
-   list.length?"Players ("+list.length+"/50): "+list.map(p=>p.display_name||p.name||"Player").join(", "):"এখনো Player list পাওয়া যায়নি।";
+   "Players ("+list.length+"/"+capacity+"): "+
+   list.map(p=>p.display_name||p.name||"Player").join(", ");
 
  }catch(e){
   message("roomMessage","Players পাওয়া যায়নি: "+e.message);
  }
 }
 
-function leaveRoom(){
- currentRoom=null;
- stopRoomRefresh();
- message("roomInfo","No room selected.");
- message("roomPlayers","");
- message("roomMessage","Room view বন্ধ করা হয়েছে। Server leave API এখনো যুক্ত নয়।");
+async function leaveRoom(){
+ if(!currentRoom){
+  message("roomMessage","আপনি কোনো Room-এ নেই।");
+  return;
+ }
+
+ try{
+  const roomId=currentRoom.$id||currentRoom.id||currentRoom.room_id;
+  if(!roomId)throw new Error("Room ID পাওয়া যায়নি।");
+
+  await gameApi("/rooms/leave","POST",{room_id:roomId});
+
+  currentRoom=null;
+  stopRoomRefresh();
+  message("roomInfo","No room selected.");
+  message("roomPlayers","");
+  message("roomMessage","Room থেকে বের হয়েছেন।");
+
+ }catch(e){
+  message("roomMessage","Room থেকে বের হওয়া যায়নি: "+e.message);
+ }
 }
 
 async function startOnlineMatch(){
@@ -767,8 +784,7 @@ async function findMatch(){
  message("matchmakingInfo","Matchmaking request পাঠানো হচ্ছে...");
 
  try{
-  const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});
-  message("matchmakingInfo",result.message||"Searching for players...");
+  const result=await gameApi("/matchmaking/join","POST",{mode:selectedMode});message("matchmakingInfo",result.message||"Searching for players...");
   startMatchmakingPolling();
 
  }catch(e){
