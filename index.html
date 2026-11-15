@@ -1211,9 +1211,235 @@ async function startApp(){
 }
 
 /* START GAME APP */
-document.addEventListener("DOMContentLoaded",()=>{
- startApp();
+/* =========================
+   PRACTICE ARENA
+========================= */
+
+let practiceTimer = null;
+let practiceRunning = false;
+let practiceDirection = "";
+let practiceScore = 0;
+
+let practicePlayer = { x: 150, y: 150 };
+let practiceStar = { x: 70, y: 70 };
+
+function drawPractice() {
+  const canvas = document.getElementById("arena");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Arena background
+  ctx.fillStyle = "#327c55";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Ground grid
+  ctx.strokeStyle = "#70a77b";
+  ctx.lineWidth = 2;
+
+  for (let x = 0; x < canvas.width; x += 30) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y < canvas.height; y += 30) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+
+  // Star
+  ctx.fillStyle = "#ffd700";
+  ctx.beginPath();
+  ctx.arc(practiceStar.x, practiceStar.y, 10, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Player
+  ctx.fillStyle = "#168cff";
+  ctx.beginPath();
+  ctx.arc(
+    practicePlayer.x,
+    practicePlayer.y,
+    15,
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
+
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+function movePractice() {
+  if (!practiceRunning) return;
+
+  const speed = 5;
+
+  if (practiceDirection === "left") {
+    practicePlayer.x -= speed;
+  }
+
+  if (practiceDirection === "right") {
+    practicePlayer.x += speed;
+  }
+
+  if (practiceDirection === "up") {
+    practicePlayer.y -= speed;
+  }
+
+  if (practiceDirection === "down") {
+    practicePlayer.y += speed;
+  }
+
+  const canvas = document.getElementById("arena");
+  if (!canvas) return;
+
+  practicePlayer.x = Math.max(
+    15,
+    Math.min(canvas.width - 15, practicePlayer.x)
+  );
+
+  practicePlayer.y = Math.max(
+    15,
+    Math.min(canvas.height - 15, practicePlayer.y)
+  );
+
+  const dx = practicePlayer.x - practiceStar.x;
+  const dy = practicePlayer.y - practiceStar.y;
+
+  if (Math.sqrt(dx * dx + dy * dy) < 28) {
+    practiceScore++;
+
+    practiceStar.x = 20 + Math.random() * Math.max(1, canvas.width - 40);
+    practiceStar.y = 20 + Math.random() * Math.max(1, canvas.height - 40);
+
+    showMessage("practiceScore", practiceScore);
+  }
+
+  drawPractice();
+}
+
+function startPractice() {
+  stopPractice();
+
+  practiceRunning = true;
+  practiceScore = 0;
+  practiceDirection = "";
+
+  practicePlayer = { x: 150, y: 150 };
+  practiceStar = { x: 70, y: 70 };
+
+  showMessage("practiceScore", 0);
+  showMessage("resultText", "Practice session started.");
+
+  drawPractice();
+
+  practiceTimer = setInterval(movePractice, 45);
+}
+
+function setPracticeDirection(direction) {
+  if (!practiceRunning) return;
+  practiceDirection = direction;
+}
+
+function stopPractice() {
+  practiceRunning = false;
+  practiceDirection = "";
+
+  if (practiceTimer) {
+    clearInterval(practiceTimer);
+    practiceTimer = null;
+  }
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+function saveSettings() {
+  const sound = document.getElementById("soundSetting");
+  const graphics = document.getElementById("graphicsSetting");
+
+  if (!sound || !graphics) return;
+
+  try {
+    localStorage.setItem("bdGameSound", sound.value);
+    localStorage.setItem("bdGameGraphics", graphics.value);
+
+    showMessage(
+      "settingsMessage",
+      "Settings saved successfully."
+    );
+  } catch (error) {
+    showMessage(
+      "settingsMessage",
+      "Could not save settings."
+    );
+  }
+}
+
+function loadSettings() {
+  try {
+    const sound = localStorage.getItem("bdGameSound");
+    const graphics = localStorage.getItem("bdGameGraphics");
+
+    const soundElement = document.getElementById("soundSetting");
+    const graphicsElement = document.getElementById("graphicsSetting");
+
+    if (sound && soundElement) {
+      soundElement.value = sound;
+    }
+
+    if (graphics && graphicsElement) {
+      graphicsElement.value = graphics;
+    }
+  } catch (error) {
+    console.log("Settings error:", error.message);
+  }
+}
+
+/* =========================
+   AUTOMATIC STARTUP
+========================= */
+
+async function startApp() {
+  loadSettings();
+
+  try {
+    const sessions = await account.listSessions();
+
+    if (sessions.sessions && sessions.sessions.length > 0) {
+      currentUser = await account.get();
+      await afterLogin();
+      return;
+    }
+  } catch (error) {
+    console.log("Session check:", error.message);
+  }
+
+  setTimeout(() => {
+    if (!currentUser) {
+      go("entry");
+
+      setTimeout(() => {
+        if (!currentUser) {
+          go("login");
+        }
+      }, 1800);
+    }
+  }, 1500);
+}
+
+/* =========================
+   START GAME APP
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  startApp();
 });
-</script>
-</body>
-      </html>
