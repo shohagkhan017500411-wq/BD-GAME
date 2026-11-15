@@ -1,0 +1,26 @@
+BD GAME index.html এ ২টি ছোট পরিবর্তন লাগবে।
+
+1) <head> অংশে এই লাইনের ঠিক পরে:
+<meta name="theme-color" content="#080d18">
+
+এই ৪টি লাইন বসান:
+<meta name="description" content="BD GAME — Battle Arena">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon.svg">
+
+2) index.html-এর একেবারে শেষে </body> লাইনের ঠিক আগে বসান:
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(error => console.log("App install support:", error));
+  });
+}
+</script>
+
+নতুন ফাইলগুলো repository-র root-এ রাখতে হবে:
+manifest.json
+icon.svg
+sw.js
+
+নোট: এটি ওয়েব অ্যাপকে installable PWA করে। Android APK/AAB প্যাকেজ তৈরির জন্য এরপর PWABuilder/TWA build ও Android signing প্রয়োজন হবে। Appwrite login/multiplayer-এর জন্য ইন্টারনেট লাগবে; service worker শুধু app shell cache করে।
