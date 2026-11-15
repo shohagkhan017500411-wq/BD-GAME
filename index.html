@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -6,370 +5,391 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#080d18">
 <title>BD GAME</title>
+
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
 
-/* BD GAME COMPLETE LOBBY MENU */
-#lobby .lobby-stage {
-  min-height: 470px;
-  height: auto;
-  position: relative;
-  overflow: hidden;
-  border-radius: 14px;
-  background: linear-gradient(
-    180deg,
-    #092c58,
-    #176b91 42%,
-    #579d83 72%,
-    #173b32
-  );
-}
-
-#lobby .lobby-rail {
-  position: absolute;
-  z-index: 15;
-  top: 62px;
-  left: 7px;
-  bottom: 8px;
-  width: 78px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-}
-
-#lobby .lobby-rail button {
-  min-height: 38px;
-  padding: 4px 2px;
-  border-radius: 7px;
-  background: linear-gradient(135deg,#174d79,#101e32);
-  border: 1px solid #e8bd62;
-  color: #ffe19a;
-  font-size: 8px;
-  font-weight: bold;
-  line-height: 1.15;
-}
-
-#lobby .lobby-rail button span {
-  display: block;
-  font-size: 16px;
-  margin-bottom: 2px;
-}
-
-#lobby .hero-character-wrap {
-  z-index: 5;
-  left: 58%;
-  bottom: 0;
-}
-
-#lobby .lobby-scene-title {
-  left: 88px;
-}
-
-#lobby .shortcuts {
-  display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr));
-  gap: 7px;
-  margin-top: 12px;
-}
-
-#lobby .shortcuts button {
-  min-width: 0;
-  min-height: 55px;
-  padding: 7px 2px;
-  background: linear-gradient(135deg,#173e65,#101e32);
-  color: #ffe19a;
-  border: 1px solid #e8bd62;
-  font-size: 10px;
-}
-
-#lobby .lobby-playbar {
-  position: relative;
-  z-index: 20;
-}<style>/* BD GAME - NEW LOBBY DESIGN FIX */
-#lobby.page.active {
-  display: block !important;
-  background: #080d18;
-  color: #fff;
-  min-height: 100vh;
-  padding: 12px 12px 85px;
-}
-
-#lobby .lobby-stage {
-  display: block !important;
-  position: relative;
-  width: 100%;
-  height: 430px;
-  overflow: hidden;
-  border: 2px solid #e8bd62;
-  border-radius: 15px;
-  background:
-    radial-gradient(ellipse at 50% 70%, #d6ad55 0%, transparent 30%),
-    linear-gradient(180deg, #092b55 0%, #176b91 40%, #55a58c 70%, #153e35 100%);
-}
-
-#lobby .lobby-stage::before {
-  content: "";
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: 0;
-  height: 48%;
-  background: linear-gradient(140deg, #36785a, #102d2c);
-  clip-path: polygon(0 55%, 20% 10%, 40% 45%, 60% 0, 80% 40%, 100% 15%, 100% 100%, 0 100%);
-}
-
-#lobby .lobby-hud {
-  position: absolute;
-  z-index: 10;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  display: flex;
-  justify-content: space-between;
-}
-
-#lobby .hud-chip {
-  background: #101e32;
-  color: #ffe09a;
-  border: 1px solid #e8bd62;
-  border-radius: 8px;
-  padding: 8px;
-  font-weight: bold;
-}
-
-#lobby .lobby-rail {
-  position: absolute;
-  z-index: 12;
-  top: 65px;
-  left: 8px;
-  bottom: 10px;
-  width: 75px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-}
-
-#lobby .lobby-rail button {
-  min-height: 52px;
-  padding: 5px 2px;
-  background: linear-gradient(135deg, #174c78, #101e32);
-  border: 1px solid #f2cb70;
-  color: #ffe6a8;
-  font-size: 9px;
-}
-
-#lobby .lobby-rail button span {
-  display: block;
-  font-size: 20px;
-}
-
-#lobby .lobby-scene-title {
-  position: absolute;
-  z-index: 5;
-  top: 75px;
-  left: 90px;
-  right: 8px;
-  text-align: center;
-}
-
-#lobby .lobby-scene-title strong {
-  color: #ffe09a;
-  font-size: 25px;
-  letter-spacing: 3px;
-  text-shadow: 0 3px 8px #000;
-}
-
-#lobby .lobby-scene-title small {
-  display: block;
-  margin-top: 5px;
-  color: white;
-}
-
-#lobby .hero-character-wrap {
-  position: absolute;
-  z-index: 7;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-25%);
-  width: 180px;
-  height: 245px;
-  display: flex;
-  align-items: end;
-  justify-content: center;
-}
-
-#lobby .hero-character-svg {
-  width: 100%;
-  height: 100%;
-}
-
-#lobby .lobby-playbar {
-  position: relative;
-  z-index: 15;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 9px;
-  margin-top: 12px;
-}
-
-#lobby .lobby-playbar .mode-row {
-  grid-column: 1 / -1;
-}
-
-#lobby .lobby-playbar button {
-  background: linear-gradient(135deg, #f5d77e, #c18b2c);
-  color: #172033;
-  font-weight: 900;
-}
-
-#lobby .lobby-notice {
-  color: #ffe09a;
-  text-align: center;
-}
-
-@media (min-width: 600px) {
-  #lobby .lobby-stage {
-    height: 500px;
-  }
-  #lobby .hero-character-wrap {
-    width: 230px;
-    height: 320px;
-  }
-}
+<style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
+body{
+ margin:0;
+ background:#080d18;
+ color:white;
+ font-family:Arial,sans-serif;
+}
 button,input,select{font:inherit}
-button{border:0;border-radius:8px;padding:12px;background:#e8bd62;color:#151515;font-weight:bold;cursor:pointer}
-input,select{width:100%;padding:13px;margin:7px 0;background:#172438;border:1px solid #45536a;border-radius:8px;color:white}
-header{height:55px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
-.logo{font-size:22px;font-weight:1000;color:#f3c76c;letter-spacing:2px}
-.page{display:none;min-height:calc(100vh - 55px);padding:12px 12px 85px}
+button{
+ border:0;
+ border-radius:8px;
+ padding:12px;
+ background:#e8bd62;
+ color:#151515;
+ font-weight:bold;
+ cursor:pointer;
+}
+input,select{
+ width:100%;
+ padding:13px;
+ margin:7px 0;
+ background:#172438;
+ border:1px solid #45536a;
+ border-radius:8px;
+ color:white;
+}
+header{
+ height:55px;
+ background:#101a2b;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 12px;
+}
+.logo{
+ font-size:22px;
+ font-weight:1000;
+ color:#f3c76c;
+ letter-spacing:2px;
+}
+.page{
+ display:none;
+ min-height:calc(100vh - 55px);
+ padding:12px 12px 85px;
+}
 .page.active{display:block}
-.title{text-align:center;color:#f3c76c;letter-spacing:2px}
-.panel{background:#121e30;border:1px solid #34445a;border-radius:12px;padding:14px;margin:12px 0}
+.title{
+ text-align:center;
+ color:#f3c76c;
+ letter-spacing:2px;
+}
+.panel{
+ background:#121e30;
+ border:1px solid #34445a;
+ border-radius:12px;
+ padding:14px;
+ margin:12px 0;
+}
 .full{width:100%;margin:6px 0}
 .darkbtn{background:#26374d;color:white}
 .green{background:#16845a;color:white}
 .red{background:#a8323e;color:white}
 .muted{color:#9eabc0;font-size:13px}
 .center{text-align:center}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.tile,.slot{background:#17263b;border:1px solid #35465b;border-radius:10px;padding:17px 5px;text-align:center}
-.nav{position:fixed;bottom:0;left:0;right:0;height:62px;background:#101a2b;border-top:1px solid #344158;display:none;justify-content:space-around;align-items:center;z-index:20}
-.nav button{background:transparent;color:white;font-size:12px;padding:7px}
-.status{padding:10px;background:#17263b;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:9px;
+}
+.tile,.slot{
+ background:#17263b;
+ border:1px solid #35465b;
+ border-radius:10px;
+ padding:17px 5px;
+ text-align:center;
+}
+.nav{
+ position:fixed;
+ bottom:0;
+ left:0;
+ right:0;
+ height:62px;
+ background:#101a2b;
+ border-top:1px solid #344158;
+ display:none;
+ justify-content:space-around;
+ align-items:center;
+ z-index:20;
+}
+.nav button{
+ background:transparent;
+ color:white;
+ font-size:12px;
+ padding:7px;
+}
+.status{
+ padding:10px;
+ background:#17263b;
+ border-radius:8px;
+ margin:8px 0;
+ overflow-wrap:anywhere;
+}
 .hide{display:none!important}
 
-/* LOGO AND ENTRY */
+/* ENTRY SCREENS */
 body:has(#splash.active) header,
 body:has(#entry.active) header{display:none}
+
 #splash.active,#entry.active{
- display:flex;min-height:100vh;padding:0;
- align-items:center;justify-content:center;overflow:hidden
+ display:flex;
+ min-height:100vh;
+ padding:0;
+ align-items:center;
+ justify-content:center;
+ overflow:hidden;
 }
-#splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)}
+#splash{
+ background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18);
+}
 .splash-wrap{padding:20px}
 .splash-mark{
- width:145px;height:145px;margin:auto;border:4px solid #ffd36a;
- border-radius:50%;display:grid;place-items:center;
- font-size:65px;font-weight:1000;color:#ffd36a;box-shadow:0 0 35px #bd812b
+ width:145px;
+ height:145px;
+ margin:auto;
+ border:4px solid #ffd36a;
+ border-radius:50%;
+ display:grid;
+ place-items:center;
+ font-size:65px;
+ font-weight:1000;
+ color:#ffd36a;
+ box-shadow:0 0 35px #bd812b;
 }
-.splash-title{color:#ffd36a;letter-spacing:5px;font-size:35px}
+.splash-title{
+ color:#ffd36a;
+ letter-spacing:5px;
+ font-size:35px;
+}
 #entry{
- position:relative;
  background:radial-gradient(ellipse at 50% 75%,#247b70,#173c50 45%,#080d18);
- text-align:center;overflow:hidden
+ text-align:center;
+ overflow:hidden;
 }
 .entry-content{width:100%;padding:20px}
-.entry-title{color:#ffd36a;font-size:38px;letter-spacing:5px;text-shadow:0 0 20px #e8bd62}
+.entry-title{
+ color:#ffd36a;
+ font-size:38px;
+ letter-spacing:5px;
+ text-shadow:0 0 20px #e8bd62;
+}
 .entry-island{font-size:75px;margin-top:30px}
-.entry-character{font-size:125px;margin-top:20px;animation:idle 3s infinite}
+.entry-character{
+ font-size:125px;
+ margin-top:20px;
+ animation:idle 3s infinite;
+}
 .entry-subtitle{letter-spacing:3px}
-@keyframes idle{50%{transform:translateY(-9px)}}
+@keyframes idle{
+ 50%{transform:translateY(-9px)}
+}
 
-/* NEW BD GAME LOBBY DESIGN */
-.lobby-stage{
- position:relative;height:390px;margin:10px -12px 12px;overflow:hidden;
+/* BD GAME LOBBY */
+#lobby.page.active{
+ display:block;
+ background:#080d18;
+ color:#fff;
+ min-height:100vh;
+ padding:12px 12px 85px;
+}
+#lobby .lobby-stage{
+ display:block;
+ position:relative;
+ width:100%;
+ min-height:470px;
+ height:auto;
+ overflow:hidden;
+ border:2px solid #e8bd62;
+ border-radius:15px;
  background:
- radial-gradient(ellipse at 50% 65%,rgba(255,210,112,.30),transparent 38%),
- linear-gradient(180deg,#123c67 0%,#1b6480 38%,#65a58d 68%,#244d45 100%);
- border-top:2px solid #e8bd62;border-bottom:2px solid #e8bd62;
+ radial-gradient(ellipse at 50% 70%,#d6ad55 0%,transparent 30%),
+ linear-gradient(180deg,#092b55 0%,#176b91 40%,#55a58c 70%,#153e35 100%);
 }
-.lobby-stage:before{
- content:"";position:absolute;left:-8%;right:-8%;bottom:0;height:45%;
- background:linear-gradient(150deg,#245d53,#173b3c 70%);
- clip-path:polygon(0 45%,18% 8%,35% 38%,53% 0,72% 40%,88% 12%,100% 45%,100% 100%,0 100%);
+#lobby .lobby-stage:before{
+ content:"";
+ position:absolute;
+ left:-10%;
+ right:-10%;
+ bottom:0;
+ height:48%;
+ background:linear-gradient(140deg,#36785a,#102d2c);
+ clip-path:polygon(0 55%,20% 10%,40% 45%,60% 0,80% 40%,100% 15%,100% 100%,0 100%);
 }
-.lobby-stage:after{
- content:"";position:absolute;left:0;right:0;bottom:0;height:24%;
- background:linear-gradient(180deg,rgba(27,94,65,.15),#102d2b);
-}
-.lobby-hud{
- position:absolute;z-index:5;top:10px;left:10px;right:10px;
- display:flex;justify-content:space-between;align-items:center;gap:6px;
+#lobby .lobby-hud{
+ position:absolute;
+ z-index:10;
+ top:10px;
+ left:10px;
+ right:10px;
+ display:flex;
+ justify-content:space-between;
 }
 .hud-chip{
- background:rgba(5,16,31,.82);border:1px solid #e8bd62;border-radius:7px;
- padding:7px 9px;color:#ffe19a;font-size:11px;font-weight:900;
- box-shadow:0 3px 12px #06101d66;
+ background:#101e32;
+ color:#ffe09a;
+ border:1px solid #e8bd62;
+ border-radius:8px;
+ padding:8px;
+ font-weight:bold;
 }
-.lobby-rail{
- position:absolute;z-index:6;left:8px;top:64px;bottom:12px;width:72px;
- display:flex;flex-direction:column;justify-content:center;gap:7px;
+#lobby .lobby-rail{
+ position:absolute;
+ z-index:15;
+ top:62px;
+ left:7px;
+ bottom:8px;
+ width:78px;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ gap:5px;
 }
-.lobby-rail button{
- min-height:52px;padding:5px 2px;background:linear-gradient(135deg,#153b66,#10233b);
- border:1px solid #e8bd62;color:#ffe19a;font-size:9px;line-height:1.25;
- box-shadow:0 3px 10px #06101d88;
+#lobby .lobby-rail button{
+ min-height:38px;
+ padding:4px 2px;
+ border-radius:7px;
+ background:linear-gradient(135deg,#174d79,#101e32);
+ border:1px solid #e8bd62;
+ color:#ffe19a;
+ font-size:8px;
+ font-weight:bold;
+ line-height:1.15;
 }
-.lobby-rail button span{display:block;font-size:20px;margin-bottom:3px}
-.lobby-scene-title{
- position:absolute;z-index:3;top:72px;left:90px;right:8px;text-align:center;
- text-shadow:0 3px 5px #071321;
+#lobby .lobby-rail button span{
+ display:block;
+ font-size:16px;
+ margin-bottom:2px;
 }
-.lobby-scene-title strong{font-size:24px;letter-spacing:3px;color:#ffe09a}
-.lobby-scene-title small{display:block;color:#fff;letter-spacing:2px;margin-top:4px}
-.hero-character-wrap{
- position:absolute;z-index:4;bottom:3px;left:50%;transform:translateX(-35%);
- width:175px;height:245px;display:flex;align-items:flex-end;justify-content:center;
- filter:drop-shadow(0 10px 9px #07132199);
+#lobby .lobby-scene-title{
+ position:absolute;
+ z-index:5;
+ top:75px;
+ left:88px;
+ right:8px;
+ text-align:center;
 }
-.hero-character-svg{width:100%;height:100%;overflow:visible}
-.lobby-playbar{
- position:relative;z-index:8;display:grid;grid-template-columns:1fr 1fr;gap:8px;
+#lobby .lobby-scene-title strong{
+ color:#ffe09a;
+ font-size:25px;
+ letter-spacing:3px;
+ text-shadow:0 3px 8px #000;
 }
-.lobby-playbar .mode-row{grid-column:1/-1}
-.lobby-playbar .start-match{font-size:16px;letter-spacing:1px;min-height:50px}
-.lobby-playbar .quick-match{min-height:50px}
-.lobby-notice{min-height:18px;text-align:center;color:#f5d58c;font-size:12px;margin:5px 0}
-.mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.mode-card{background:#1c2b3b;color:white;border:1px solid #435365}
-.mode-card.selected{background:#e0b65d;color:#111}
-.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
-.shortcuts button{background:#142235;color:#f1cb74;padding:11px 2px}
-.map-card{padding:16px;background:#1c3040;border:1px solid #536477;border-radius:10px;margin:8px 0}
+#lobby .lobby-scene-title small{
+ display:block;
+ margin-top:5px;
+ color:white;
+}
+#lobby .hero-character-wrap{
+ position:absolute;
+ z-index:7;
+ left:58%;
+ bottom:0;
+ transform:translateX(-25%);
+ width:180px;
+ height:245px;
+ display:flex;
+ align-items:end;
+ justify-content:center;
+}
+#lobby .hero-character-svg{
+ width:100%;
+ height:100%;
+}
+#lobby .lobby-playbar{
+ position:relative;
+ z-index:20;
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+ margin-top:12px;
+}
+#lobby .lobby-playbar .mode-row{
+ grid-column:1/-1;
+}
+#lobby .lobby-playbar button{
+ background:linear-gradient(135deg,#f5d77e,#c18b2c);
+ color:#172033;
+ font-weight:900;
+}
+#lobby .lobby-notice{
+ color:#ffe09a;
+ text-align:center;
+}
+.mode-row{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+}
+.mode-card{
+ background:#1c2b3b!important;
+ color:white!important;
+ border:1px solid #435365;
+}
+.mode-card.selected{
+ background:#e0b65d!important;
+ color:#111!important;
+}
+.shortcuts{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:7px;
+ margin-top:12px;
+}
+.shortcuts button{
+ min-width:0;
+ min-height:55px;
+ padding:7px 2px;
+ background:linear-gradient(135deg,#173e65,#101e32);
+ color:#ffe19a;
+ border:1px solid #e8bd62;
+ font-size:10px;
+}
+.map-card{
+ padding:16px;
+ background:#1c3040;
+ border:1px solid #536477;
+ border-radius:10px;
+ margin:8px 0;
+}
 .selected-map{border:2px solid #e8bd62}
-#arena{width:100%;background:#327c55;border-radius:10px;touch-action:none}
-.controls{display:flex;justify-content:center;gap:7px;margin:12px}
-.control{width:58px;height:52px;background:#263952;color:white;font-size:22px;touch-action:none}
-.rank-row{display:flex;align-items:center;gap:10px;background:#17263b;border:1px solid #35465b;border-radius:9px;padding:12px;margin:7px 0}
-.rank-number{width:35px;height:35px;display:grid;place-items:center;background:#26374d;border-radius:8px;color:#f3c76c;font-weight:bold}
+#arena{
+ width:100%;
+ background:#327c55;
+ border-radius:10px;
+ touch-action:none;
+}
+.controls{
+ display:flex;
+ justify-content:center;
+ gap:7px;
+ margin:12px;
+}
+.control{
+ width:58px;
+ height:52px;
+ background:#263952;
+ color:white;
+ font-size:22px;
+ touch-action:none;
+}
+.rank-row{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ background:#17263b;
+ border:1px solid #35465b;
+ border-radius:9px;
+ padding:12px;
+ margin:7px 0;
+}
+.rank-number{
+ width:35px;
+ height:35px;
+ display:grid;
+ place-items:center;
+ background:#26374d;
+ border-radius:8px;
+ color:#f3c76c;
+ font-weight:bold;
+}
 .rank-name{flex:1;overflow-wrap:anywhere}
 .rank-points{color:#f3c76c;font-weight:bold;white-space:nowrap}
 .my-rank{border:1px solid #e8bd62;background:#26364a}
+
 @media(min-width:600px){
- .lobby-stage{height:470px}
- .lobby-rail{width:90px}
- .lobby-rail button{font-size:11px;min-height:60px}
- .lobby-scene-title{left:115px}
- .hero-character-wrap{height:310px;width:220px}
+ #lobby .lobby-stage{height:500px}
+ #lobby .hero-character-wrap{width:230px;height:320px}
 }
 </style>
 </head>
 
 <body>
-
 <header>
  <div class="logo">BD GAME</div>
  <div id="playerName" class="muted">Guest Player</div>
@@ -385,7 +405,7 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- AUTOMATIC ENTRY SCREEN -->
+<!-- ENTRY SCREEN -->
 <section id="entry" class="page center">
  <div class="entry-content">
   <h1 class="entry-title">BD GAME</h1>
@@ -422,7 +442,7 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- NEW MAIN LOBBY -->
+<!-- MAIN LOBBY -->
 <section id="lobby" class="page">
  <div class="lobby-stage">
   <div class="lobby-hud">
@@ -437,6 +457,10 @@ body:has(#entry.active) header{display:none}
    <button onclick="go('character')"><span>🧍</span>CHARACTER</button>
    <button onclick="showLobbyNotice('Weapons')"><span>⚔️</span>WEAPONS</button>
    <button onclick="go('maps')"><span>🗺️</span>MAPS</button>
+   <button onclick="go('profile')"><span>👤</span>PROFILE</button>
+   <button onclick="go('team')"><span>👥</span>TEAM</button>
+   <button onclick="go('rank')"><span>🏆</span>RANK</button>
+   <button onclick="go('room')"><span>🚪</span>ROOM</button>
   </nav>
 
   <div class="lobby-scene-title">
@@ -478,17 +502,18 @@ body:has(#entry.active) header{display:none}
   </div>
  </div>
 
- <div class="lobby-playbar action-panel">
+ <div class="lobby-playbar">
   <b style="grid-column:1/-1">SELECT GAME MODE</b>
   <div class="mode-row">
    <button class="mode-card selected" id="soloBtn" onclick="setMode('SOLO')">1<br>SOLO</button>
    <button class="mode-card" id="duoBtn" onclick="setMode('DUO')">2<br>DUO</button>
    <button class="mode-card" id="squadBtn" onclick="setMode('SQUAD')">4<br>SQUAD</button>
   </div>
-  <button class="start-match" onclick="startMatch()">▶ PLAY</button>
-  <button class="green quick-match" onclick="findMatch()">⚡ RANDOM MATCH</button>
+  <button onclick="startMatch()">▶ PLAY</button>
+  <button class="green" onclick="findMatch()">⚡ RANDOM MATCH</button>
   <button class="full darkbtn" style="grid-column:1/-1" onclick="go('room')">CREATE / JOIN ROOM</button>
  </div>
+
  <p id="lobbyNotice" class="lobby-notice"></p>
 
  <div class="shortcuts">
@@ -503,672 +528,692 @@ body:has(#entry.active) header{display:none}
   <button onclick="go('settings')">⚙<br>SETTINGS</button>
   <button onclick="go('room')">🚪<br>ROOM</button>
  </div>
-</section>
-
-<!-- CHARACTER -->
+  </section><!-- CHARACTER PAGE -->
 <section id="character" class="page">
- <h2 class="title">CHARACTER & OUTFIT</h2>
+ <h2 class="title">CHARACTER</h2>
  <div class="panel center">
-  <div id="characterPreview" style="font-size:100px">🧍</div>
-  <h3 id="characterName">BD ELITE SURVIVOR</h3>
-  <p class="muted">Choose your character</p>
+  <div style="font-size:100px">🦸</div>
+  <h3 id="characterName">BD HERO</h3>
+  <p class="muted">Your selected character</p>
+  <button class="full" onclick="showMessage('characterMessage','BD HERO selected')">SELECT CHARACTER</button>
+  <p id="characterMessage" class="muted"></p>
  </div>
- <div class="grid">
-  <button onclick="chooseCharacter('BD Elite Survivor','🧍')">BD ELITE</button>
-  <button onclick="chooseCharacter('Shadow Explorer','🥷')">SHADOW</button>
-  <button onclick="chooseCharacter('Desert Explorer','🧔')">DESERT</button>
-  <button onclick="chooseCharacter('Jungle Ranger','🧑‍🚀')">RANGER</button>
- </div>
- <div class="grid">
-  <div class="tile">👕<br>OUTFIT</div>
-  <div class="tile">🎒<br>BACKPACK</div>
-  <div class="tile">🎨<br>SKIN</div>
-  <div class="tile">🪂<br>PARACHUTE</div>
- </div>
- <p class="muted">Outfit, Backpack, Skin ও Parachute এখনো নমুনা অপশন।</p>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
 </section>
 
-<!-- MAPS -->
+<!-- MAPS PAGE -->
 <section id="maps" class="page">
  <h2 class="title">SELECT MAP</h2>
- <div class="map-card selected-map" onclick="selectMap('BD ISLAND',this)">🏝️ <b>BD ISLAND</b><p class="muted">Main Adventure Island</p></div>
- <div class="map-card" onclick="selectMap('GREEN VALLEY',this)">🌲 <b>GREEN VALLEY</b><p class="muted">Coming Soon</p></div>
- <div class="map-card" onclick="selectMap('DESERT ZONE',this)">🏜️ <b>DESERT ZONE</b><p class="muted">Coming Soon</p></div>
- <p id="mapMessage" class="muted">Selected: BD ISLAND</p>
+ <div class="map-card selected-map" onclick="selectMap('BD ISLAND',this)">
+  <h3>🏝️ BD ISLAND</h3>
+  <p class="muted">Main battle arena</p>
+ </div>
+ <div class="map-card" onclick="selectMap('GREEN VALLEY',this)">
+  <h3>🌲 GREEN VALLEY</h3>
+  <p class="muted">Green nature map</p>
+ </div>
+ <div class="map-card" onclick="selectMap('DESERT ZONE',this)">
+  <h3>🏜️ DESERT ZONE</h3>
+  <p class="muted">Desert environment</p>
+ </div>
+ <p id="mapMessage" class="muted center">Selected: BD ISLAND</p>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
 </section>
 
-<!-- PROFILE -->
+<!-- PROFILE PAGE -->
 <section id="profile" class="page">
  <h2 class="title">PLAYER PROFILE</h2>
  <div class="panel center">
   <div style="font-size:65px">👤</div>
-  <h3 id="profileName">Player</h3>
-  <p id="profileId" class="muted">Player ID: Loading...</p>
-  <p>LEVEL: <b id="profileLevel">1</b></p>
-  <p>XP: <b id="profileXp">0</b></p>
-  <p>COINS: <b id="profileCoins">0</b></p>
-  <p>DIAMONDS: <b id="profileDiamonds">0</b></p>
-  <p>RANK POINTS: <b id="profileRankPoints">0</b></p>
+  <h2 id="profileName">Guest Player</h2>
+  <p id="profileEmail" class="muted">Player account</p>
+  <div class="grid">
+   <div class="tile">🪙<h3 id="profileCoins">0</h3><small>COINS</small></div>
+   <div class="tile">🏆<h3 id="profilePoints">0</h3><small>POINTS</small></div>
+  </div>
  </div>
- <button class="full darkbtn" onclick="loadProfile()">REFRESH PROFILE</button>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
  <button class="full red" onclick="logoutPlayer()">LOGOUT</button>
 </section>
 
-<!-- TEAM -->
+<!-- TEAM PAGE -->
 <section id="team" class="page">
- <h2 class="title">TEAM & FRIENDS</h2>
+ <h2 class="title">TEAM</h2>
  <div class="panel">
-  <input id="invitePlayerId" placeholder="Friend Player ID">
-  <button class="full" onclick="inviteFriend()">SEND ROOM INVITE</button>
-  <p id="inviteMessage" class="muted"></p>
+  <h3>MY TEAM</h3>
+  <p class="muted">Create a room to invite your friends.</p>
+  <button class="full" onclick="go('room')">CREATE TEAM ROOM</button>
+  <input id="inviteCode" placeholder="Enter room code">
+  <button class="full green" onclick="joinRoom()">JOIN TEAM</button>
+  <p id="teamMessage" class="muted"></p>
  </div>
- <div class="panel">
-  <h3>TEAM MEMBERS</h3>
-  <p class="muted">Room তৈরি বা Join করার পরে বন্ধুদের Invite করতে পারবে।</p>
- </div>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
 </section>
 
-<!-- ROOM -->
+<!-- ROOM PAGE -->
 <section id="room" class="page">
- <h2 class="title">ROOM SYSTEM</h2>
+ <h2 class="title">ROOM & MATCH</h2>
  <div class="panel">
-  <input id="roomCode" placeholder="Room Code">
-  <button class="full" onclick="createRoom()">CREATE ROOM</button>
-  <button class="full green" onclick="joinRoom()">JOIN ROOM</button>
-  <button class="full darkbtn" onclick="leaveRoom()">LEAVE ROOM</button>
+  <h3>CREATE ROOM</h3>
+  <button class="full green" onclick="createRoom()">CREATE NEW ROOM</button>
+  <p id="roomCodeDisplay" class="status center">No room created</p>
+  <button class="full darkbtn" onclick="copyRoomCode()">COPY ROOM CODE</button>
+ </div>
+ <div class="panel">
+  <h3>JOIN ROOM</h3>
+  <input id="roomJoinCode" placeholder="Enter room code">
+  <button class="full" onclick="joinRoom()">JOIN ROOM</button>
   <p id="roomMessage" class="muted"></p>
  </div>
- <div class="panel">
-  <h3>ROOM DETAILS</h3>
-  <p id="roomDetails" class="muted">No room joined.</p>
- </div>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
 </section>
 
-<!-- RANK -->
+<!-- RANK PAGE -->
 <section id="rank" class="page">
- <h2 class="title">RANK & LEADERBOARD</h2>
- <div class="panel center">
-  <div style="font-size:55px">🏆</div>
-  <h3>YOUR RANK</h3>
-  <p id="myRankText">Rank: Loading...</p>
-  <p id="myPointsText" class="muted">Rank Points: 0</p>
-  <button class="full" onclick="loadLeaderboard()">↻ REFRESH LEADERBOARD</button>
-  <p id="rankMessage" class="muted">Leaderboard লোড হচ্ছে...</p>
- </div>
+ <h2 class="title">LEADERBOARD</h2>
  <div class="panel">
-  <h3 class="title">TOP 50 PLAYERS</h3>
+  <p class="muted">Top players</p>
   <div id="leaderboardList">
-   <p class="muted center">Leaderboard লোড হচ্ছে...</p>
+   <p class="center muted">Loading leaderboard...</p>
   </div>
+  <button class="full" onclick="loadLeaderboard()">REFRESH RANK</button>
  </div>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
 </section>
 
-<!-- RESULT -->
+<!-- RESULT PAGE -->
 <section id="result" class="page">
  <h2 class="title">MATCH RESULT</h2>
  <div class="panel center">
-  <h2 id="resultTitle">PRACTICE RESULT</h2>
-  <p id="resultText">এখনো কোনো ফলাফল নেই।</p>
-  <p id="resultXp">XP: 0</p>
+  <div style="font-size:65px">🏆</div>
+  <h2>YOUR RESULTS</h2>
+  <p id="resultText" class="muted">No match played yet.</p>
   <button class="full" onclick="go('lobby')">BACK TO LOBBY</button>
  </div>
 </section>
 
-<!-- PRACTICE -->
+<!-- PRACTICE PAGE -->
 <section id="practice" class="page">
- <h2 class="title">BD ISLAND PRACTICE</h2>
+ <h2 class="title">PRACTICE ARENA</h2>
  <div class="panel center">
-  <p>তারকা সংগ্রহ করে অনুশীলন করো।</p>
+  <p>Collect the stars!</p>
+  <canvas id="arena" width="320" height="300"></canvas>
   <p>Score: <b id="practiceScore">0</b></p>
-  <canvas id="arena" width="320" height="400"></canvas>
   <div class="controls">
-   <button class="control" onpointerdown="movePlayer('left')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">◀</button>
-   <button class="control" onpointerdown="movePlayer('up')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">▲</button>
-   <button class="control" onpointerdown="movePlayer('down')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">▼</button>
-   <button class="control" onpointerdown="movePlayer('right')" onpointerup="stopPlayer()" onpointerleave="stopPlayer()">▶</button>
+   <button class="control" onpointerdown="movePractice('left')" onpointerup="stopPractice()" onpointerleave="stopPractice()">←</button>
+   <button class="control" onpointerdown="movePractice('up')" onpointerup="stopPractice()" onpointerleave="stopPractice()">↑</button>
+   <button class="control" onpointerdown="movePractice('down')" onpointerup="stopPractice()" onpointerleave="stopPractice()">↓</button>
+   <button class="control" onpointerdown="movePractice('right')" onpointerup="stopPractice()" onpointerleave="stopPractice()">→</button>
   </div>
-  <button class="full" onclick="startPractice()">START PRACTICE</button>
-  <button class="full darkbtn" onclick="stopPractice()">STOP</button>
+  <button class="full green" onclick="startPractice()">START PRACTICE</button>
  </div>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
 </section>
 
-<!-- SETTINGS -->
+<!-- SETTINGS PAGE -->
 <section id="settings" class="page">
  <h2 class="title">SETTINGS</h2>
  <div class="panel">
-  <p>Account Settings</p>
-  <button class="full darkbtn" onclick="go('profile')">PLAYER PROFILE</button>
-  <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
-  <button class="full red" onclick="logoutPlayer()">LOGOUT</button>
+  <h3>GAME SETTINGS</h3>
+  <label>Sound</label>
+  <select id="soundSetting">
+   <option>ON</option>
+   <option>OFF</option>
+  </select>
+  <label>Graphics</label>
+  <select id="graphicsSetting">
+   <option>HIGH</option>
+   <option>MEDIUM</option>
+   <option>LOW</option>
+  </select>
+  <button class="full" onclick="saveSettings()">SAVE SETTINGS</button>
+  <p id="settingsMessage" class="muted"></p>
  </div>
+ <button class="full darkbtn" onclick="go('practice')">PRACTICE ARENA</button>
+ <button class="full darkbtn" onclick="go('lobby')">BACK TO LOBBY</button>
 </section>
 
-<!-- BOTTOM NAV -->
-<nav id="bottomNav" class="nav">
+<!-- BOTTOM NAVIGATION -->
+<nav class="nav" id="bottomNav">
  <button onclick="go('lobby')">🏠<br>HOME</button>
- <button onclick="go('character')">🧍<br>PLAYER</button>
- <button onclick="go('team')">👥<br>TEAM</button>
  <button onclick="go('profile')">👤<br>PROFILE</button>
+ <button onclick="go('rank')">🏆<br>RANK</button>
+ <button onclick="go('settings')">⚙<br>SETTINGS</button>
 </nav>
 
 <script>
-const {Client,Account,ID,TablesDB,Query}=Appwrite;
+/* APPWRITE CONNECTION */
+const APPWRITE_ENDPOINT = "https://sgp.cloud.appwrite.io/v1";
+const APPWRITE_PROJECT = "6af4c610002ee336af01";
+const DATABASE_ID = "6af4e97b0018132a174c";
+const PLAYERS_TABLE = "players";
+const LEADERBOARD_TABLE = "leaderboard";
+const MATCH_API = "https://sgp.cloud.appwrite.io/v1/functions/bd-game-match-api/executions";
 
-const client=new Client()
- .setEndpoint("https://sgp.cloud.appwrite.io/v1")
- .setProject("6af4c610002ee336af01");
+const client = new Appwrite.Client()
+ .setEndpoint(APPWRITE_ENDPOINT)
+ .setProject(APPWRITE_PROJECT);
 
-const account=new Account(client);
-const tablesDB=new TablesDB(client);
+const account = new Appwrite.Account(client);
+const tables = new Appwrite.TablesDB(client);
 
-const DATABASE_ID="6af4e97b0018132a174c";
-const PLAYERS_TABLE_ID="players";
-const LEADERBOARD_TABLE_ID="leaderboard";
-const API_URL="https://sgp.cloud.appwrite.io/v1/functions/bd-game-match-api/executions";
+let currentUser = null;
+let selectedMode = "SOLO";
+let selectedMap = "BD ISLAND";
+let currentRoomCode = "";
+let practiceRunning = false;
+let practiceDirection = "";
+let practiceScore = 0;
+let practicePlayer = {x:150,y:150};
+let practiceStar = {x:70,y:70};
 
-let currentUser=null;
-let currentProfile=null;
-let currentRoom=null;
-let selectedMode="SOLO";
-let selectedMap="BD ISLAND";
-let selectedCharacter="BD ELITE SURVIVOR";
-let practiceTimer=null;
-let playerPosition={x:150,y:190};
-let starPosition={x:80,y:100};
-let practiceScore=0;
-let moveDirection=null;
-let guestLoginRunning=false;
-let leaderboardLoading=false;
-let entryTimer=null;
-
-function message(id,text){
+/* COMMON HELPERS */
+function showMessage(id,message){
  const el=document.getElementById(id);
- if(el)el.textContent=text;
+ if(el) el.textContent=message;
 }
 
-function showLobbyNotice(feature){
- const el=document.getElementById("lobbyNotice");
- if(el)el.textContent=feature+" — COMING SOON";
+function showLobbyNotice(message){
+ showMessage("lobbyNotice",message+" section is coming soon.");
 }
 
 function go(page){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  const target=document.getElementById(page);
- if(target)target.classList.add("active");
+ if(target) target.classList.add("active");
 
- document.getElementById("bottomNav").style.display=
-  ["lobby","profile","character","maps","team","room","rank","result","practice","settings"].includes(page)?"flex":"none";
+ const nav=document.getElementById("bottomNav");
+ if(nav) nav.style.display=
+  ["lobby","character","maps","profile","team","room","rank","result","practice","settings"].includes(page)
+  ?"flex":"none";
 
- if(page==="rank")loadLeaderboard();
- if(page==="profile"&&currentUser)loadProfile();
+ if(page==="profile") updateProfile();
+ if(page==="rank") loadLeaderboard();
+ if(page==="lobby") updateLobby();
 }
 
 function setMode(mode){
  selectedMode=mode;
- ["soloBtn","duoBtn","squadBtn"].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el)el.classList.remove("selected");
+ ["solo","duo","squad"].forEach(name=>{
+  const el=document.getElementById(name+"Btn");
+  if(el) el.classList.toggle("selected",name.toUpperCase()===mode);
  });
- const selected=document.getElementById(mode.toLowerCase()+"Btn");
- if(selected)selected.classList.add("selected");
 }
 
 function selectMap(name,element){
  selectedMap=name;
- document.querySelectorAll(".map-card").forEach(el=>el.classList.remove("selected-map"));
+ document.querySelectorAll(".map-card").forEach(card=>card.classList.remove("selected-map"));
  element.classList.add("selected-map");
- message("mapMessage","Selected: "+name);
+ showMessage("mapMessage","Selected: "+name);
 }
 
-function chooseCharacter(name,emoji){
- selectedCharacter=name;
- document.getElementById("characterName").textContent=name;
- document.getElementById("characterPreview").textContent=emoji;
- document.getElementById("lobbyCharacter").innerHTML=
-  '<div style="font-size:110px;line-height:1">'+emoji+'</div>';
+function updateLobby(){
+ if(currentUser){
+  const name=currentUser.name || currentUser.email || "Player";
+  showMessage("playerName",name);
+ }
 }
 
 /* GUEST LOGIN */
 async function guestLogin(){
- if(guestLoginRunning)return;
- guestLoginRunning=true;
+ showMessage("loginMessage","Connecting...");
 
  try{
-  try{
-   currentUser=await account.get();
-  }catch(getError){
-   try{
-    currentUser=await account.createAnonymousSession();
-   }catch(createError){
-    const errorText=String(createError.message||"").toLowerCase();
-    if(errorText.includes("session")&&errorText.includes("active")){
-     currentUser=await account.get();
-    }else{
-     throw createError;
-    }
-   }
+  let sessionList=await account.listSessions();
+
+  if(!sessionList.sessions || sessionList.sessions.length===0){
+   await account.createAnonymousSession();
   }
+
+  currentUser=await account.get();
+
   await afterLogin();
- }catch(e){
-  message("loginMessage","Guest Login হয়নি: "+e.message);
- }finally{
-  guestLoginRunning=false;
+ }catch(error){
+  showMessage("loginMessage",error.message || "Guest login failed");
  }
 }
 
-/* REGISTER */
+/* REGISTER PLAYER */
 async function registerPlayer(){
  const name=document.getElementById("regName").value.trim();
  const email=document.getElementById("regEmail").value.trim();
  const password=document.getElementById("regPassword").value;
 
- if(!name||!email||password.length<8){
-  message("regMessage","নাম, Gmail এবং কমপক্ষে ৮ অক্ষরের Password দিন।");
+ if(!name || !email || password.length<8){
+  showMessage("regMessage","Enter name, Gmail and password (minimum 8 characters).");
   return;
  }
 
+ showMessage("regMessage","Creating account...");
+
  try{
-  await account.create(ID.unique(),email,password,name);
-  message("regMessage","Account তৈরি হয়েছে। এখন Login করুন।");
-  go("login");
- }catch(e){
-  message("regMessage","Registration হয়নি: "+e.message);
+  await account.create(Appwrite.ID.unique(),email,password,name);
+  await account.createEmailPasswordSession(email,password);
+  currentUser=await account.get();
+  await afterLogin();
+ }catch(error){
+  showMessage("regMessage",error.message || "Registration failed");
  }
 }
 
-/* LOGIN */
+/* PLAYER LOGIN */
 async function loginPlayer(){
  const email=document.getElementById("loginEmail").value.trim();
  const password=document.getElementById("loginPassword").value;
+
+ if(!email || !password){
+  showMessage("loginMessage","Enter Gmail and password.");
+  return;
+ }
+
+ showMessage("loginMessage","Logging in...");
 
  try{
   await account.createEmailPasswordSession(email,password);
   currentUser=await account.get();
   await afterLogin();
- }catch(e){
-  message("loginMessage","Login হয়নি: "+e.message);
+ }catch(error){
+  showMessage("loginMessage",error.message || "Login failed");
  }
 }
 
 /* AFTER LOGIN */
 async function afterLogin(){
- if(!currentUser)currentUser=await account.get();
+ if(!currentUser) currentUser=await account.get();
 
- document.getElementById("playerName").textContent=currentUser.name||"Player";
- document.getElementById("profileName").textContent=currentUser.name||"Player";
- document.getElementById("profileId").textContent="Player ID: "+currentUser.$id;
+ showMessage("playerName",currentUser.name || "Player");
+ showMessage("profileName",currentUser.name || "Player");
+ showMessage("profileEmail",currentUser.email || "Guest account");
 
  go("lobby");
- await loadProfile();
+ await updatePlayerRecord();
+ await loadLeaderboard();
 }
 
-/* PROFILE */
-async function loadProfile(){
- try{
-  if(!currentUser)currentUser=await account.get();
+/* PLAYER DATABASE RECORD */
+async function updatePlayerRecord(){
+ if(!currentUser || !currentUser.$id) return;
 
-  const result=await tablesDB.listRows({
+ try{
+  const found=await tables.listRows({
    databaseId:DATABASE_ID,
-   tableId:PLAYERS_TABLE_ID,
-   queries:[Query.equal("auth_user_id",currentUser.$id)],
-   total:false
+   tableId:PLAYERS_TABLE,
+   queries:[Appwrite.Query.equal("userId",currentUser.$id)]
   });
 
-  if(result.rows.length){
-   currentProfile=result.rows[0];
-   updateProfileUI();
-  }else{
-   message("profileId","Player ID: "+currentUser.$id);
+  if(!found.rows || found.rows.length===0){
+   await tables.createRow({
+    databaseId:DATABASE_ID,
+    tableId:PLAYERS_TABLE,
+    rowId:Appwrite.ID.unique(),
+    data:{
+     userId:currentUser.$id,
+     playerName:currentUser.name || "Player",
+     email:currentUser.email || "",
+     coins:0,
+     points:0
+    }
+   });
   }
- }catch(e){
-  console.log("Profile load:",e.message);
+ }catch(error){
+  console.log("Player record:",error.message);
  }
 }
 
-function updateProfileUI(){
- if(!currentProfile)return;
+/* PROFILE */
+async function updateProfile(){
+ if(!currentUser) return;
 
- document.getElementById("profileName").textContent=currentProfile.display_name||currentUser.name;
- document.getElementById("profileLevel").textContent=currentProfile.level||1;
- document.getElementById("profileXp").textContent=currentProfile.xp||0;
- document.getElementById("profileCoins").textContent=currentProfile.coins||0;
- document.getElementById("profileDiamonds").textContent=currentProfile.diamonds||0;
- document.getElementById("profileRankPoints").textContent=currentProfile.rank_points||0;
- document.getElementById("lobbyCoins").textContent=(currentProfile.coins||0);
+ showMessage("profileName",currentUser.name || "Player");
+ showMessage("profileEmail",currentUser.email || "Guest account");
+
+ try{
+  const found=await tables.listRows({
+   databaseId:DATABASE_ID,
+   tableId:PLAYERS_TABLE,
+   queries:[Appwrite.Query.equal("userId",currentUser.$id)]
+  });
+
+  if(found.rows && found.rows.length){
+   const player=found.rows[0];
+   showMessage("profileCoins",player.coins || 0);
+   showMessage("profilePoints",player.points || 0);
+   showMessage("lobbyCoins",player.coins || 0);
+  }
+ }catch(error){
+  console.log(error.message);
+ }
 }
 
 /* LOGOUT */
 async function logoutPlayer(){
- if(entryTimer)clearTimeout(entryTimer);
-
  try{
   await account.deleteSession("current");
- }catch(e){}
+ }catch(error){
+  console.log(error.message);
+ }
 
  currentUser=null;
- currentProfile=null;
- currentRoom=null;
-
- startGame();
+ go("login");
 }
 
-/* GAME API */
-async function gameApi(path,method="GET",body=null){
- const session=await account.getSession("current").catch(()=>null);
- const headers={"Content-Type":"application/json"};
-
- if(session){
-  const jwtResult=await account.createJWT();
-  headers["X-Appwrite-JWT"]=jwtResult.jwt;
- }
-
- const response=await fetch(API_URL,{
-  method:"POST",
-  headers,
-  body:JSON.stringify({
-   path,
-   method,
-   body,
-   user_id:currentUser?.$id||null
-  })
- });
-
- const data=await response.json().catch(()=>({}));
-
- if(!response.ok)throw new Error(data.message||data.error||"API Error "+response.status);
- if(data.success===false)throw new Error(data.message||"Request failed");
-
- return data;
-}
-
-/* ROOM */
-async function createRoom(){
+/* MATCH API */
+async function callMatchAPI(action,data={}){
  try{
-  const result=await gameApi("/rooms/create","POST",{mode:selectedMode});
-  currentRoom=result.room||result.data?.room||result;
-  message("roomMessage",result.message||"Room তৈরি হয়েছে।");
-  document.getElementById("roomDetails").textContent=JSON.stringify(currentRoom);
- }catch(e){
-  message("roomMessage","Room তৈরি হয়নি: "+e.message);
+  const response=await fetch(MATCH_API,{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    action,
+    userId:currentUser ? currentUser.$id : null,
+    mode:selectedMode,
+    map:selectedMap,
+    ...data
+   })
+  });
+
+  const result=await response.json();
+  if(!response.ok) throw new Error(result.message || "Match API error");
+  return result;
+ }catch(error){
+  console.log("Match API:",error.message);
+  return {success:false,message:error.message};
  }
 }
 
+/* PLAY */
+async function startMatch(){
+ if(!currentUser){
+  go("login");
+  return;
+ }
+
+ showMessage("lobbyNotice","Preparing "+selectedMode+" match...");
+
+ const result=await callMatchAPI("start_match");
+
+ if(result.success){
+  showMessage("lobbyNotice","Match request accepted!");
+  showMessage("resultText","Match started: "+selectedMode+" / "+selectedMap);
+ }else{
+  showMessage("lobbyNotice","Match service is not connected yet. Try Practice Arena.");
+ }
+}
+
+/* RANDOM MATCH */
+async function findMatch(){
+ if(!currentUser){
+  go("login");
+  return;
+ }
+
+ showMessage("lobbyNotice","Searching for players...");
+
+ const result=await callMatchAPI("find_match");
+
+ if(result.success){
+  showMessage("lobbyNotice","Match found!");
+ }else{
+  showMessage("lobbyNotice","Matchmaking service is not ready yet.");
+ }
+}
+
+/* CREATE ROOM */
+async function createRoom(){
+ if(!currentUser){
+  go("login");
+  return;
+ }
+
+ const result=await callMatchAPI("create_room");
+
+ if(result.success && result.roomCode){
+  currentRoomCode=result.roomCode;
+  showMessage("roomCodeDisplay","ROOM CODE: "+currentRoomCode);
+  showMessage("roomMessage","Room created successfully.");
+ }else{
+  currentRoomCode=Math.random().toString(36).substring(2,8).toUpperCase();
+  showMessage("roomCodeDisplay","ROOM CODE: "+currentRoomCode);
+  showMessage("roomMessage","Local demo room created. Online room service is not connected.");
+ }
+}
+
+/* JOIN ROOM */
 async function joinRoom(){
- const code=document.getElementById("roomCode").value.trim();
+ const code=
+  document.getElementById("roomJoinCode").value.trim() ||
+  document.getElementById("inviteCode").value.trim();
 
  if(!code){
-  message("roomMessage","Room Code লিখুন।");
+  showMessage("roomMessage","Enter room code first.");
+  showMessage("teamMessage","Enter room code first.");
   return;
  }
 
- try{
-  const result=await gameApi("/rooms/join","POST",{room_code:code});
-  currentRoom=result.room||result.data?.room||result;
-  message("roomMessage",result.message||"Room-এ Join হয়েছে।");
-  document.getElementById("roomDetails").textContent=JSON.stringify(currentRoom);
- }catch(e){
-  message("roomMessage","Join হয়নি: "+e.message);
+ const result=await callMatchAPI("join_room",{roomCode:code});
+
+ if(result.success){
+  showMessage("roomMessage","Joined room successfully.");
+  showMessage("teamMessage","Joined room successfully.");
+ }else{
+  showMessage("roomMessage","Room service is not connected. Check the room code later.");
+  showMessage("teamMessage","Room service is not connected.");
  }
 }
 
-async function leaveRoom(){
- if(!currentRoom){
-  message("roomMessage","আপনি কোনো Room-এ নেই।");
+/* COPY ROOM CODE */
+async function copyRoomCode(){
+ if(!currentRoomCode){
+  showMessage("roomMessage","Create a room first.");
   return;
  }
 
  try{
-  await gameApi("/rooms/leave","POST",{
-   room_id:currentRoom.$id||currentRoom.id||currentRoom.room_id
-  });
-
-  currentRoom=null;
-  message("roomMessage","Room থেকে বের হয়েছেন।");
-  document.getElementById("roomDetails").textContent="No room joined.";
- }catch(e){
-  message("roomMessage","Leave হয়নি: "+e.message);
- }
-}
-
-/* FRIEND INVITE */
-async function inviteFriend(){
- const friendId=document.getElementById("invitePlayerId").value.trim();
- const roomId=currentRoom?.$id||currentRoom?.id||currentRoom?.room_id;
-
- if(!friendId){
-  message("inviteMessage","Friend Player ID লিখুন।");
-  return;
- }
-
- if(!roomId){
-  message("inviteMessage","আগে একটি Room তৈরি বা Join করুন।");
-  return;
- }
-
- try{
-  const result=await gameApi("/invites/send","POST",{
-   room_id:roomId,
-   invitee_user_id:friendId
-  });
-  message("inviteMessage",result.message||"Invite request পাঠানো হয়েছে।");
- }catch(e){
-  message("inviteMessage","Invite পাঠানো যায়নি: "+e.message);
- }
-}
-
-/* MATCHMAKING */
-async function findMatch(){
- try{
-  message("roomMessage","Match খোঁজা হচ্ছে...");
-  const result=await gameApi("/matchmaking/join","POST",{
-   mode:selectedMode
-  });
-  message("roomMessage",result.message||"Matchmaking request পাঠানো হয়েছে।");
- }catch(e){
-  message("roomMessage","Matchmaking হয়নি: "+e.message);
+  await navigator.clipboard.writeText(currentRoomCode);
+  showMessage("roomMessage","Room code copied!");
+ }catch(error){
+  showMessage("roomMessage","Room code: "+currentRoomCode);
  }
 }
 
 /* LEADERBOARD */
 async function loadLeaderboard(){
- if(leaderboardLoading)return;
- leaderboardLoading=true;
-
  const list=document.getElementById("leaderboardList");
- message("rankMessage","Leaderboard লোড হচ্ছে...");
- list.innerHTML='<p class="muted center">লোড হচ্ছে...</p>';
+ if(!list) return;
+
+ list.innerHTML='<p class="center muted">Loading leaderboard...</p>';
 
  try{
-  if(!currentUser){
-   currentUser=await account.get();
-  }
-
-  const result=await tablesDB.listRows({
+  const result=await tables.listRows({
    databaseId:DATABASE_ID,
-   tableId:LEADERBOARD_TABLE_ID,
+   tableId:LEADERBOARD_TABLE,
    queries:[
-    Query.orderDesc("rank_points"),
-    Query.limit(50)
-   ],
-   total:true
+    Appwrite.Query.orderDesc("points"),
+    Appwrite.Query.limit(20)
+   ]
   });
 
-  const rows=result.rows||[];
-
-  if(!rows.length){
-   list.innerHTML='<p class="muted center">এখনো Leaderboard-এ কোনো Player নেই।</p>';
-   message("rankMessage","Leaderboard-এ এখনো কোনো রেকর্ড পাওয়া যায়নি।");
-   message("myRankText","Rank: Not ranked");
-   message("myPointsText","Rank Points: 0");
+  if(!result.rows || result.rows.length===0){
+   list.innerHTML='<p class="center muted">No leaderboard data yet.</p>';
    return;
-  }
-
-  const myIndex=rows.findIndex(row=>row.user_id===currentUser.$id);
-
-  if(myIndex>=0){
-   message("myRankText","Your Rank: #"+(myIndex+1));
-   message("myPointsText","Rank Points: "+(rows[myIndex].rank_points||0));
-  }else{
-   message("myRankText","Your Rank: Top 50-এর বাইরে");
-   message("myPointsText","Rank Points: এখনো তালিকায় নেই");
   }
 
   list.innerHTML="";
 
-  rows.forEach((row,index)=>{
-   const userId=String(row.user_id||"");
-   const playerName=row.display_name||row.player_name||("Player "+userId.slice(0,7));
-   const points=Number(row.rank_points||0);
-   const wins=Number(row.wins||0);
-   const isMe=userId===currentUser.$id;
-
-   const item=document.createElement("div");
-   item.className="rank-row"+(isMe?" my-rank":"");
+  result.rows.forEach((player,index)=>{
+   const row=document.createElement("div");
+   row.className="rank-row";
 
    const number=document.createElement("div");
    number.className="rank-number";
-   number.textContent="#"+(index+1);
+   number.textContent=index+1;
 
    const name=document.createElement("div");
    name.className="rank-name";
+   name.textContent=player.playerName || "Player";
 
-   const nameText=document.createElement("b");
-   nameText.textContent=playerName+(isMe?" (YOU)":"");
+   const points=document.createElement("div");
+   points.className="rank-points";
+   points.textContent=(player.points || 0)+" PTS";
 
-   const detail=document.createElement("div");
-   detail.className="muted";
-   detail.textContent="Wins: "+wins;
-
-   name.appendChild(nameText);
-   name.appendChild(detail);
-
-   const score=document.createElement("div");
-   score.className="rank-points";
-   score.textContent=points+" pts";
-
-   item.appendChild(number);
-   item.appendChild(name);
-   item.appendChild(score);
-   list.appendChild(item);
+   row.append(number,name,points);
+   list.appendChild(row);
   });
 
-  message("rankMessage","Top "+rows.length+" Player দেখানো হচ্ছে।");
- }catch(e){
-  list.innerHTML='<p class="muted center">Leaderboard লোড হয়নি।</p>';
-  message("rankMessage","সমস্যা: "+e.message);
- }finally{
-  leaderboardLoading=false;
+ }catch(error){
+  list.innerHTML='<p class="center muted">Leaderboard data is not connected yet.</p>';
  }
 }
+        </script>/* PRACTICE ARENA */
+let practiceTimer=null;
 
-/* PRACTICE */
-function startMatch(){
- if(selectedMap==="BD ISLAND"){
-  go("practice");
-  startPractice();
- }else{
-  message("mapMessage","এই Map এখনো প্রস্তুত নয়।");
-  go("maps");
+function drawPractice(){
+ const canvas=document.getElementById("arena");
+ if(!canvas) return;
+
+ const ctx=canvas.getContext("2d");
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ ctx.fillStyle="#327c55";
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ ctx.strokeStyle="#70a77b";
+ ctx.lineWidth=2;
+
+ for(let x=0;x<canvas.width;x+=32){
+  ctx.beginPath();
+  ctx.moveTo(x,0);
+  ctx.lineTo(x,canvas.height);
+  ctx.stroke();
+ }
+
+ for(let y=0;y<canvas.height;y+=32){
+  ctx.beginPath();
+  ctx.moveTo(0,y);
+  ctx.lineTo(canvas.width,y);
+  ctx.stroke();
+ }
+
+ ctx.font="25px Arial";
+ ctx.fillText("⭐",practiceStar.x,practiceStar.y);
+
+ ctx.font="30px Arial";
+ ctx.fillText("🧍",practicePlayer.x,practicePlayer.y);
+
+ showMessage("practiceScore",practiceScore);
+}
+
+function movePractice(direction){
+ practiceDirection=direction;
+
+ if(!practiceRunning) return;
+
+ if(practiceTimer) return;
+
+ practiceTimer=setInterval(()=>{
+  if(!practiceRunning) return;
+
+  const speed=5;
+
+  if(practiceDirection==="left") practicePlayer.x-=speed;
+  if(practiceDirection==="right") practicePlayer.x+=speed;
+  if(practiceDirection==="up") practicePlayer.y-=speed;
+  if(practiceDirection==="down") practicePlayer.y+=speed;
+
+  const canvas=document.getElementById("arena");
+
+  practicePlayer.x=Math.max(0,Math.min(canvas.width-25,practicePlayer.x));
+  practicePlayer.y=Math.max(25,Math.min(canvas.height-5,practicePlayer.y));
+
+  const dx=practicePlayer.x-practiceStar.x;
+  const dy=practicePlayer.y-practiceStar.y;
+
+  if(Math.sqrt(dx*dx+dy*dy)<28){
+   practiceScore++;
+   practiceStar.x=20+Math.random()*270;
+   practiceStar.y=35+Math.random()*240;
+  }
+
+  drawPractice();
+ },45);
+}
+
+function stopPractice(){
+ practiceDirection="";
+ if(practiceTimer){
+  clearInterval(practiceTimer);
+  practiceTimer=null;
  }
 }
 
 function startPractice(){
- stopPractice();
-
+ practiceRunning=true;
  practiceScore=0;
- playerPosition={x:150,y:190};
- starPosition={x:Math.random()*260+20,y:Math.random()*340+20};
+ practicePlayer={x:150,y:150};
+ practiceStar={x:70,y:70};
+ showMessage("practiceScore",0);
+ drawPractice();
 
- message("practiceScore",practiceScore);
- drawArena();
-
- practiceTimer=setInterval(()=>{
-  if(moveDirection){
-   if(moveDirection==="left")playerPosition.x-=4;
-   if(moveDirection==="right")playerPosition.x+=4;
-   if(moveDirection==="up")playerPosition.y-=4;
-   if(moveDirection==="down")playerPosition.y+=4;
-  }
-
-  playerPosition.x=Math.max(12,Math.min(308,playerPosition.x));
-  playerPosition.y=Math.max(12,Math.min(388,playerPosition.y));
-
-  const dx=playerPosition.x-starPosition.x;
-  const dy=playerPosition.y-starPosition.y;
-
-  if(Math.sqrt(dx*dx+dy*dy)<22){
-   practiceScore++;
-   message("practiceScore",practiceScore);
-   starPosition={x:Math.random()*260+20,y:Math.random()*340+20};
-  }
-
-  drawArena();
- },40);
+ showMessage("resultText","Practice session started.");
 }
 
-function drawArena(){
- const canvas=document.getElementById("arena");
- if(!canvas)return;
-
- const ctx=canvas.getContext("2d");
- ctx.clearRect(0,0,320,400);
- ctx.fillStyle="#327c55";
- ctx.fillRect(0,0,320,400);
- ctx.fillStyle="#e8bd62";
- ctx.font="24px Arial";
- ctx.fillText("★",starPosition.x-10,starPosition.y+8);
- ctx.font="28px Arial";
- ctx.fillText("🧍",playerPosition.x-13,playerPosition.y+10);
-}
-
-function movePlayer(direction){
- moveDirection=direction;
-}
-
-function stopPlayer(){
- moveDirection=null;
-}
-
-function stopPractice(){
- if(practiceTimer)clearInterval(practiceTimer);
- practiceTimer=null;
- moveDirection=null;
-}
-
-/* AUTOMATIC LOGO -> ENTRY -> LOGIN / LOBBY */
-async function startGame(){
- if(entryTimer)clearTimeout(entryTimer);
+/* SETTINGS */
+function saveSettings(){
+ const sound=document.getElementById("soundSetting").value;
+ const graphics=document.getElementById("graphicsSetting").value;
 
  try{
-  currentUser=await account.get();
- }catch(e){
-  currentUser=null;
+  localStorage.setItem("bdGameSound",sound);
+  localStorage.setItem("bdGameGraphics",graphics);
+  showMessage("settingsMessage","Settings saved successfully.");
+ }catch(error){
+  showMessage("settingsMessage","Could not save settings.");
  }
-
- go("splash");
-
- entryTimer=setTimeout(()=>{
-  go("entry");
-
-  entryTimer=setTimeout(async()=>{
-   if(currentUser){
-    try{
-     await afterLogin();
-    }catch(e){
-     currentUser=null;
-     go("login");
-    }
-   }else{
-    go("login");
-   }
-  },3500);
-
- },1800);
 }
 
+function loadSettings(){
+ try{
+  const sound=localStorage.getItem("bdGameSound");
+  const graphics=localStorage.getItem("bdGameGraphics");
+
+  if(sound) document.getElementById("soundSetting").value=sound;
+  if(graphics) document.getElementById("graphicsSetting").value=graphics;
+ }catch(error){
+  console.log(error.message);
+ }
+}
+
+/* AUTOMATIC STARTUP */
+async function startApp(){
+ loadSettings();
+
+ try{
+  const sessions=await account.listSessions();
+
+  if(sessions.sessions && sessions.sessions.length>0){
+   currentUser=await account.get();
+   await afterLogin();
+   return;
+  }
+ }catch(error){
+  console.log("Session check:",error.message);
+ }
+
+ setTimeout(()=>{
+  if(!currentUser){
+   go("entry");
+
+   setTimeout(()=>{
+    if(!currentUser) go("login");
+   },1800);
+  }
+ },1500);
+}
+
+/* START GAME APP */
 document.addEventListener("DOMContentLoaded",()=>{
- startGame();
+ startApp();
 });
 </script>
 </body>
-</html>
+      </html>
