@@ -40,14 +40,26 @@ body:has(#entry.active) header{display:none}
  align-items:center;justify-content:center;overflow:hidden
 }
 #splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)}
-.splash-wrap{padding:20px}
+.splash-wrap{padding:20px;animation:splashEnter 1s ease both}
 .splash-mark{
- width:145px;height:145px;margin:auto;border:4px solid #ffd36a;
+ position:relative;width:145px;height:145px;margin:auto;border:4px solid #ffd36a;
  border-radius:50%;display:grid;place-items:center;
  font-size:65px;font-weight:1000;color:#ffd36a;
- box-shadow:0 0 35px #bd812b
+ box-shadow:0 0 20px #bd812b,0 0 55px #e8bd62;
+ animation:logoPulse 1.6s ease-in-out infinite
 }
-.splash-title{color:#ffd36a;letter-spacing:5px;font-size:35px}
+.splash-mark:before,.splash-mark:after{
+ content:"";position:absolute;inset:-13px;border:2px solid #ffd36a;
+ border-radius:50%;opacity:.65;animation:logoRing 2s linear infinite
+}
+.splash-mark:after{inset:-25px;opacity:.3;animation-delay:1s}
+.splash-title{color:#ffd36a;letter-spacing:5px;font-size:35px;text-shadow:0 0 18px #e8bd62}
+.splash-loading{width:190px;height:5px;margin:25px auto 0;background:#26374d;border-radius:9px;overflow:hidden}
+.splash-loading:after{content:"";display:block;height:100%;width:35%;background:#ffd36a;border-radius:9px;animation:loadingRun 1.2s ease-in-out infinite}
+@keyframes logoPulse{50%{transform:scale(1.06);box-shadow:0 0 35px #bd812b,0 0 75px #e8bd62}}
+@keyframes logoRing{0%{transform:scale(.88);opacity:.7}100%{transform:scale(1.2);opacity:0}}
+@keyframes loadingRun{0%{transform:translateX(-110%)}100%{transform:translateX(390%)}}
+@keyframes splashEnter{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 #entry{
  background:radial-gradient(ellipse at 50% 75%,#247b70,#173c50 45%,#080d18);
  text-align:center;overflow:hidden
@@ -134,6 +146,7 @@ body:has(#entry.active) header{display:none}
   <div class="splash-mark">BD</div>
   <h2 class="splash-title">BD GAME</h2>
   <p class="muted">BATTLE ARENA</p>
+  <div class="splash-loading"></div>
  </div>
 </section>
 
@@ -155,6 +168,7 @@ body:has(#entry.active) header{display:none}
   <input id="loginEmail" type="email" placeholder="Gmail">
   <input id="loginPassword" type="password" placeholder="Password">
   <button class="full" onclick="loginPlayer()">LOGIN</button>
+  <button class="full darkbtn" onclick="facebookLogin()">CONTINUE WITH FACEBOOK</button>
   <button class="full darkbtn" onclick="go('register')">CREATE ACCOUNT</button>
   <button class="full darkbtn" onclick="guestLogin()">GUEST LOGIN</button>
   <p id="loginMessage" class="muted"></p>
@@ -172,9 +186,7 @@ body:has(#entry.active) header{display:none}
   <button class="full darkbtn" onclick="go('login')">BACK TO LOGIN</button>
   <p id="regMessage" class="muted"></p>
  </div>
-</section>
-
-<!-- MAIN LOBBY -->
+ </section><!-- MAIN LOBBY -->
 <section id="lobby" class="page">
  <div class="lobby-stage">
   <div class="lobby-hud">
@@ -392,9 +404,7 @@ const client=new Appwrite.Client()
   .setProject(APPWRITE_PROJECT);
 
 const account=new Appwrite.Account(client);
-const tables=new Appwrite.TablesDB(client);
-
-/* GLOBAL STATE */
+const tables=new Appwrite.TablesDB(client);/* GLOBAL STATE */
 let currentUser=null;
 let selectedMode="SOLO";
 let selectedMap="Bermuda";
@@ -475,9 +485,9 @@ async function guestLogin(){
 
 /* PLAYER REGISTRATION */
 async function registerPlayer(){
-  const name=document.getElementById("registerName")?.value.trim();
-  const email=document.getElementById("registerEmail")?.value.trim();
-  const password=document.getElementById("registerPassword")?.value;
+  const name=document.getElementById("regName")?.value.trim();
+  const email=document.getElementById("regEmail")?.value.trim();
+  const password=document.getElementById("regPassword")?.value;
 
   if(!name || !email || !password){
     showMessage("Please enter name, email and password.");
@@ -497,6 +507,17 @@ async function registerPlayer(){
     await afterLogin();
   }catch(error){
     showMessage("Registration failed: "+error.message);
+  }
+}
+
+/* FACEBOOK LOGIN */
+function facebookLogin(){
+  const successURL=window.location.origin+window.location.pathname;
+  const failureURL=window.location.origin+window.location.pathname+"?oauth=failed";
+  try{
+    account.createOAuth2Session("facebook",successURL,failureURL);
+  }catch(error){
+    showMessage("Facebook login failed: "+error.message);
   }
 }
 
@@ -765,7 +786,9 @@ async function loadLeaderboard(){
     container.textContent="Leaderboard unavailable.";
     console.error(error);
   }
-}/* PRACTICE ARENA */
+}
+
+/* PRACTICE ARENA */
 function drawPractice(){
   const canvas=document.getElementById("practiceCanvas");
   if(!canvas) return;
@@ -898,27 +921,35 @@ function loadSettings(){
 async function startApp(){
   loadSettings();
 
+  const params=new URLSearchParams(window.location.search);
+  if(params.get("oauth")==="failed"){
+    const message=document.getElementById("loginMessage");
+    if(message) message.textContent="Facebook login was not completed. Please try again.";
+    window.history.replaceState({},document.title,window.location.pathname);
+  }
+
+  let hasSession=false;
   try{
     const sessions=await account.listSessions();
-
-    if(sessions.sessions && sessions.sessions.length>0){
-      currentUser=await account.get();
-      await afterLogin();
-      return;
-    }
+    hasSession=!!(sessions.sessions && sessions.sessions.length>0);
   }catch(error){
     console.log("Session check:",error.message);
   }
 
-  setTimeout(()=>{
-    if(!currentUser){
-      go("entry");
-
-      setTimeout(()=>{
-        if(!currentUser) go("login");
-      },1800);
+  go("splash");
+  setTimeout(async()=>{
+    if(hasSession){
+      try{
+        currentUser=await account.get();
+        await afterLogin();
+      }catch(error){
+        currentUser=null;
+        go("login");
+      }
+    }else if(!currentUser){
+      go("login");
     }
-  },1500);
+  },3900);
 }
 
 /* APP START */
@@ -926,4 +957,4 @@ document.addEventListener("DOMContentLoaded",startApp);
 
 </script>
 </body>
-   </html>
+                                   </html>
