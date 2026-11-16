@@ -958,5 +958,12 @@ async function startApp(){
 document.addEventListener("DOMContentLoaded",startApp);
 
 </script>
-</body>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js")
+      .catch(error => console.log("PWA:", error));
+  });
+}
+</script></body>
  </html>
