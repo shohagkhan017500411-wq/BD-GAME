@@ -34,12 +34,16 @@ async function verifyAdmin(request, env) {
   const supabaseUrl = env.SUPABASE_URL.replace(/\/+$/, "");
   const token = authorization.slice(7);
 
+  const authController = new AbortController();
+  const authTimer = setTimeout(() => authController.abort(), 10000);
+
   try {
     const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
       headers: {
         apikey: env.SUPABASE_ANON_KEY,
         Authorization: `Bearer ${token}`
-      }
+      },
+      signal: authController.signal
     });
 
     if (response.status === 401 || response.status === 403) {
@@ -57,8 +61,16 @@ async function verifyAdmin(request, env) {
     }
 
     return { ok: true, user };
-  } catch {
-    return { ok: false, status: 502, error: "Cannot reach Supabase authentication service" };
+  } catch (error) {
+    return {
+      ok: false,
+      status: 502,
+      error: error?.name === "AbortError"
+        ? "Supabase authentication request timed out"
+        : "Cannot reach Supabase authentication service"
+    };
+  } finally {
+    clearTimeout(authTimer);
   }
 }
 
@@ -71,12 +83,22 @@ async function getAdminPlayers(env) {
     `${APPWRITE_ENDPOINT}/tablesdb/${APPWRITE_DATABASE_ID}` +
     `/tables/players/rows?limit=100&total=true`;
 
-  const response = await fetch(endpoint, {
-    headers: {
-      "X-Appwrite-Project": APPWRITE_PROJECT_ID,
-      "X-Appwrite-Key": env.APPWRITE_API_KEY
-    }
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+
+  let response;
+
+  try {
+    response = await fetch(endpoint, {
+      headers: {
+        "X-Appwrite-Project": APPWRITE_PROJECT_ID,
+        "X-Appwrite-Key": env.APPWRITE_API_KEY
+      },
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 
   const result = await response.json();
 
@@ -180,7 +202,6 @@ export class GameRoom {
     const server = pair[1];
 
     const url = new URL(request.url);
-
     const rawName = url.searchParams.get("name") || "Guest Player";
 
     const name = rawName
