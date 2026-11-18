@@ -188,7 +188,9 @@ body:has(#entry.active) header{display:none}
   <button class="full darkbtn" onclick="go('login')">BACK TO LOGIN</button>
   <p id="regMessage" class="muted"></p>
  </div>
-</section><!-- MAIN LOBBY -->
+</section>
+
+<!-- MAIN LOBBY -->
 <section id="lobby" class="page">
  <div class="lobby-stage">
   <div class="lobby-hud">
@@ -269,7 +271,9 @@ body:has(#entry.active) header{display:none}
   <button onclick="go('settings')">⚙<br>SETTINGS</button>
   <button onclick="go('room')">🚪<br>ROOM</button>
  </div>
- </section><!-- CHARACTER PAGE -->
+</section>
+
+<!-- CHARACTER PAGE -->
 <section id="character" class="page">
   <div class="panel">
     <h2>CHARACTER</h2>
@@ -406,7 +410,9 @@ const client=new Appwrite.Client()
   .setProject(APPWRITE_PROJECT);
 
 const account=new Appwrite.Account(client);
-const tables=new Appwrite.TablesDB(client);/* GLOBAL STATE */
+const tables=new Appwrite.TablesDB(client);
+
+/* GLOBAL STATE */
 let currentUser=null;
 let selectedMode="SOLO";
 let selectedMap="Bermuda";
@@ -452,6 +458,16 @@ function go(page){
 function setMode(mode){
   selectedMode=mode;
   updateLobby();
+
+  document.querySelectorAll(".mode-card").forEach(button=>{
+    button.classList.remove("selected");
+  });
+
+  const selectedButton=document.getElementById(
+    mode.toLowerCase()+"Btn"
+  );
+
+  if(selectedButton) selectedButton.classList.add("selected");
 }
 
 function selectMap(map){
@@ -516,6 +532,7 @@ async function registerPlayer(){
 function facebookLogin(){
   const successURL=window.location.origin+window.location.pathname;
   const failureURL=window.location.origin+window.location.pathname+"?oauth=failed";
+
   try{
     account.createOAuth2Session("facebook",successURL,failureURL);
   }catch(error){
@@ -548,9 +565,11 @@ async function afterLogin(){
 
   const name=document.getElementById("profileName");
   const email=document.getElementById("profileEmail");
+  const headerName=document.getElementById("playerName");
 
   if(name) name.textContent=currentUser.name || "Player";
   if(email) email.textContent=currentUser.email || "Guest Player";
+  if(headerName) headerName.textContent=currentUser.name || "Guest Player";
 
   go("lobby");
   await updatePlayerRecord();
@@ -562,30 +581,22 @@ async function updatePlayerRecord(){
   if(!currentUser) return;
 
   try{
-    const result=await tables.listRows({
+    await tables.createRow({
       databaseId:DATABASE_ID,
-      tableId:PLAYERS_TABLE
+      tableId:PLAYERS_TABLE,
+      rowId:currentUser.$id,
+      data:{
+        userId:currentUser.$id,
+        name:currentUser.name || "Player",
+        email:currentUser.email || "",
+        score:0
+      }
     });
-
-    const existing=result.rows.find(
-      row=>row.userId===currentUser.$id
-    );
-
-    if(!existing){
-      await tables.createRow({
-        databaseId:DATABASE_ID,
-        tableId:PLAYERS_TABLE,
-        rowId:"unique()",
-        data:{
-          userId:currentUser.$id,
-          name:currentUser.name || "Player",
-          email:currentUser.email || "",
-          score:0
-        }
-      });
-    }
   }catch(error){
-    console.error("Player record:",error);
+    // একই Player-এর রেকর্ড আগে থেকেই থাকলে Appwrite 409 দেয়।
+    if(error.code !== 409){
+      console.error("Player record:",error);
+    }
   }
 }
 
@@ -604,7 +615,10 @@ async function updateProfile(){
     currentUser=await account.get();
 
     const name=document.getElementById("profileName");
+    const headerName=document.getElementById("playerName");
+
     if(name) name.textContent=currentUser.name;
+    if(headerName) headerName.textContent=currentUser.name;
 
     showMessage("Profile updated.");
   }catch(error){
