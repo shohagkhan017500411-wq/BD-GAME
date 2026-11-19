@@ -43,10 +43,7 @@ async function verifyAdmin(request, env) {
   const token = authorization.slice(7);
 
   const authController = new AbortController();
-  const authTimer = setTimeout(
-    () => authController.abort(),
-    10000
-  );
+  const authTimer = setTimeout(() => authController.abort(), 10000);
 
   try {
     const response = await fetch(
@@ -60,27 +57,35 @@ async function verifyAdmin(request, env) {
       }
     );
 
-    if (
-      response.status === 401 ||
-      response.status === 403
-    ) {
-      return {
-        ok: false,
-        status: 401,
-        error: "Admin session invalid or expired"
-      };
-    }
-
     if (!response.ok) {
+      const authError = await response.json().catch(() => ({}));
+
+      const safeDetail = String(
+        authError.msg ||
+        authError.message ||
+        authError.error_description ||
+        authError.error ||
+        "No error detail returned"
+      ).replace(/[\r\n]+/g, " ").slice(0, 140);
+
       console.error(
-        "[BD GAME] Supabase Auth HTTP status:",
-        response.status
+        "[BD GAME] Supabase Auth rejected request:",
+        response.status,
+        safeDetail
       );
+
+      if (response.status === 401 || response.status === 403) {
+        return {
+          ok: false,
+          status: 401,
+          error: `Supabase rejected Admin token (HTTP ${response.status}): ${safeDetail}`
+        };
+      }
 
       return {
         ok: false,
         status: 502,
-        error: `Supabase authentication service error (HTTP ${response.status})`
+        error: `Supabase authentication service error (HTTP ${response.status}): ${safeDetail}`
       };
     }
 
@@ -123,10 +128,7 @@ async function getAdminPlayers(env) {
     `/tables/players/rows?limit=100&total=true`;
 
   const controller = new AbortController();
-  const timer = setTimeout(
-    () => controller.abort(),
-    12000
-  );
+  const timer = setTimeout(() => controller.abort(), 12000);
 
   let response;
 
@@ -145,9 +147,7 @@ async function getAdminPlayers(env) {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      result.message || "Appwrite request failed"
-    );
+    throw new Error(result.message || "Appwrite request failed");
   }
 
   return {
@@ -175,28 +175,21 @@ export default {
       });
     }
 
-    // ADMIN PLAYER API
     if (url.pathname === "/api/admin/players") {
       if (request.method !== "GET") {
-        return json(
-          {
-            ok: false,
-            error: "Method not allowed"
-          },
-          405
-        );
+        return json({
+          ok: false,
+          error: "Method not allowed"
+        }, 405);
       }
 
       const auth = await verifyAdmin(request, env);
 
       if (!auth.ok) {
-        return json(
-          {
-            ok: false,
-            error: auth.error
-          },
-          auth.status
-        );
+        return json({
+          ok: false,
+          error: auth.error
+        }, auth.status);
       }
 
       try {
@@ -215,25 +208,18 @@ export default {
           error?.message || "Unknown error"
         );
 
-        return json(
-          {
-            ok: false,
-            error: "Appwrite database connection failed"
-          },
-          502
-        );
+        return json({
+          ok: false,
+          error: "Appwrite database connection failed"
+        }, 502);
       }
     }
 
-    // MULTIPLAYER WEBSOCKET
     if (url.pathname === "/api/ws") {
-      if (
-        request.headers.get("Upgrade") !== "websocket"
-      ) {
-        return new Response(
-          "WebSocket upgrade required",
-          { status: 426 }
-        );
+      if (request.headers.get("Upgrade") !== "websocket") {
+        return new Response("WebSocket upgrade required", {
+          status: 426
+        });
       }
 
       const room = (
@@ -245,15 +231,12 @@ export default {
       ).toUpperCase();
 
       if (!["SOLO", "DUO", "SQUAD"].includes(mode)) {
-        return new Response(
-          "Invalid game mode",
-          { status: 400 }
-        );
+        return new Response("Invalid game mode", {
+          status: 400
+        });
       }
 
-      const id = env.GAME_ROOMS.idFromName(
-        room + ":" + mode
-      );
+      const id = env.GAME_ROOMS.idFromName(room + ":" + mode);
 
       return env.GAME_ROOMS.get(id).fetch(request);
     }
@@ -274,18 +257,16 @@ export class GameRoom {
     const server = pair[1];
 
     const url = new URL(request.url);
-    const rawName =
-      url.searchParams.get("name") || "Guest Player";
+    const rawName = url.searchParams.get("name") || "Guest Player";
 
     const name = rawName
       .replace(/[<>\u0000-\u001f]/g, "")
       .slice(0, 20) || "Guest Player";
 
     if (this.ctx.getWebSockets().length >= 50) {
-      return new Response(
-        "Room is full",
-        { status: 503 }
-      );
+      return new Response("Room is full", {
+        status: 503
+      });
     }
 
     server.accept();
@@ -327,16 +308,12 @@ export class GameRoom {
 
       if (msg.type !== "player_update") return;
 
-      const player =
-        server.deserializeAttachment() || {};
+      const player = server.deserializeAttachment() || {};
 
       const x = Number(msg.x);
       const z = Number(msg.z);
 
-      if (
-        !Number.isFinite(x) ||
-        !Number.isFinite(z)
-      ) {
+      if (!Number.isFinite(x) || !Number.isFinite(z)) {
         return;
       }
 
