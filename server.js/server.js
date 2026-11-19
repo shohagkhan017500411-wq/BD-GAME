@@ -4,6 +4,12 @@ const APPWRITE_PROJECT_ID = "6af4c610002ee336af01";
 const APPWRITE_DATABASE_ID = "6af4e97b0018132a174c";
 const ADMIN_OWNER_ID = "3fcee17a-fd33-4d0e-97cf-7ae35c9eb820";
 
+const SUPABASE_PROJECT_URL =
+  "https://kvloogdidadztnpgcvqu.supabase.co";
+
+let jwksCache = null;
+let jwksCacheTime = 0;
+
 function corsHeaders() {
   return {
     "Access-Control-Allow-Origin": "*",
@@ -20,6 +26,196 @@ function json(data, status = 200) {
   });
 }
 
+function decodeBase64Url(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes;
+}
+
+function decodeJwtPart(value) {
+  return JSON.parse(
+    new TextDecoder().decode(decodeBase64Url(value))
+  );
+}
+
+async function getJWKS(forceRefresh = false) {
+  const now = Date.now();
+
+  if (
+    !forceRefresh &&
+    jwksCache &&
+    now - jwksCacheTime < 5 * 60 * 1000
+  ) {
+    return jwksCache;
+  }
+
+  const response = await fetch(
+    `${SUPABASE_PROJECT_URL}/auth/v1/.well-known/jwks.json`,
+    {
+      headers: {
+        Accept: "application/json"
+      }
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`JWKS request failed: HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data.keys) || data.keys.length === 0) {
+    throw new Error("No public signing keys found in Supabase JWKS");
+  }
+
+  jwksCache = data;
+  jwksCacheTime = now;
+
+  return data;
+}
+
+async function verifyES256(token, forceRefresh = false) {
+  const parts = token.split(".");
+
+  if (parts.length !== 3) {
+    throw new Error("Invalid JWT format");
+  }
+
+  const header = decodeJwtPart(parts[0]);
+  const claims = decodeJwtPart(parts[1]);
+
+  if (header.alg !== "ES256") {
+    throw new Error("Unsupported JWT algorithm");
+  }
+
+  if (!header.kid) {
+    throw new Error("JWT signing key ID is missing");
+  }
+
+  const jwks = await getJWKS(forceRefresh);
+
+  const jwk = jwks.keys.find(
+    key => key.kid === header.kid &&
+           key.alg === "ES256" &&
+           key.kty === "EC" &&
+           key.crv === "P-256"
+  );
+
+  if (!jwk) {
+    if (!forceRefresh) {
+      jwksCache = null;
+      jwksCacheTime = 0;
+      return verifyES256(token, true);
+    }
+
+    throw new Error(
+      `JWT kid ${String(header.kid).slice(0, 40)} not found in Supabase JWKS`
+    );
+  }
+
+  const publicKey = await crypto.subtle.importKey(
+    "jwk",
+    jwk,
+    {
+      name: "ECDSA",
+      namedCurve: "P-256"
+    },
+    false,
+    ["verify"]
+  );
+
+  const valid = await crypto.subtle.verify(
+    {
+      name: "ECDSA",
+      hash: "SHA-256"
+    },
+    publicKey,
+    decodeBase64Url(parts[2]),
+    new TextEncoder().encode(parts[0] + "." + parts[1])
+  );
+
+  if (!valid) {
+    throw new Error("JWT signature verification failed");
+  }
+
+  validateClaims(claims);
+
+  return claims;
+}
+
+function validateClaims(claims) {
+  const now = Math.floor(Date.now() / 1000);
+
+  if (!claims.sub || !claims.exp) {
+    throw new Error("JWT missing required claims");
+  }
+
+  if (claims.exp <= now) {
+    throw new Error("Admin session expired. Login again.");
+  }
+
+  if (claims.nbf && claims.nbf > now) {
+    throw new Error("JWT is not active yet");
+  }
+
+  if (claims.iss !== `${SUPABASE_PROJECT_URL}/auth/v1`) {
+    throw new Error("JWT belongs to a different Supabase project");
+  }
+
+  const validAudience =
+    claims.aud === "authenticated" ||
+    (
+      Array.isArray(claims.aud) &&
+      claims.aud.includes("authenticated")
+    );
+
+  if (!validAudience || claims.role !== "authenticated") {
+    throw new Error("JWT is not an authenticated user token");
+  }
+}
+
+async function verifyHS256WithSupabase(token, env) {
+  if (!env.SUPABASE_ANON_KEY) {
+    throw new Error("Supabase API key configuration missing");
+  }
+
+  const response = await fetch(
+    `${SUPABASE_PROJECT_URL}/auth/v1/user`,
+    {
+      headers: {
+        apikey: env.SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(
+      String(
+        data.msg ||
+        data.message ||
+        data.error_description ||
+        data.error ||
+        `Supabase Auth HTTP ${response.status}`
+      ).slice(0, 160)
+    );
+  }
+
+  return {
+    sub: data.id,
+    email: data.email || null
+  };
+}
+
 async function verifyAdmin(request, env) {
   const authorization = request.headers.get("Authorization");
 
@@ -31,67 +227,40 @@ async function verifyAdmin(request, env) {
     };
   }
 
-  if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
+  if (
+    !env.SUPABASE_URL ||
+    env.SUPABASE_URL.replace(/\/+$/, "") !== SUPABASE_PROJECT_URL
+  ) {
     return {
       ok: false,
       status: 500,
-      error: "Supabase Worker configuration missing"
+      error: "Player Worker Supabase URL does not match BD GAME project"
     };
   }
 
-  const supabaseUrl = env.SUPABASE_URL.replace(/\/+$/, "");
   const token = authorization.slice(7);
 
-  const authController = new AbortController();
-  const authTimer = setTimeout(() => authController.abort(), 10000);
-
   try {
-    const response = await fetch(
-      `${supabaseUrl}/auth/v1/user`,
-      {
-        headers: {
-          apikey: env.SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${token}`
-        },
-        signal: authController.signal
-      }
-    );
+    const parts = token.split(".");
 
-    if (!response.ok) {
-      const authError = await response.json().catch(() => ({}));
-
-      const safeDetail = String(
-        authError.msg ||
-        authError.message ||
-        authError.error_description ||
-        authError.error ||
-        "No error detail returned"
-      ).replace(/[\r\n]+/g, " ").slice(0, 140);
-
-      console.error(
-        "[BD GAME] Supabase Auth rejected request:",
-        response.status,
-        safeDetail
-      );
-
-      if (response.status === 401 || response.status === 403) {
-        return {
-          ok: false,
-          status: 401,
-          error: `Supabase rejected Admin token (HTTP ${response.status}): ${safeDetail}`
-        };
-      }
-
-      return {
-        ok: false,
-        status: 502,
-        error: `Supabase authentication service error (HTTP ${response.status}): ${safeDetail}`
-      };
+    if (parts.length !== 3) {
+      throw new Error("Invalid JWT format");
     }
 
-    const user = await response.json();
+    const header = decodeJwtPart(parts[0]);
+    let claims;
 
-    if (user.id !== ADMIN_OWNER_ID) {
+    if (header.alg === "ES256") {
+      claims = await verifyES256(token);
+    } else if (header.alg === "HS256") {
+      claims = await verifyHS256WithSupabase(token, env);
+    } else {
+      throw new Error(
+        `Unsupported JWT algorithm: ${String(header.alg)}`
+      );
+    }
+
+    if (claims.sub !== ADMIN_OWNER_ID) {
       return {
         ok: false,
         status: 403,
@@ -101,20 +270,24 @@ async function verifyAdmin(request, env) {
 
     return {
       ok: true,
-      user
+      user: {
+        id: claims.sub,
+        email: claims.email || null
+      }
     };
 
   } catch (error) {
+    const detail = String(
+      error?.message || "JWT verification failed"
+    ).replace(/[\r\n]+/g, " ").slice(0, 180);
+
+    console.error("[BD GAME] Admin JWT error:", detail);
+
     return {
       ok: false,
-      status: 502,
-      error: error?.name === "AbortError"
-        ? "Supabase authentication request timed out"
-        : "Cannot reach Supabase authentication service"
+      status: 401,
+      error: `Admin token verification failed: ${detail}`
     };
-
-  } finally {
-    clearTimeout(authTimer);
   }
 }
 
