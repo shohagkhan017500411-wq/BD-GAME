@@ -5,16 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#080d18">
-<title>BD GAME</title><meta name="description" content="BD GAME Battle Arena">
+<title>BD GAME</title>
+<meta name="description" content="BD GAME Battle Arena">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/appwrite@29.0.0"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
 button,input,select{font:inherit}
 button{border:0;border-radius:8px;padding:12px;background:#e8bd62;color:#151515;font-weight:bold;cursor:pointer}
+button:disabled{cursor:not-allowed}
 input,select{width:100%;padding:13px;margin:7px 0;background:#172438;border:1px solid #45536a;border-radius:8px;color:white}
 header{height:55px;background:#101a2b;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
 .logo{font-size:22px;font-weight:1000;color:#f3c76c;letter-spacing:2px}
@@ -34,27 +35,12 @@ header{height:55px;background:#101a2b;display:flex;align-items:center;justify-co
 .nav button{background:transparent;color:white;font-size:12px;padding:7px}
 .status{padding:10px;background:#17263b;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
 .hide{display:none!important}
-
-body:has(#splash.active) header,
-body:has(#entry.active) header{display:none}
-
-#splash.active,#entry.active{
- display:flex;min-height:100vh;padding:0;
- align-items:center;justify-content:center;overflow:hidden
-}
+body:has(#splash.active) header,body:has(#entry.active) header{display:none}
+#splash.active,#entry.active{display:flex;min-height:100vh;padding:0;align-items:center;justify-content:center;overflow:hidden}
 #splash{background:radial-gradient(ellipse at 50% 30%,#263b58,#101a2b 50%,#080d18)}
 .splash-wrap{padding:20px;animation:splashEnter 1s ease both}
-.splash-mark{
- position:relative;width:145px;height:145px;margin:auto;border:4px solid #ffd36a;
- border-radius:50%;display:grid;place-items:center;
- font-size:65px;font-weight:1000;color:#ffd36a;
- box-shadow:0 0 20px #bd812b,0 0 55px #e8bd62;
- animation:logoPulse 1.6s ease-in-out infinite
-}
-.splash-mark:before,.splash-mark:after{
- content:"";position:absolute;inset:-13px;border:2px solid #ffd36a;
- border-radius:50%;opacity:.65;animation:logoRing 2s linear infinite
-}
+.splash-mark{position:relative;width:145px;height:145px;margin:auto;border:4px solid #ffd36a;border-radius:50%;display:grid;place-items:center;font-size:65px;font-weight:1000;color:#ffd36a;box-shadow:0 0 20px #bd812b,0 0 55px #e8bd62;animation:logoPulse 1.6s ease-in-out infinite}
+.splash-mark:before,.splash-mark:after{content:"";position:absolute;inset:-13px;border:2px solid #ffd36a;border-radius:50%;opacity:.65;animation:logoRing 2s linear infinite}
 .splash-mark:after{inset:-25px;opacity:.3;animation-delay:1s}
 .splash-title{color:#ffd36a;letter-spacing:5px;font-size:35px;text-shadow:0 0 18px #e8bd62}
 .splash-loading{width:190px;height:5px;margin:25px auto 0;background:#26374d;border-radius:9px;overflow:hidden}
@@ -63,54 +49,27 @@ body:has(#entry.active) header{display:none}
 @keyframes logoRing{0%{transform:scale(.88);opacity:.7}100%{transform:scale(1.2);opacity:0}}
 @keyframes loadingRun{0%{transform:translateX(-110%)}100%{transform:translateX(390%)}}
 @keyframes splashEnter{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-#entry{
- background:radial-gradient(ellipse at 50% 75%,#247b70,#173c50 45%,#080d18);
- text-align:center;overflow:hidden
-}
+#entry{background:radial-gradient(ellipse at 50% 75%,#247b70,#173c50 45%,#080d18);text-align:center;overflow:hidden}
 .entry-content{width:100%;padding:20px}
 .entry-title{color:#ffd36a;font-size:38px;letter-spacing:5px;text-shadow:0 0 20px #e8bd62}
 .entry-island{font-size:75px;margin-top:30px}
 .entry-character{font-size:125px;margin-top:20px;animation:idle 3s infinite}
 .entry-subtitle{letter-spacing:3px}
 @keyframes idle{50%{transform:translateY(-9px)}}
-
-/* BD GAME LOBBY */
 #lobby.page.active{display:block;background:#080d18;color:white;min-height:100vh;padding:12px 12px 85px}
-#lobby .lobby-stage{
- display:block;position:relative;width:100%;min-height:470px;height:auto;
- overflow:hidden;border:2px solid #e8bd62;border-radius:15px;
- background:radial-gradient(ellipse at 50% 70%,#d6ad55 0%,transparent 30%),
- linear-gradient(180deg,#092b55 0%,#176b91 40%,#55a58c 70%,#153e35 100%)
-}
-#lobby .lobby-stage:before{
- content:"";position:absolute;left:-10%;right:-10%;bottom:0;height:48%;
- background:linear-gradient(140deg,#36785a,#102d2c);
- clip-path:polygon(0 55%,20% 10%,40% 45%,60% 0,80% 40%,100% 15%,100% 100%,0 100%)
-}
+#lobby .lobby-stage{display:block;position:relative;width:100%;min-height:470px;height:auto;overflow:hidden;border:2px solid #e8bd62;border-radius:15px;background:radial-gradient(ellipse at 50% 70%,#d6ad55 0%,transparent 30%),linear-gradient(180deg,#092b55 0%,#176b91 40%,#55a58c 70%,#153e35 100%)}
+#lobby .lobby-stage:before{content:"";position:absolute;left:-10%;right:-10%;bottom:0;height:48%;background:linear-gradient(140deg,#36785a,#102d2c);clip-path:polygon(0 55%,20% 10%,40% 45%,60% 0,80% 40%,100% 15%,100% 100%,0 100%)}
 #lobby .lobby-hud{position:absolute;z-index:10;top:10px;left:10px;right:10px;display:flex;justify-content:space-between}
 .hud-chip{background:#101e32;color:#ffe09a;border:1px solid #e8bd62;border-radius:8px;padding:8px;font-weight:bold}
-#lobby .lobby-rail{
- position:absolute;z-index:15;top:62px;left:7px;bottom:8px;width:78px;
- display:flex;flex-direction:column;justify-content:center;gap:5px
-}
-#lobby .lobby-rail button{
- min-height:38px;padding:4px 2px;border-radius:7px;
- background:linear-gradient(135deg,#174d79,#101e32);
- border:1px solid #e8bd62;color:#ffe19a;font-size:8px;
- font-weight:bold;line-height:1.15
-}
+#lobby .lobby-rail{position:absolute;z-index:15;top:62px;left:7px;bottom:8px;width:78px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+#lobby .lobby-rail button{min-height:38px;padding:4px 2px;border-radius:7px;background:linear-gradient(135deg,#174d79,#101e32);border:1px solid #e8bd62;color:#ffe19a;font-size:8px;font-weight:bold;line-height:1.15}
 #lobby .lobby-rail button span{display:block;font-size:16px;margin-bottom:2px}
 #lobby .lobby-scene-title{position:absolute;z-index:5;top:75px;left:88px;right:8px;text-align:center}
 #lobby .lobby-scene-title strong{color:#ffe09a;font-size:25px;letter-spacing:3px;text-shadow:0 3px 8px #000}
 #lobby .lobby-scene-title small{display:block;margin-top:5px;color:white}
-#lobby .hero-character-wrap{
- position:absolute;z-index:7;left:58%;bottom:0;transform:translateX(-25%);
- width:180px;height:245px;display:flex;align-items:end;justify-content:center
-}
+#lobby .hero-character-wrap{position:absolute;z-index:7;left:58%;bottom:0;transform:translateX(-25%);width:180px;height:245px;display:flex;align-items:end;justify-content:center}
 #lobby .hero-character-svg{width:100%;height:100%}
-#lobby .lobby-playbar{
- position:relative;z-index:20;display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px
-}
+#lobby .lobby-playbar{position:relative;z-index:20;display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
 #lobby .lobby-playbar .mode-row{grid-column:1/-1}
 #lobby .lobby-playbar button{background:linear-gradient(135deg,#f5d77e,#c18b2c);color:#172033;font-weight:900}
 #lobby .lobby-notice{color:#ffe09a;text-align:center}
@@ -128,14 +87,9 @@ body:has(#entry.active) header{display:none}
 .rank-number{width:35px;height:35px;display:grid;place-items:center;background:#26374d;border-radius:8px;color:#f3c76c;font-weight:bold}
 .rank-name{flex:1;overflow-wrap:anywhere}
 .rank-points{color:#f3c76c;font-weight:bold;white-space:nowrap}
-
-@media(min-width:600px){
- #lobby .lobby-stage{height:500px}
- #lobby .hero-character-wrap{width:230px;height:320px}
-}
+@media(min-width:600px){#lobby .lobby-stage{height:500px}#lobby .hero-character-wrap{width:230px;height:320px}}
 </style>
 </head>
-
 <body>
 <header>
  <div class="logo">BD GAME</div>
@@ -143,7 +97,6 @@ body:has(#entry.active) header{display:none}
  <button class="darkbtn" onclick="go('settings')">⚙</button>
 </header>
 
-<!-- LOGO SCREEN -->
 <section id="splash" class="page active center">
  <div class="splash-wrap">
   <div class="splash-mark">BD</div>
@@ -153,7 +106,6 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- ENTRY SCREEN -->
 <section id="entry" class="page center">
  <div class="entry-content">
   <h1 class="entry-title">BD GAME</h1>
@@ -164,7 +116,6 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- LOGIN -->
 <section id="login" class="page">
  <h2 class="title">PLAYER LOGIN</h2>
  <div class="panel">
@@ -178,7 +129,6 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- REGISTER -->
 <section id="register" class="page">
  <h2 class="title">CREATE PLAYER ACCOUNT</h2>
  <div class="panel">
@@ -191,7 +141,6 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- MAIN LOBBY -->
 <section id="lobby" class="page">
  <div class="lobby-stage">
   <div class="lobby-hud">
@@ -199,7 +148,6 @@ body:has(#entry.active) header{display:none}
    <div class="hud-chip">🪙 <span id="lobbyCoins">0</span></div>
    <div class="hud-chip">💎 0</div>
   </div>
-
   <nav class="lobby-rail" aria-label="Game menu">
    <button onclick="showLobbyNotice('Shop')"><span>🛒</span>SHOP</button>
    <button onclick="showLobbyNotice('Luck Royale')"><span>🎡</span>LUCK<br>ROYALE</button>
@@ -211,24 +159,16 @@ body:has(#entry.active) header{display:none}
    <button onclick="go('rank')"><span>🏆</span>RANK</button>
    <button onclick="go('room')"><span>🚪</span>ROOM</button>
   </nav>
-
   <div class="lobby-scene-title">
    <strong>BD ISLAND</strong>
    <small>ENTER THE BATTLE ARENA</small>
   </div>
-
   <div class="hero-character-wrap" id="lobbyCharacter">
    <svg class="hero-character-svg" viewBox="0 0 180 250" role="img" aria-label="BD GAME original hero character">
     <defs>
-     <linearGradient id="jacket" x1="0" x2="1" y1="0" y2="1">
-      <stop stop-color="#f5d477"/><stop offset=".5" stop-color="#2874a6"/><stop offset="1" stop-color="#102b4c"/>
-     </linearGradient>
-     <linearGradient id="pants" x1="0" x2="1">
-      <stop stop-color="#253d57"/><stop offset="1" stop-color="#0b1729"/>
-     </linearGradient>
-     <linearGradient id="skin" x1="0" x2="1">
-      <stop stop-color="#f5c89a"/><stop offset="1" stop-color="#a96849"/>
-     </linearGradient>
+     <linearGradient id="jacket" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f5d477"/><stop offset=".5" stop-color="#2874a6"/><stop offset="1" stop-color="#102b4c"/></linearGradient>
+     <linearGradient id="pants" x1="0" x2="1"><stop stop-color="#253d57"/><stop offset="1" stop-color="#0b1729"/></linearGradient>
+     <linearGradient id="skin" x1="0" x2="1"><stop stop-color="#f5c89a"/><stop offset="1" stop-color="#a96849"/></linearGradient>
     </defs>
     <ellipse cx="92" cy="239" rx="55" ry="8" fill="#071b20" opacity=".55"/>
     <path d="M57 145 L47 222 Q65 234 82 222 L91 164 L101 222 Q119 232 136 220 L124 139Z" fill="url(#pants)" stroke="#d8b75f" stroke-width="3"/>
@@ -246,7 +186,6 @@ body:has(#entry.active) header{display:none}
    </svg>
   </div>
  </div>
-
  <div class="lobby-playbar">
   <b style="grid-column:1/-1">SELECT GAME MODE</b>
   <div class="mode-row">
@@ -258,7 +197,6 @@ body:has(#entry.active) header{display:none}
   <button class="green" onclick="findMatch()">⚡ RANDOM MATCH</button>
   <button class="full darkbtn" style="grid-column:1/-1" onclick="go('room')">CREATE / JOIN ROOM</button>
  </div>
-
  <p id="lobbyNotice" class="lobby-notice"></p>
  <div class="shortcuts">
   <button onclick="go('profile')">👤<br>PROFILE</button>
@@ -274,131 +212,114 @@ body:has(#entry.active) header{display:none}
  </div>
 </section>
 
-<!-- CHARACTER PAGE -->
 <section id="character" class="page">
-  <div class="panel">
-    <h2>CHARACTER</h2>
-    <div class="character-card">
-      <div class="character-avatar">🧑‍🚀</div>
-      <h3>BD HERO</h3>
-      <p>Battle Arena Character</p>
-      <button class="primary-btn" onclick="showMessage('Character selected')">SELECT</button>
-    </div>
+ <div class="panel">
+  <h2>CHARACTER</h2>
+  <div class="character-card">
+   <div class="character-avatar">🧑‍🚀</div>
+   <h3>BD HERO</h3>
+   <p>Battle Arena Character</p>
+   <button onclick="showMessage('Character selected')">SELECT</button>
   </div>
+ </div>
 </section>
 
-<!-- MAPS PAGE -->
 <section id="maps" class="page">
-  <div class="panel">
-    <h2>SELECT MAP</h2>
-    <div class="map-grid">
-      <button class="map-card" onclick="selectMap('Bermuda')">🏝️<br>Bermuda</button>
-      <button class="map-card" onclick="selectMap('Kalahari')">🏜️<br>Kalahari</button>
-      <button class="map-card" onclick="selectMap('Alpine')">🏔️<br>Alpine</button>
-      <button class="map-card" onclick="selectMap('Purgatory')">🌲<br>Purgatory</button>
-    </div>
+ <div class="panel">
+  <h2>SELECT MAP</h2>
+  <div class="map-grid">
+   <button class="map-card" onclick="selectMap('Bermuda')">🏝️<br>Bermuda</button>
+   <button class="map-card" onclick="selectMap('Kalahari')">🏜️<br>Kalahari</button>
+   <button class="map-card" onclick="selectMap('Alpine')">🏔️<br>Alpine</button>
+   <button class="map-card" onclick="selectMap('Purgatory')">🌲<br>Purgatory</button>
   </div>
+ </div>
 </section>
 
-<!-- PROFILE PAGE -->
 <section id="profile" class="page">
-  <div class="panel">
-    <h2>PLAYER PROFILE</h2>
-    <div class="profile-avatar">👤</div>
-    <h3 id="profileName">Player</h3>
-    <p id="profileEmail"></p>
-    <button class="primary-btn" onclick="updateProfile()">UPDATE PROFILE</button>
-    <button class="secondary-btn" onclick="logout()">LOG OUT</button>
-  </div>
+ <div class="panel">
+  <h2>PLAYER PROFILE</h2>
+  <div class="profile-avatar">👤</div>
+  <h3 id="profileName">Player</h3>
+  <p id="profileEmail"></p>
+  <button onclick="updateProfile()">UPDATE PROFILE</button>
+  <button class="red" onclick="logout()">LOG OUT</button>
+ </div>
 </section>
 
-<!-- TEAM PAGE -->
 <section id="team" class="page">
-  <div class="panel">
-    <h2>TEAM</h2>
-    <p>Invite your friends to play together.</p>
-    <button class="primary-btn" onclick="showMessage('Team invitation feature coming soon')">INVITE PLAYER</button>
-  </div>
+ <div class="panel">
+  <h2>TEAM</h2>
+  <p>Invite your friends to play together.</p>
+  <button onclick="showMessage('Team invitation feature coming soon')">INVITE PLAYER</button>
+ </div>
 </section>
 
-<!-- ROOM PAGE -->
 <section id="room" class="page">
-  <div class="panel">
-    <h2>ROOM MATCH</h2>
-    <input id="roomCodeInput" placeholder="Enter room code">
-    <button class="primary-btn" onclick="joinRoom()">JOIN ROOM</button>
-    <button class="secondary-btn" onclick="createRoom()">CREATE ROOM</button>
-    <p id="roomCodeDisplay"></p>
-    <button class="secondary-btn" onclick="copyRoomCode()">COPY ROOM CODE</button>
-  </div>
+ <div class="panel">
+  <h2>ROOM MATCH</h2>
+  <input id="roomCodeInput" placeholder="Enter room code">
+  <button onclick="joinRoom()">JOIN ROOM</button>
+  <button class="darkbtn" onclick="createRoom()">CREATE ROOM</button>
+  <p id="roomCodeDisplay"></p>
+  <button class="darkbtn" onclick="copyRoomCode()">COPY ROOM CODE</button>
+ </div>
 </section>
 
-<!-- RANK PAGE -->
 <section id="rank" class="page">
-  <div class="panel">
-    <h2>LEADERBOARD</h2>
-    <div id="leaderboardList">Loading...</div>
-  </div>
+ <div class="panel">
+  <h2>LEADERBOARD</h2>
+  <div id="leaderboardList">Loading...</div>
+ </div>
 </section>
 
-<!-- RESULT PAGE -->
 <section id="result" class="page">
-  <div class="panel">
-    <h2>MATCH RESULT</h2>
-    <p id="resultMessage">No match result yet.</p>
-    <button class="primary-btn" onclick="go('lobby')">BACK TO LOBBY</button>
-  </div>
+ <div class="panel">
+  <h2>MATCH RESULT</h2>
+  <p id="resultMessage">No match result yet.</p>
+  <button onclick="go('lobby')">BACK TO LOBBY</button>
+ </div>
 </section>
 
-<!-- PRACTICE PAGE -->
 <section id="practice" class="page">
-  <div class="panel">
-    <h2>PRACTICE ARENA</h2>
-    <p>Practice movement and collect stars.</p>
-    <canvas id="practiceCanvas" width="320" height="320"></canvas>
-    <h3>Score: <span id="practiceScore">0</span></h3>
-    <button class="primary-btn" onclick="startPractice()">START PRACTICE</button>
-    <div class="practice-controls">
-      <button onpointerdown="setPracticeDirection('up')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">⬆️</button>
-      <div>
-        <button onpointerdown="setPracticeDirection('left')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">⬅️</button>
-        <button onpointerdown="setPracticeDirection('down')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">⬇️</button>
-        <button onpointerdown="setPracticeDirection('right')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">➡️</button>
-      </div>
-    </div>
+ <div class="panel">
+  <h2>PRACTICE ARENA</h2>
+  <p>Practice movement and collect stars.</p>
+  <canvas id="practiceCanvas" width="320" height="320"></canvas>
+  <h3>Score: <span id="practiceScore">0</span></h3>
+  <button onclick="startPractice()">START PRACTICE</button>
+  <div class="practice-controls">
+   <button onpointerdown="setPracticeDirection('up')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">⬆️</button>
+   <div>
+    <button onpointerdown="setPracticeDirection('left')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">⬅️</button>
+    <button onpointerdown="setPracticeDirection('down')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">⬇️</button>
+    <button onpointerdown="setPracticeDirection('right')" onpointerup="setPracticeDirection('')" onpointerleave="setPracticeDirection('')">➡️</button>
+   </div>
   </div>
+ </div>
 </section>
 
-<!-- SETTINGS PAGE -->
 <section id="settings" class="page">
-  <div class="panel">
-    <h2>SETTINGS</h2>
-    <label>Sound</label>
-    <select id="soundSetting">
-      <option value="on">ON</option>
-      <option value="off">OFF</option>
-    </select>
-    <label>Graphics</label>
-    <select id="graphicsSetting">
-      <option value="high">HIGH</option>
-      <option value="medium">MEDIUM</option>
-      <option value="low">LOW</option>
-    </select>
-    <button class="primary-btn" onclick="saveSettings()">SAVE SETTINGS</button>
-  </div>
+ <div class="panel">
+  <h2>SETTINGS</h2>
+  <label>Sound</label>
+  <select id="soundSetting"><option value="on">ON</option><option value="off">OFF</option></select>
+  <label>Graphics</label>
+  <select id="graphicsSetting"><option value="high">HIGH</option><option value="medium">MEDIUM</option><option value="low">LOW</option></select>
+  <button onclick="saveSettings()">SAVE SETTINGS</button>
+ </div>
 </section>
 
-<!-- BOTTOM NAVIGATION -->
 <nav class="nav" id="bottomNav">
-  <button onclick="go('lobby')">HOME</button>
-  <button onclick="go('character')">CHARACTER</button>
-  <button onclick="go('maps')">MAPS</button>
-  <button onclick="go('profile')">PROFILE</button>
-  <button onclick="go('settings')">SETTINGS</button>
+ <button onclick="go('lobby')">HOME</button>
+ <button onclick="go('character')">CHARACTER</button>
+ <button onclick="go('maps')">MAPS</button>
+ <button onclick="go('profile')">PROFILE</button>
+ <button onclick="go('settings')">SETTINGS</button>
 </nav>
 
 <script>
-/* APPWRITE CONNECTION */
+/* APPWRITE: Player authentication, database and match API */
 const APPWRITE_ENDPOINT="https://sgp.cloud.appwrite.io/v1";
 const APPWRITE_PROJECT="6af4c610002ee336af01";
 const DATABASE_ID="6af4e97b0018132a174c";
@@ -406,10 +327,95 @@ const PLAYERS_TABLE="players";
 const LEADERBOARD_TABLE="leaderboard";
 const MATCH_API="https://sgp.cloud.appwrite.io/v1/functions/bd-game-match-api/executions";
 
-const client=new Appwrite.Client()
-  .setEndpoint(APPWRITE_ENDPOINT)
-  .setProject(APPWRITE_PROJECT);
+/* SUPABASE: Read-only published settings from separate Admin app */
+const SUPABASE_URL="https://kvloogdidadztnpgcvqu.supabase.co";
+const SUPABASE_PUBLIC_KEY="sb_publishable_tlk8AD630Wy3P_qTFU-S5Q_ARm_1BED";
+let liveGameSettings=null;
 
+async function loadLiveAdminSettings(){
+ try{
+  const response=await fetch(
+   SUPABASE_URL+"/rest/v1/game_live_settings?select=settings&id=eq.global",
+   {method:"GET",headers:{
+    "apikey":SUPABASE_PUBLIC_KEY,
+    "Authorization":"Bearer "+SUPABASE_PUBLIC_KEY
+   },cache:"no-store"}
+  );
+  if(!response.ok)throw new Error("Live settings HTTP "+response.status);
+  const rows=await response.json();
+  liveGameSettings=rows&&rows[0]&&rows[0].settings?rows[0].settings:null;
+  if(liveGameSettings)applyLiveAdminSettings(liveGameSettings);
+ }catch(error){
+  console.warn("Admin live settings unavailable:",error);
+ }
+}
+
+function applyLiveAdminSettings(settings){
+ if(!settings||typeof settings!=="object")return;
+
+ const modes=settings.gameMode||{};
+ const modeMap={SOLO:"solo",DUO:"duo",SQUAD:"squad"};
+ Object.entries(modeMap).forEach(([mode,key])=>{
+  const button=document.getElementById(key+"Btn");
+  const enabled=modes[key]!==false;
+  if(button){
+   button.disabled=!enabled;
+   button.style.opacity=enabled?"1":".4";
+   button.title=enabled?"":"This mode is disabled by game admin";
+  }
+ });
+ if(modes[String(selectedMode).toLowerCase()]===false){
+  const firstEnabled=["SOLO","DUO","SQUAD"].find(mode=>modes[mode.toLowerCase()]!==false);
+  if(firstEnabled)setMode(firstEnabled);
+ }
+
+ const visual=settings.visual||{};
+ if(visual.theme==="Light"){
+  document.body.style.background="#edf2f8";
+  document.body.style.color="#142033";
+ }else{
+  document.body.style.background="#080d18";
+  document.body.style.color="#ffffff";
+ }
+
+ const stage=document.querySelector("#lobby .lobby-stage");
+ if(stage&&visual.background){
+  const backgrounds={
+   Island:"radial-gradient(ellipse at 50% 70%,#d6ad55 0%,transparent 30%),linear-gradient(180deg,#092b55 0%,#176b91 40%,#55a58c 70%,#153e35 100%)",
+   Forest:"linear-gradient(180deg,#153d32,#34744d 55%,#102d24)",
+   City:"linear-gradient(180deg,#17243d,#52627a 55%,#202b3c)"
+  };
+  if(backgrounds[visual.background])stage.style.background=backgrounds[visual.background];
+ }
+ if(visual.animations===false){
+  document.querySelectorAll(".splash-mark,.entry-character").forEach(el=>el.style.animation="none");
+ }
+
+ const entry=settings.entry||{};
+ if(entry.splash===false){
+  const splash=document.getElementById("splash");
+  if(splash)splash.classList.remove("active");
+ }
+ const afterLoginPage=String(entry.afterLogin||"Lobby").toLowerCase();
+ window.bdGameAfterLoginPage=["lobby","character","maps","profile"].includes(afterLoginPage)?afterLoginPage:"lobby";
+
+ /* Apply Admin-published menu labels while preserving each button action */
+ if(Array.isArray(settings.buttons)){
+  const labels=settings.buttons.map(v=>String(v).trim()).filter(Boolean);
+  const rail=document.querySelector("#lobby .lobby-rail");
+  if(rail&&labels.length){
+   rail.querySelectorAll("button").forEach((button,index)=>{
+    if(labels[index]){
+     const icon=button.querySelector("span");
+     const iconHTML=icon?icon.outerHTML:"";
+     button.innerHTML=iconHTML+labels[index];
+    }
+   });
+  }
+ }
+}
+
+const client=new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
 const account=new Appwrite.Account(client);
 const tables=new Appwrite.TablesDB(client);
 
@@ -425,560 +431,348 @@ let practicePlayer={x:150,y:150};
 let practiceStar={x:80,y:80};
 let practiceTimer=null;
 
-/* MESSAGE HELPERS */
-function showMessage(message){
-  alert(message);
-}
-
+function showMessage(message){alert(message)}
 function showLobbyNotice(message){
-  const notice=document.getElementById("lobbyNotice");
-  if(notice) notice.textContent=message;
-  else showMessage(message);
+ const notice=document.getElementById("lobbyNotice");
+ if(notice)notice.textContent=message;else showMessage(message);
 }
 
-/* PAGE NAVIGATION */
 function go(page){
-  document.querySelectorAll(".page").forEach(section=>{
-    section.classList.remove("active");
-  });
-
-  const target=document.getElementById(page);
-  if(target) target.classList.add("active");
-
-  if(page!=="practice"){
-    practiceRunning=false;
-    practiceDirection="";
-    if(practiceTimer){
-      clearInterval(practiceTimer);
-      practiceTimer=null;
-    }
-  }
+ document.querySelectorAll(".page").forEach(section=>section.classList.remove("active"));
+ const target=document.getElementById(page);
+ if(target)target.classList.add("active");
+ if(page!=="practice"){
+  practiceRunning=false;
+  practiceDirection="";
+  if(practiceTimer){clearInterval(practiceTimer);practiceTimer=null}
+ }
 }
 
-/* GAME MODE */
 function setMode(mode){
-  selectedMode=mode;
-  updateLobby();
-
-  document.querySelectorAll(".mode-card").forEach(button=>{
-    button.classList.remove("selected");
-  });
-
-  const selectedButton=document.getElementById(
-    mode.toLowerCase()+"Btn"
-  );
-
-  if(selectedButton) selectedButton.classList.add("selected");
+ const key=mode.toLowerCase();
+ if(liveGameSettings&&liveGameSettings.gameMode&&liveGameSettings.gameMode[key]===false){
+  showMessage("এই Game Mode Admin বন্ধ রেখেছেন।");
+  return;
+ }
+ selectedMode=mode;
+ updateLobby();
+ document.querySelectorAll(".mode-card").forEach(button=>button.classList.remove("selected"));
+ const selectedButton=document.getElementById(key+"Btn");
+ if(selectedButton)selectedButton.classList.add("selected");
 }
 
 function selectMap(map){
-  selectedMap=map;
-  updateLobby();
-  showMessage("Selected map: "+map);
+ selectedMap=map;
+ updateLobby();
+ showMessage("Selected map: "+map);
 }
 
 function updateLobby(){
-  const mode=document.getElementById("selectedMode");
-  const map=document.getElementById("selectedMap");
-
-  if(mode) mode.textContent=selectedMode;
-  if(map) map.textContent=selectedMap;
+ const mode=document.getElementById("selectedMode");
+ const map=document.getElementById("selectedMap");
+ if(mode)mode.textContent=selectedMode;
+ if(map)map.textContent=selectedMap;
 }
 
 /* GUEST LOGIN */
 async function guestLogin(){
-  try{
-    const sessions=await account.listSessions();
-
-    if(!sessions.sessions || sessions.sessions.length===0){
-      await account.createAnonymousSession();
-    }
-
-    currentUser=await account.get();
-    await afterLogin();
-  }catch(error){
-    console.error(error);
-    showMessage("Guest login failed: "+error.message);
-  }
+ try{
+  const sessions=await account.listSessions();
+  if(!sessions.sessions||sessions.sessions.length===0)await account.createAnonymousSession();
+  currentUser=await account.get();
+  await afterLogin();
+ }catch(error){
+  console.error(error);
+  showMessage("Guest login failed: "+error.message);
+ }
 }
 
 /* PLAYER REGISTRATION */
 async function registerPlayer(){
-  const name=document.getElementById("regName")?.value.trim();
-  const email=document.getElementById("regEmail")?.value.trim();
-  const password=document.getElementById("regPassword")?.value;
-
-  if(!name || !email || !password){
-    showMessage("Please enter name, email and password.");
-    return;
-  }
-
-  try{
-    await account.create(
-      "unique()",
-      email,
-      password,
-      name
-    );
-
-    await account.createEmailPasswordSession(email,password);
-    currentUser=await account.get();
-    await afterLogin();
-  }catch(error){
-    showMessage("Registration failed: "+error.message);
-  }
+ const name=document.getElementById("regName")?.value.trim();
+ const email=document.getElementById("regEmail")?.value.trim();
+ const password=document.getElementById("regPassword")?.value;
+ if(!name||!email||!password){showMessage("Please enter name, email and password.");return}
+ try{
+  await account.create("unique()",email,password,name);
+  await account.createEmailPasswordSession(email,password);
+  currentUser=await account.get();
+  await afterLogin();
+ }catch(error){showMessage("Registration failed: "+error.message)}
 }
 
 /* FACEBOOK LOGIN */
 function facebookLogin(){
-  const successURL=window.location.origin+window.location.pathname;
-  const failureURL=window.location.origin+window.location.pathname+"?oauth=failed";
-
-  try{
-    account.createOAuth2Session("facebook",successURL,failureURL);
-  }catch(error){
-    showMessage("Facebook login failed: "+error.message);
-  }
+ const successURL=window.location.origin+window.location.pathname;
+ const failureURL=window.location.origin+window.location.pathname+"?oauth=failed";
+ try{account.createOAuth2Session("facebook",successURL,failureURL)}
+ catch(error){showMessage("Facebook login failed: "+error.message)}
 }
 
 /* PLAYER LOGIN */
 async function loginPlayer(){
-  const email=document.getElementById("loginEmail")?.value.trim();
-  const password=document.getElementById("loginPassword")?.value;
-
-  if(!email || !password){
-    showMessage("Enter your email and password.");
-    return;
-  }
-
-  try{
-    await account.createEmailPasswordSession(email,password);
-    currentUser=await account.get();
-    await afterLogin();
-  }catch(error){
-    showMessage("Login failed: "+error.message);
-  }
+ const email=document.getElementById("loginEmail")?.value.trim();
+ const password=document.getElementById("loginPassword")?.value;
+ if(!email||!password){showMessage("Enter your email and password.");return}
+ try{
+  await account.createEmailPasswordSession(email,password);
+  currentUser=await account.get();
+  await afterLogin();
+ }catch(error){showMessage("Login failed: "+error.message)}
 }
 
 /* AFTER LOGIN */
 async function afterLogin(){
-  currentUser=await account.get();
-
-  const name=document.getElementById("profileName");
-  const email=document.getElementById("profileEmail");
-  const headerName=document.getElementById("playerName");
-
-  if(name) name.textContent=currentUser.name || "Player";
-  if(email) email.textContent=currentUser.email || "Guest Player";
-  if(headerName) headerName.textContent=currentUser.name || "Guest Player";
-
-  go("lobby");
-  await updatePlayerRecord();
-  await loadLeaderboard();
+ currentUser=await account.get();
+ const name=document.getElementById("profileName");
+ const email=document.getElementById("profileEmail");
+ const headerName=document.getElementById("playerName");
+ if(name)name.textContent=currentUser.name||"Player";
+ if(email)email.textContent=currentUser.email||"Guest Player";
+ if(headerName)headerName.textContent=currentUser.name||"Guest Player";
+ go(window.bdGameAfterLoginPage||"lobby");
+ await updatePlayerRecord();
+ await loadLeaderboard();
 }
 
 /* PLAYER DATABASE RECORD */
 async function updatePlayerRecord(){
-  if(!currentUser) return;
-
-  try{
-    await tables.createRow({
-      databaseId:DATABASE_ID,
-      tableId:PLAYERS_TABLE,
-      rowId:currentUser.$id,
-      data:{
-        userId:currentUser.$id,
-        name:currentUser.name || "Player",
-        email:currentUser.email || "",
-        score:0
-      }
-    });
-  }catch(error){
-    // একই Player-এর রেকর্ড আগে থেকেই থাকলে Appwrite 409 দেয়।
-    if(error.code !== 409){
-      console.error("Player record:",error);
-    }
-  }
+ if(!currentUser)return;
+ try{
+  await tables.createRow({
+   databaseId:DATABASE_ID,
+   tableId:PLAYERS_TABLE,
+   rowId:currentUser.$id,
+   data:{userId:currentUser.$id,name:currentUser.name||"Player",email:currentUser.email||"",score:0}
+  });
+ }catch(error){
+  if(error.code!==409)console.error("Player record:",error);
+ }
 }
 
 /* UPDATE PROFILE */
 async function updateProfile(){
-  if(!currentUser){
-    showMessage("Please login first.");
-    return;
-  }
-
-  const newName=prompt("Enter your player name:",currentUser.name || "Player");
-  if(!newName || !newName.trim()) return;
-
-  try{
-    await account.updateName(newName.trim());
-    currentUser=await account.get();
-
-    const name=document.getElementById("profileName");
-    const headerName=document.getElementById("playerName");
-
-    if(name) name.textContent=currentUser.name;
-    if(headerName) headerName.textContent=currentUser.name;
-
-    showMessage("Profile updated.");
-  }catch(error){
-    showMessage("Profile update failed: "+error.message);
-  }
+ if(!currentUser){showMessage("Please login first.");return}
+ const newName=prompt("Enter your player name:",currentUser.name||"Player");
+ if(!newName||!newName.trim())return;
+ try{
+  await account.updateName(newName.trim());
+  currentUser=await account.get();
+  const name=document.getElementById("profileName");
+  const headerName=document.getElementById("playerName");
+  if(name)name.textContent=currentUser.name;
+  if(headerName)headerName.textContent=currentUser.name;
+  showMessage("Profile updated.");
+ }catch(error){showMessage("Profile update failed: "+error.message)}
 }
 
 /* LOGOUT */
 async function logout(){
-  try{
-    await account.deleteSession("current");
-  }catch(error){
-    console.error(error);
-  }
-
-  currentUser=null;
-  go("entry");
+ try{await account.deleteSession("current")}catch(error){console.error(error)}
+ currentUser=null;
+ go("entry");
 }
 
 /* MATCH API */
 async function callMatchAPI(action,data={}){
-  const response=await fetch(MATCH_API,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      action,
-      userId:currentUser?.$id || null,
-      ...data
-    })
-  });
-
-  const result=await response.json();
-
-  if(!response.ok){
-    throw new Error(result.message || "Match service error");
-  }
-
-  return result;
+ const response=await fetch(MATCH_API,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({action,userId:currentUser?.$id||null,...data})
+ });
+ const result=await response.json();
+ if(!response.ok)throw new Error(result.message||"Match service error");
+ return result;
 }
 
-/* START MATCH */
 async function startMatch(){
-  if(!currentUser){
-    showMessage("Please login first.");
-    return;
-  }
-
-  try{
-    const result=await callMatchAPI("start",{
-      mode:selectedMode,
-      map:selectedMap
-    });
-
-    showLobbyNotice(result.message || "Match request sent.");
-  }catch(error){
-    showMessage("Match service: "+error.message);
-  }
+ if(!currentUser){showMessage("Please login first.");return}
+ try{
+  const result=await callMatchAPI("start",{mode:selectedMode,map:selectedMap});
+  showLobbyNotice(result.message||"Match request sent.");
+ }catch(error){showMessage("Match service: "+error.message)}
 }
 
-/* FIND MATCH */
 async function findMatch(){
-  if(!currentUser){
-    showMessage("Please login first.");
-    return;
-  }
-
-  try{
-    const result=await callMatchAPI("find",{
-      mode:selectedMode,
-      map:selectedMap
-    });
-
-    showLobbyNotice(result.message || "Searching for match...");
-  }catch(error){
-    showMessage("Match search failed: "+error.message);
-  }
+ if(!currentUser){showMessage("Please login first.");return}
+ try{
+  const result=await callMatchAPI("find",{mode:selectedMode,map:selectedMap});
+  showLobbyNotice(result.message||"Searching for match...");
+ }catch(error){showMessage("Match search failed: "+error.message)}
 }
 
-/* CREATE ROOM */
 async function createRoom(){
-  if(!currentUser){
-    showMessage("Please login first.");
-    return;
-  }
-
-  try{
-    const result=await callMatchAPI("createRoom",{
-      mode:selectedMode,
-      map:selectedMap
-    });
-
-    currentRoomCode=result.roomCode || "";
-
-    const display=document.getElementById("roomCodeDisplay");
-    if(display) display.textContent="Room Code: "+currentRoomCode;
-
-    go("room");
-  }catch(error){
-    showMessage("Create room failed: "+error.message);
-  }
+ if(!currentUser){showMessage("Please login first.");return}
+ try{
+  const result=await callMatchAPI("createRoom",{mode:selectedMode,map:selectedMap});
+  currentRoomCode=result.roomCode||"";
+  const display=document.getElementById("roomCodeDisplay");
+  if(display)display.textContent="Room Code: "+currentRoomCode;
+  go("room");
+ }catch(error){showMessage("Create room failed: "+error.message)}
 }
 
-/* JOIN ROOM */
 async function joinRoom(){
-  if(!currentUser){
-    showMessage("Please login first.");
-    return;
-  }
-
-  const code=document.getElementById("roomCodeInput")?.value.trim();
-
-  if(!code){
-    showMessage("Enter a room code.");
-    return;
-  }
-
-  try{
-    const result=await callMatchAPI("joinRoom",{
-      roomCode:code
-    });
-
-    showMessage(result.message || "Room request sent.");
-  }catch(error){
-    showMessage("Join room failed: "+error.message);
-  }
+ if(!currentUser){showMessage("Please login first.");return}
+ const code=document.getElementById("roomCodeInput")?.value.trim();
+ if(!code){showMessage("Enter a room code.");return}
+ try{
+  const result=await callMatchAPI("joinRoom",{roomCode:code});
+  showMessage(result.message||"Room request sent.");
+ }catch(error){showMessage("Join room failed: "+error.message)}
 }
 
-/* COPY ROOM CODE */
 function copyRoomCode(){
-  if(!currentRoomCode){
-    showMessage("No room code available.");
-    return;
-  }
-
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(currentRoomCode)
-      .then(()=>showMessage("Room code copied."))
-      .catch(()=>showMessage("Copy failed."));
-  }else{
-    showMessage("Clipboard not supported.");
-  }
+ if(!currentRoomCode){showMessage("No room code available.");return}
+ if(navigator.clipboard){
+  navigator.clipboard.writeText(currentRoomCode).then(()=>showMessage("Room code copied.")).catch(()=>showMessage("Copy failed."));
+ }else{showMessage("Clipboard not supported.")}
 }
 
 /* LOAD LEADERBOARD */
 async function loadLeaderboard(){
-  const container=document.getElementById("leaderboardList");
-  if(!container) return;
-
-  container.textContent="Loading...";
-
-  try{
-    const result=await tables.listRows({
-      databaseId:DATABASE_ID,
-      tableId:LEADERBOARD_TABLE
-    });
-
-    container.textContent="";
-
-    if(!result.rows || result.rows.length===0){
-      container.textContent="No leaderboard records yet.";
-      return;
-    }
-
-    result.rows.forEach((row,index)=>{
-      const item=document.createElement("div");
-      item.className="leaderboard-item";
-
-      const player=document.createElement("span");
-      player.textContent=(index+1)+". "+(row.name || "Player");
-
-      const score=document.createElement("span");
-      score.textContent=String(row.score ?? 0);
-
-      item.appendChild(player);
-      item.appendChild(score);
-      container.appendChild(item);
-    });
-  }catch(error){
-    container.textContent="Leaderboard unavailable.";
-    console.error(error);
-  }
+ const container=document.getElementById("leaderboardList");
+ if(!container)return;
+ container.textContent="Loading...";
+ try{
+  const result=await tables.listRows({databaseId:DATABASE_ID,tableId:LEADERBOARD_TABLE});
+  container.textContent="";
+  if(!result.rows||result.rows.length===0){container.textContent="No leaderboard records yet.";return}
+  result.rows.forEach((row,index)=>{
+   const item=document.createElement("div");
+   item.className="leaderboard-item";
+   const player=document.createElement("span");
+   player.textContent=(index+1)+". "+(row.name||"Player");
+   const score=document.createElement("span");
+   score.textContent=String(row.score??0);
+   item.appendChild(player);
+   item.appendChild(score);
+   container.appendChild(item);
+  });
+ }catch(error){container.textContent="Leaderboard unavailable.";console.error(error)}
 }
 
 /* PRACTICE ARENA */
 function drawPractice(){
-  const canvas=document.getElementById("practiceCanvas");
-  if(!canvas) return;
-
-  const ctx=canvas.getContext("2d");
-
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle="#245b42";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  ctx.strokeStyle="#477c5c";
-  ctx.lineWidth=1;
-
-  for(let x=0;x<canvas.width;x+=30){
-    ctx.beginPath();
-    ctx.moveTo(x,0);
-    ctx.lineTo(x,canvas.height);
-    ctx.stroke();
-  }
-
-  for(let y=0;y<canvas.height;y+=30){
-    ctx.beginPath();
-    ctx.moveTo(0,y);
-    ctx.lineTo(canvas.width,y);
-    ctx.stroke();
-  }
-
-  ctx.fillStyle="#ffd700";
-  ctx.beginPath();
-  ctx.arc(practiceStar.x,practiceStar.y,10,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#168cff";
-  ctx.beginPath();
-  ctx.arc(practicePlayer.x,practicePlayer.y,15,0,Math.PI*2);
-  ctx.fill();
-
-  const scoreElement=document.getElementById("practiceScore");
-  if(scoreElement) scoreElement.textContent=practiceScore;
+ const canvas=document.getElementById("practiceCanvas");
+ if(!canvas)return;
+ const ctx=canvas.getContext("2d");
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle="#245b42";
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.strokeStyle="#477c5c";
+ ctx.lineWidth=1;
+ for(let x=0;x<canvas.width;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}
+ for(let y=0;y<canvas.height;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}
+ ctx.fillStyle="#ffd700";
+ ctx.beginPath();ctx.arc(practiceStar.x,practiceStar.y,10,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#168cff";
+ ctx.beginPath();ctx.arc(practicePlayer.x,practicePlayer.y,15,0,Math.PI*2);ctx.fill();
+ const scoreElement=document.getElementById("practiceScore");
+ if(scoreElement)scoreElement.textContent=practiceScore;
 }
 
 function practiceStep(){
-  if(!practiceRunning) return;
-
-  const canvas=document.getElementById("practiceCanvas");
-  if(!canvas) return;
-
-  const speed=5;
-
-  if(practiceDirection==="left") practicePlayer.x-=speed;
-  if(practiceDirection==="right") practicePlayer.x+=speed;
-  if(practiceDirection==="up") practicePlayer.y-=speed;
-  if(practiceDirection==="down") practicePlayer.y+=speed;
-
-  practicePlayer.x=Math.max(15,Math.min(canvas.width-15,practicePlayer.x));
-  practicePlayer.y=Math.max(15,Math.min(canvas.height-15,practicePlayer.y));
-
-  const dx=practicePlayer.x-practiceStar.x;
-  const dy=practicePlayer.y-practiceStar.y;
-
-  if(Math.sqrt(dx*dx+dy*dy)<28){
-    practiceScore++;
-
-    practiceStar.x=20+Math.random()*(canvas.width-40);
-    practiceStar.y=20+Math.random()*(canvas.height-40);
-  }
-
-  drawPractice();
+ if(!practiceRunning)return;
+ const canvas=document.getElementById("practiceCanvas");
+ if(!canvas)return;
+ const speed=5;
+ if(practiceDirection==="left")practicePlayer.x-=speed;
+ if(practiceDirection==="right")practicePlayer.x+=speed;
+ if(practiceDirection==="up")practicePlayer.y-=speed;
+ if(practiceDirection==="down")practicePlayer.y+=speed;
+ practicePlayer.x=Math.max(15,Math.min(canvas.width-15,practicePlayer.x));
+ practicePlayer.y=Math.max(15,Math.min(canvas.height-15,practicePlayer.y));
+ const dx=practicePlayer.x-practiceStar.x;
+ const dy=practicePlayer.y-practiceStar.y;
+ if(Math.sqrt(dx*dx+dy*dy)<28){
+  practiceScore++;
+  practiceStar.x=20+Math.random()*(canvas.width-40);
+  practiceStar.y=20+Math.random()*(canvas.height-40);
+ }
+ drawPractice();
 }
 
-function setPracticeDirection(direction){
-  if(practiceRunning){
-    practiceDirection=direction;
-  }
-}
-
-function stopPractice(){
-  practiceDirection="";
-}
-
+function setPracticeDirection(direction){if(practiceRunning)practiceDirection=direction}
+function stopPractice(){practiceDirection=""}
 function startPractice(){
-  if(practiceTimer){
-    clearInterval(practiceTimer);
-  }
-
-  practiceRunning=true;
-  practiceScore=0;
-  practiceDirection="";
-
-  practicePlayer={x:150,y:150};
-  practiceStar={x:70,y:70};
-
-  drawPractice();
-
-  practiceTimer=setInterval(practiceStep,45);
+ if(practiceTimer)clearInterval(practiceTimer);
+ practiceRunning=true;
+ practiceScore=0;
+ practiceDirection="";
+ practicePlayer={x:150,y:150};
+ practiceStar={x:70,y:70};
+ drawPractice();
+ practiceTimer=setInterval(practiceStep,45);
 }
 
-/* SETTINGS */
+/* LOCAL PLAYER SETTINGS */
 function saveSettings(){
-  const sound=document.getElementById("soundSetting");
-  const graphics=document.getElementById("graphicsSetting");
-
-  if(!sound || !graphics) return;
-
-  try{
-    localStorage.setItem("bdGameSound",sound.value);
-    localStorage.setItem("bdGameGraphics",graphics.value);
-    showMessage("Settings saved successfully.");
-  }catch(error){
-    showMessage("Could not save settings.");
-  }
+ const sound=document.getElementById("soundSetting");
+ const graphics=document.getElementById("graphicsSetting");
+ if(!sound||!graphics)return;
+ try{
+  localStorage.setItem("bdGameSound",sound.value);
+  localStorage.setItem("bdGameGraphics",graphics.value);
+  showMessage("Settings saved successfully.");
+ }catch(error){showMessage("Could not save settings.")}
 }
 
 function loadSettings(){
-  try{
-    const sound=localStorage.getItem("bdGameSound");
-    const graphics=localStorage.getItem("bdGameGraphics");
-
-    const soundElement=document.getElementById("soundSetting");
-    const graphicsElement=document.getElementById("graphicsSetting");
-
-    if(sound && soundElement) soundElement.value=sound;
-    if(graphics && graphicsElement) graphicsElement.value=graphics;
-  }catch(error){
-    console.log("Settings error:",error.message);
-  }
+ try{
+  const sound=localStorage.getItem("bdGameSound");
+  const graphics=localStorage.getItem("bdGameGraphics");
+  const soundElement=document.getElementById("soundSetting");
+  const graphicsElement=document.getElementById("graphicsSetting");
+  if(sound&&soundElement)soundElement.value=sound;
+  if(graphics&&graphicsElement)graphicsElement.value=graphics;
+ }catch(error){console.log("Settings error:",error.message)}
 }
 
 /* START APP */
 async function startApp(){
-  loadSettings();
+ loadSettings();
+ await loadLiveAdminSettings();
 
-  const params=new URLSearchParams(window.location.search);
-  if(params.get("oauth")==="failed"){
-    const message=document.getElementById("loginMessage");
-    if(message) message.textContent="Facebook login was not completed. Please try again.";
-    window.history.replaceState({},document.title,window.location.pathname);
+ const params=new URLSearchParams(window.location.search);
+ if(params.get("oauth")==="failed"){
+  const message=document.getElementById("loginMessage");
+  if(message)message.textContent="Facebook login was not completed. Please try again.";
+  window.history.replaceState({},document.title,window.location.pathname);
+ }
+
+ let hasSession=false;
+ try{
+  const sessions=await account.listSessions();
+  hasSession=!!(sessions.sessions&&sessions.sessions.length>0);
+ }catch(error){console.log("Session check:",error.message)}
+
+ go("splash");
+ setTimeout(async()=>{
+  if(hasSession){
+   try{
+    currentUser=await account.get();
+    await afterLogin();
+   }catch(error){
+    currentUser=null;
+    go("login");
+   }
+  }else if(!currentUser){
+   const loginEnabled=!(liveGameSettings&&liveGameSettings.entry&&liveGameSettings.entry.login===false);
+   go(loginEnabled?"login":"entry");
   }
-
-  let hasSession=false;
-  try{
-    const sessions=await account.listSessions();
-    hasSession=!!(sessions.sessions && sessions.sessions.length>0);
-  }catch(error){
-    console.log("Session check:",error.message);
-  }
-
-  go("splash");
-  setTimeout(async()=>{
-    if(hasSession){
-      try{
-        currentUser=await account.get();
-        await afterLogin();
-      }catch(error){
-        currentUser=null;
-        go("login");
-      }
-    }else if(!currentUser){
-      go("login");
-    }
-  },3900);
+ },3900);
 }
 
-/* APP START */
 document.addEventListener("DOMContentLoaded",startApp);
-
 </script>
+
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js")
-      .catch(error => console.log("PWA:", error));
-  });
+if("serviceWorker" in navigator){
+ window.addEventListener("load",()=>{
+  navigator.serviceWorker.register("/sw.js").catch(error=>console.log("PWA:",error));
+ });
 }
-</script></body>
+</script>
+</body>
 </html>
